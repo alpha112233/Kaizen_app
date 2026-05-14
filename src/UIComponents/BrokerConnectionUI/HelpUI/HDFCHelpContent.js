@@ -53,7 +53,7 @@ const HDFCHelpContent = ({expanded, onExpandChange }) => {
                           </Text>
                           <Text style={styles.instruction}>
                             5. Copy the *API* and *Secret Key* and paste
-            them into the {Config?.REACT_APP_WHITE_LABEL_TEXT || 'Kaizen Alpha'} platform to connect
+            them into the {Config?.REACT_APP_WHITE_LABEL_TEXT || 'AlphaQuark'} platform to connect
             your broker.
                           </Text>
         </>

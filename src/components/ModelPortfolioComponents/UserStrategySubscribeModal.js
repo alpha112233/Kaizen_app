@@ -1050,7 +1050,7 @@ const UserStrategySubscribeModal = ({
             stockDetails: stockDetails,
             leaving_datetime: currentISTDateTime,
             email: userEmail,
-            trade_given_by: configData?.config?.REACT_APP_ADVISOR_SPECIFIC_TAG || 'kaizenalpha',
+            trade_given_by: configData?.config?.REACT_APP_ADVISOR_SPECIFIC_TAG || 'AlphaQuark',
           },
         )
         .then(res => {

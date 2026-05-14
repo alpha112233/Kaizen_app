@@ -4,14 +4,10 @@
 <dict>
 	<key></key>
 	<string></string>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Kaizen Alpha</string>
+	<string>KaizenAlpha</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,6 +22,10 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+    	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -33,15 +33,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.174847117466-qd77f4l3pja385bbenfnoajltke95eh2</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>kaizenapp</string>
+				<string>com.googleusercontent.apps.892331696104-3ga6a5c9ell75turpt6th0bbpc8ftvjl</string>
 			</array>
 		</dict>
 	</array>
@@ -58,28 +50,14 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
-	<key>RCTNewArchEnabled</key>
-	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to allow you to upload profile pictures and share images.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome.ttf</string>
 		<string>MaterialIcons.ttf</string>
 		<string>Fontisto.ttf</string>
 		<string>AntDesign.ttf</string>
-		<string>Azonix.otf</string>
-		<string>ObviouslyDemo-NarrowBlack.otf</string>
-		<string>ObviouslyNarrow-Black.otf</string>
-		<string>Satoshi-Black.otf</string>
-		<string>Satoshi-BlackItalic.otf</string>
-		<string>Satoshi-Bold.otf</string>
-		<string>Satoshi-BoldItalic.otf</string>
-		<string>Satoshi-Italic.otf</string>
-		<string>Satoshi-Light.otf</string>
-		<string>Satoshi-LightItalic.otf</string>
-		<string>Satoshi-Medium.otf</string>
-		<string>Satoshi-MediumItalic.otf</string>
-		<string>Satoshi-Regular.otf</string>
-		<string>Gillies.ttf</string>
 		<string>Poppins-Black.ttf</string>
 		<string>Poppins-BlackItalic.ttf</string>
 		<string>Poppins-Bold.ttf</string>
@@ -98,9 +76,22 @@
 		<string>Poppins-SemiBoldItalic.ttf</string>
 		<string>Poppins-Thin.ttf</string>
 		<string>Poppins-ThinItalic.ttf</string>
+		<string>Satoshi-Black.otf</string>
+		<string>Satoshi-BlackItalic.otf</string>
+		<string>Satoshi-Bold.otf</string>
+		<string>Satoshi-BoldItalic.otf</string>
+		<string>Satoshi-Italic.otf</string>
+		<string>Satoshi-Light.otf</string>
+		<string>Satoshi-LightItalic.otf</string>
+		<string>Satoshi-Medium.otf</string>
+		<string>Satoshi-MediumItalic.otf</string>
+		<string>Satoshi-Regular.otf</string>
 		<string>Satoshi-Medium.ttf</string>
 		<string>Satoshi-Regular.ttf</string>
 		<string>Satoshi-Variable.ttf</string>
+		<string>ObviouslyDemo-NarrowBlack.otf</string>
+		<string>ObviouslyNarrow-Black.otf</string>
+		<string>Gillies.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

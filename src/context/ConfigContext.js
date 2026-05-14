@@ -12,9 +12,18 @@ export const useConfig = () => {
     return useContext(ConfigContext);
 };
 
-// Default variant for this fork. This repo ships only the kaizenalpha
-// tenant; if APP_VARIANT is missing or unrecognised, fall back to
-// kaizenalpha so we never silently render a foreign brand.
+// Default variant used when APP_VARIANT is missing or unknown. Was
+// 'kaizenalpha' historically — but rgxresearch falls through to
+// sharedUIConfig, whose logo / theme is ZamZam-branded (sharedUIConfig
+// was originally the ZamZam variant config; logo file
+// `src/assets/AppLogo/logo.png` is byte-identical to
+// `src/assets/AppLogo/Zamzam.png`). On AlphaQuark builds we MUST NOT
+// silently degrade to ZamZam branding when the env var fails to
+// resolve (gradle missed the .env, react-native-config not linked,
+// dev build bundling stale config, etc.). 'kaizenalpha' is a safer
+// default for this codebase since the variant explicitly declares
+// AlphaQuarkLogo. White-label tenants who deploy this app from their
+// own fork should change DEFAULT_VARIANT to their own variant key.
 const DEFAULT_VARIANT = 'kaizenalpha';
 
 export const ConfigProvider = ({ children }) => {
@@ -30,7 +39,7 @@ export const ConfigProvider = ({ children }) => {
         console.warn(
             '[ConfigContext] APP_VARIANT not set in .env — defaulting to',
             DEFAULT_VARIANT,
-            '. Set APP_VARIANT=kaizenalpha in .env to suppress this warning.',
+            '. If this is a non-AlphaQuark tenant build, set APP_VARIANT explicitly.',
         );
     }
     const initialConfig = { ...APP_VARIANTS[validVariant], selectedVariant: validVariant };
@@ -147,17 +156,17 @@ export const ConfigProvider = ({ children }) => {
 
                         // ============================================================================
                         // AUTHENTICATION
-                        // ============================================================================
                         // Backend (apiData) wins over the static Config.js fallback for
                         // googleWebClientId. Defensive `.trim()` because the backend has been
                         // observed returning the value with trailing whitespace
                         // (`'713385591555-…googleusercontent.com '`), which Google Sign-In
                         // rejects with DEVELOPER_ERROR if passed verbatim.
+                        // ============================================================================
                         googleWebClientId:
-                            initialConfig.googleWebClientId ||
                             (typeof apiData.googleWebClientId === 'string'
                                 ? apiData.googleWebClientId.trim()
-                                : apiData.googleWebClientId),
+                                : apiData.googleWebClientId) ||
+                            initialConfig.googleWebClientId,
 
                         // ============================================================================
                         // DIGIO CONFIGURATION
@@ -205,51 +214,48 @@ export const ConfigProvider = ({ children }) => {
 
                         // ============================================================================
                         // BRANDING & THEME COLORS
-                        // Static config (whitelabel/appVariants.js) wins over backend for all
-                        // branding fields — this is a dedicated whitelabel fork so the bundled
-                        // branding is authoritative. Backend values are only used as fallback.
                         // ============================================================================
-                        themeColor: initialConfig.themeColor || apiData.themeColor,
-                        logo: initialConfig.logo || apiData.logo,
-                        toolbarlogo: initialConfig.toolbarlogo || apiData.toolbarlogo,
+                        themeColor: apiData.themeColor || initialConfig.themeColor,
+                        logo: apiData.logo || initialConfig.logo,
+                        toolbarlogo: apiData.toolbarlogo || initialConfig.toolbarlogo,
                         backgroundLogo: apiData.backgroundLogo || null,
                         showBackgroundLogo: apiData.showBackgroundLogo !== undefined ? apiData.showBackgroundLogo : true,
-                        mainColor: initialConfig.mainColor || apiData.mainColor,
-                        secondaryColor: initialConfig.secondaryColor || apiData.secondaryColor,
-                        gradient1: initialConfig.gradient1 || apiData.gradient1,
-                        gradient2: initialConfig.gradient2 || apiData.gradient2,
-                        placeholderText: initialConfig.placeholderText || apiData.placeholderText,
+                        mainColor: apiData.mainColor || initialConfig.mainColor,
+                        secondaryColor: apiData.secondaryColor || initialConfig.secondaryColor,
+                        gradient1: apiData.gradient1 || initialConfig.gradient1,
+                        gradient2: apiData.gradient2 || initialConfig.gradient2,
+                        placeholderText: apiData.placeholderText || initialConfig.placeholderText,
 
                         // ============================================================================
                         // LAYOUT CONFIGURATION
                         // ============================================================================
-                        homeScreenLayout: initialConfig.homeScreenLayout || apiData.homeScreenLayout,
+                        homeScreenLayout: apiData.homeScreenLayout || initialConfig.homeScreenLayout,
 
                         // ============================================================================
                         // CARD STYLING
                         // Note: API uses camelCase (cardBorderWidth), static config uses CardborderWidth
                         // ============================================================================
-                        CardborderWidth: initialConfig.CardborderWidth ?? apiData.cardBorderWidth ?? apiData.CardborderWidth,
-                        cardElevation: initialConfig.cardElevation ?? apiData.cardElevation,
-                        cardverticalmargin: initialConfig.cardverticalmargin ?? apiData.cardVerticalMargin ?? apiData.cardverticalmargin,
+                        CardborderWidth: apiData.cardBorderWidth ?? apiData.CardborderWidth ?? initialConfig.CardborderWidth,
+                        cardElevation: apiData.cardElevation ?? initialConfig.cardElevation,
+                        cardverticalmargin: apiData.cardVerticalMargin ?? apiData.cardverticalmargin ?? initialConfig.cardverticalmargin,
 
                         // ============================================================================
                         // BOTTOM TAB / NAVIGATION STYLING
                         // Note: API uses camelCase, static config uses mixed case
                         // ============================================================================
-                        tabIconColor: initialConfig.tabIconColor || apiData.tabIconColor,
-                        bottomTabBorderTopWidth: initialConfig.bottomTabBorderTopWidth ?? apiData.bottomTabBorderTopWidth,
-                        bottomTabbg: initialConfig.bottomTabbg || apiData.bottomTabBg || apiData.bottomTabbg,
-                        selectedTabcolor: initialConfig.selectedTabcolor || apiData.selectedTabColor || apiData.selectedTabcolor,
+                        tabIconColor: apiData.tabIconColor || initialConfig.tabIconColor,
+                        bottomTabBorderTopWidth: apiData.bottomTabBorderTopWidth ?? initialConfig.bottomTabBorderTopWidth,
+                        bottomTabbg: apiData.bottomTabBg || apiData.bottomTabbg || initialConfig.bottomTabbg,
+                        selectedTabcolor: apiData.selectedTabColor || apiData.selectedTabcolor || initialConfig.selectedTabcolor,
 
                         // ============================================================================
                         // BASKET COLORS (for stock basket cards)
                         // Note: API uses camelCase, static config uses lowercase
                         // ============================================================================
-                        basket1: initialConfig.basket1 || apiData.basket1,
-                        basket2: initialConfig.basket2 || apiData.basket2,
-                        basketcolor: initialConfig.basketcolor || apiData.basketColor || apiData.basketcolor,
-                        basketsymbolbg: initialConfig.basketsymbolbg || apiData.basketSymbolBg || apiData.basketsymbolbg,
+                        basket1: apiData.basket1 || initialConfig.basket1,
+                        basket2: apiData.basket2 || initialConfig.basket2,
+                        basketcolor: apiData.basketColor || apiData.basketcolor || initialConfig.basketcolor,
+                        basketsymbolbg: apiData.basketSymbolBg || apiData.basketsymbolbg || initialConfig.basketsymbolbg,
 
                         // ============================================================================
                         // API KEYS (nested object) - API data takes priority

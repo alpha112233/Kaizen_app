@@ -162,7 +162,7 @@ describe('storageUtils', () => {
         config: {
           REACT_APP_HEADER_NAME: 'test-advisor',
           REACT_APP_ADVISOR_TAG: 'TEST',
-          APP_VARIANT: 'alphaquark',
+          APP_VARIANT: 'kaizenalpha',
         },
         advisorName: 'Test Advisor',
       };

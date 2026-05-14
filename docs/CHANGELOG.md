@@ -4,21 +4,979 @@ All notable changes to the AlphaQuark B2B Mobile App are documented here.
 
 ---
 
-## [unreleased] - 2026-05-06
+## [unreleased] - 2026-05-12 (23)
 
-### Fixed — MPReviewTradeModal: Place Order spinner stuck forever (Axis Securities, Dhan, all brokers)
+### Feat / Fix — Kite Publisher polling hook + GTT-in-publisher guard + backend variant-acceptance audit (Phase E + items 2, 5 of basket-flow audit)
 
-**Problem.** Clicking "Place Order" in the MP rebalance review modal caused the button to spin indefinitely. No HTTP request was ever sent to the backend (`/rebalance/process-trade`). Confirmed via nginx access logs: zero `okhttp`/React Native requests for that endpoint while the Flutter (tidi) app hit it successfully.
+This commit closes three deferred items from the basket-flow audit:
 
-**Root cause.** `placeOrder()` called `setLoading(true)` at line 317, but the `try { }` block only started at line 429 — 112 lines of synchronous setup code (exchange validation, Dhan EDIS pre-check, `computeTradeVariant`, payload/config construction, `enrollStatusCheckQueue` definition) ran entirely outside the try-catch. Any unhandled exception in that setup window → unhandled promise rejection → `setLoading(false)` in the catch was never called → spinner stuck forever. Additionally the edit that moved `try {` left an orphaned plain `{` at line 430 (the old `try {` was changed to `{`), which caused a `SyntaxError: Unexpected token 'catch'` at line 649.
+- **Item 1 (Phase E)**: client-side polling extracted into a reusable hook and wired into two new consumers
+- **Item 2**: GTT-in-publisher silent failure guarded
+- **Item 5 (audit, no code)**: backend `record-orders` route's variant-acceptance posture confirmed
+
+---
+
+**Item 1 — `useKitePublisherPolling` shared hook (Phase E)**
+
+Pre-fix posture: only `RebalanceModal.js` had client-side polling for the
+"Kite Publisher WebView callback missed" recovery scenario. The other three
+publisher-hosting modals (`MPReviewTradeModal.js`, `ReviewZerodhaTradeModal.js`,
+`AddtoCartModal.js`) relied solely on the server-side
+`add-user/status-check-queue` reconciler — which provides eventual
+consistency but takes 1-5 minutes vs. sub-5s for client polling. Three known
+WebView-intercept failure scenarios (cross-domain 302 loss, OS-suspended
+WebView during broker-app authentication, AsyncStorage hydration race) were
+silently UX-degrading on MP rebalance and stock-advice basket flows.
+
+Fix: extract the ~70 LOC polling state machine from `RebalanceModal.js` into
+a reusable hook `src/hooks/useKitePublisherPolling.js`. Three consumers now
+share the implementation:
+
+| File | Path | Integration |
+|---|---|---|
+| `src/components/AdviceScreenComponents/RebalanceModal.js` | bespoke rebalance | refactored to use hook (removes ~70 LOC of inline polling) |
+| `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` | MP rebalance | new consumer — `startKitePolling()` after `setWebView(true)` at L1044, `stopKitePolling()` at top of `checkZerodhaStatus` |
+| `src/components/ReviewZerodhaTradeModal.js` | stock-advice basket Kite Publisher | new consumer — `startKitePolling()` inside the `skipToWebView` effect, `stopKitePolling()` at top of local `checkZerodhaStatus` |
+
+`AddtoCartModal.js` is deliberately NOT integrated — its publisher path is
+dead code (the `setOpenZerodhaModel(true)` setter is never invoked from the
+cart flow; cart routes everything through REST).
+
+Hook contract:
+
+```js
+const { start, stop } = useKitePublisherPolling({
+  broker,
+  brokerCreds: { clientCode, apiKey, jwtToken, secretKey, sid, serverId },
+  configData,
+  onPublisherSettled: ({ reason, newOrders }) => { /* consumer state transition */ },
+});
+```
+
+- Hook owns: `processedRef`, `baselineOrderIdsRef`, `pollingIntervalRef`,
+  `pollingTimeoutRef` — all internal, no consumer access needed
+- `start()` is idempotent: clears any in-flight timers + resets processed flag
+- `stop()` is idempotent: clears timers + sets processed flag (so any
+  in-flight setInterval tick short-circuits before re-firing onPublisherSettled)
+- Double-fire protection via the processed flag — whichever channel
+  (WebView callback OR polling) settles first wins; the other short-circuits
+- Auto-cleanup on unmount via `useEffect` cleanup
+- Callback ref pattern: `onSettledRef` always points to the latest closure
+  so timers always invoke the current callback even if consumer re-renders
+- Constants pulled from `PUBLISHER_POLL_CONFIG` in `brokerPublisher.js`
+  (single source of truth — Phase D)
+
+**Item 2 — GTT-in-publisher silent failure guard**
+
+Kite Publisher's HTML form (`POST kite.zerodha.com/connect/basket`) does NOT
+support GTT semantics — only regular variety orders. If a basket contained
+GTT orders and was routed through publisher, the GTT config (trigger price,
+stop-loss, target) would silently degrade to plain MARKET/LIMIT — user's
+intent lost without any visible error.
+
+`StockAdvices.js:578` Zerodha branch — added `hasGttOrders` precheck. When
+the basket contains any stock with `gttCheck === true`, fall through to the
+REST path (L624-632 already splits GTT vs regular and routes through ccxt
+`/{broker}/process-trades` GTT endpoint). Trade-off: mixed GTT+regular
+baskets lose the Kite Publisher UX, but order correctness is preserved.
+
+Logs `[StockAdvices] Zerodha basket contains GTT orders — routing through
+REST instead of Kite Publisher` when the guard fires, so QA / support can
+trace the divergence.
+
+Other publisher consumers (MPReviewTradeModal, RebalanceModal,
+ReviewZerodhaTradeModal) — GTT is irrelevant: MP / bespoke rebalance trades
+come from `rebalance/calculate` which doesn't surface GTT semantics. Skipped.
+
+**Item 5 — Backend record-orders variant-acceptance audit (no code)**
+
+Read-only audit of
+`aq_backend_github/Routes/Broker/zerodha.js:269` (the `POST
+/publisher/record-orders` route handler). Findings:
+
+- Route accepts `stockDetails` array at L276 — destructures with
+  `model_id, modelName, advisor, unique_id, caPendingInfo` but **NOT
+  `variant`**. The field arrives in the body but is silently dropped.
+- Per-stock loop at L331-499 builds `orderResult` with explicit fields
+  (no variant) and `updateFields` for TradeReco persistence
+  (`trade_place_status, uniqueorderid, orderId, orderStatusMessage,
+  user_broker, Exchange, tradedQty, exitPrice, exitDate, tradedPrice,
+  purchaseDate`) — variant is not persisted to MongoDB.
+- Returned `orderResult` to the frontend also doesn't include variant — so
+  even if frontend wanted to read echoed variant, it can't.
+
+**Conclusion:** Phase B's mobile-side variant tagging is forward-compatible
+but currently terminates at the backend boundary. Frontend's three-tier
+variant resolver (response field → outgoing payload match → default REGULAR)
+correctly falls back to tier 2 (outgoing payload match by symbol+tradeId)
+since tier 1 (backend echo) always returns null. The amber AMO pill works
+correctly on success modals.
+
+A follow-up backend change would be needed to fully wire mobile → backend → DB:
+(a) accept `variant` from `stockDetails`, (b) persist to TradeReco or
+model_portfolio_user, (c) echo on the response. Not in scope for this
+commit.
+
+---
+
+**Files touched:**
+
+- **NEW** `src/hooks/useKitePublisherPolling.js` — ~180 LOC, parse-verified
+- `src/components/AdviceScreenComponents/RebalanceModal.js` — replaced
+  inline polling (~70 LOC removed), added hook import, simplified
+  `checkZerodhaStatus` (removed redundant `publisherProcessedRef` flips
+  since the hook owns that state)
+- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` — added
+  hook import + instantiation, `startKitePolling()` after `setWebView(true)`,
+  `stopKitePolling()` in `checkZerodhaStatus` and in
+  `handleWebViewNavigationStateChange`
+- `src/components/ReviewZerodhaTradeModal.js` — added hook import +
+  instantiation, `startKitePolling()` in the `skipToWebView` effect,
+  `stopKitePolling()` at top of `checkZerodhaStatus`
+- `src/components/AdviceScreenComponents/StockAdvices.js` — `hasGttOrders`
+  precheck in the Zerodha branch + fall-through-to-REST log
+- `docs/REBALANCING.md` — Layer 1 section rewritten to reference the shared
+  hook + three consumers; consumer-posture matrix updated to reflect Phases
+  B / C / D / E completed state
+
+**Verification:**
+
+- All 5 modified .js files parse cleanly under `@babel/parser` with JSX +
+  optional-chaining + nullish-coalescing.
+- New hook parse-checked.
+- `grep` confirms zero leftover references to the old refs
+  (`publisherProcessedRef`, `pollingIntervalRef`, `pollingTimeoutRef`,
+  `baselineOrderIdsRef`) in RebalanceModal.
+- Three `startKitePolling()` / `stopKitePolling()` callsite pairs verified
+  in each of the three new consumer modals.
+
+**Behavioural risk:** Low. The hook implements the same state machine as
+the previous inline polling in RebalanceModal — refactor is behaviour-preserving
+for the existing consumer. The two new consumers (MPReviewTradeModal,
+ReviewZerodhaTradeModal) gain client-side recovery as an ADDITIONAL layer
+on top of the existing server-side queue — failure modes only improve.
+
+---
+
+## [unreleased] - 2026-05-12 (22)
+
+### Refactor — `PUBLISHER_POLL_CONFIG` single source of truth (Phase D of basket-flow audit)
+
+**Why:** Phase A documented that `brokerPublisher.js:432` exported
+`PUBLISHER_POLL_CONFIG = { POLL_INTERVAL_MS: 5000, POLL_TIMEOUT_MS: 90000 }`
+but `RebalanceModal.js:148-149` redefined the same constants locally
+instead of importing from the canonical source. Dead-export on one side,
+hardcoded magic numbers on the other — exactly the divergence pattern
+that bites when someone tunes one and forgets the other.
+
+This commit closes the loop: RebalanceModal now imports `PUBLISHER_POLL_CONFIG`
+and destructures `POLL_INTERVAL_MS` / `POLL_TIMEOUT_MS` from it. The local
+declarations are removed.
+
+**Files touched:**
+
+- `src/components/AdviceScreenComponents/RebalanceModal.js` (L47 import + L148-152):
+  - Added `PUBLISHER_POLL_CONFIG` to the existing brokerPublisher named-import list.
+  - Replaced the two local `const POLL_INTERVAL_MS = 5000` / `const POLL_TIMEOUT_MS = 90000`
+    declarations with a single destructure of `PUBLISHER_POLL_CONFIG`.
+  - Added a code comment pointing at the canonical source + the REBALANCING.md
+    polling-fallback section so future polling consumers (MPReviewTradeModal,
+    StockAdvices, AddtoCartModal — when/if they add client polling) know where
+    to import from.
+- `src/utils/brokerPublisher.js`: no change — the export was already there and
+  is now actually consumed.
+
+**Verification:**
+
+- Parse-checked under `@babel/parser` with JSX + optional-chaining + nullish-coalescing.
+- Both usage sites in RebalanceModal (`setInterval(..., POLL_INTERVAL_MS)` at L207
+  and `setTimeout(..., POLL_TIMEOUT_MS)` at L219) confirmed to still resolve to
+  the destructured names.
+- No semantic change — values stay 5000ms / 90000ms.
+
+**Phase E (deferred):**
+
+- Adding client-side polling to MPReviewTradeModal / StockAdvices / AddtoCartModal
+  needs a product decision (server-side `status-check-queue` provides eventual
+  consistency; client polling provides sub-5s UX but adds complexity). Not in
+  scope for now.
+- GTT-in-publisher silent failure (basket with GTT order routed through
+  publisher would silently drop GTT semantics) — separate investigation.
+
+---
+
+## [unreleased] - 2026-05-12 (21)
+
+### Fix — `portfolioEvents` emitted from MP Zerodha publisher success path (Phase C of basket-flow audit)
+
+**Why:** Phase A documented that `MPReviewTradeModal.js` had three success
+branches (REST, Fyers publisher, Zerodha publisher) but only the first two
+emitted the structured portfolio-refresh events. The Zerodha publisher
+success path was the only success branch in the file that didn't fire the
+events, so after a Kite-publisher-mediated MP rebalance the holdings widgets
+(MPCard, RebalanceAdvices, AfterSubscriptionScreen, anything listening on
+`PORTFOLIO_EVENTS.HOLDINGS_REFRESH` or `REBALANCE_EXECUTED`) stayed stale
+until the user navigated away and back or manually pulled to refresh.
+
+Per-branch emit posture, post-fix:
+
+| Branch | File:line | HOLDINGS_REFRESH | REBALANCE_EXECUTED |
+|--------|-----------|------------------|--------------------|
+| REST path | `MPReviewTradeModal.js:649,654` | ✅ | ✅ |
+| Fyers publisher success | `MPReviewTradeModal.js:1635,1640` | ✅ | ✅ |
+| **Zerodha publisher success** | `MPReviewTradeModal.js:1316,1321` | ✅ (new) | ✅ (new) |
+| Bespoke rebalance Zerodha | `RebalanceModal.js:969,977` | ✅ (pre-existing) | ✅ (pre-existing) |
+
+**Fixed:**
+
+- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` (L1316-1325):
+  - Inserted the same `portfolioEvents.emit(...)` pair the REST path fires
+    at L649-658. Placed AFTER `setOpenSucessModal(true)` + `setLoading(false)`
+    and BEFORE `calculateRebalance()` — same ordering as the REST path.
+  - Fires on both the happy `record-orders` success AND the synthetic-Unknown
+    fallback (catch block where Kite callback fired but `record-orders`
+    HTTP failed). Justification: in the synthetic-Unknown case, orders
+    *may* still have placed in Kite — the server-side `status-check-queue`
+    reconciler will eventually confirm — and the user's holdings need to
+    refresh regardless of whether we got a clean Kite response.
+  - Hardcoded `broker: 'Zerodha'` in the payload (REST path uses `broker`
+    variable since it can be anything; here we're inside a Zerodha-only
+    branch).
+
+**What this doesn't change:**
+- No emit added to `StockAdvices.js` / `AddtoCartModal.js` / `IgnoreTradesScreen.js`
+  Zerodha publisher paths. Those are stock-advice / cart / ignore-list flows,
+  not MP rebalance — the `REBALANCE_EXECUTED` event semantically doesn't
+  apply, and `HOLDINGS_REFRESH` is partially covered by their existing
+  `getAllTrades()` + `updatePortfolioData()` calls. Whether they should also
+  emit `HOLDINGS_REFRESH` for structural consistency is tracked as an open
+  decision point in `BASKETS_ARCHITECTURE.md § 13` shared-patterns note —
+  separate change.
+- Web (prod-alphaquark-github) has its own state-management; `portfolioEvents`
+  is the RN-only `EventEmitter`. Phase C does not apply to web.
+- tidi_new doesn't use Kite Publisher (Flutter app uses `Phase3SdkConnectScreen`
+  for connect; no Publisher SDK for execute). Phase C does not apply.
+
+**Verification:**
+- `MPReviewTradeModal.js` parses cleanly under `@babel/parser` with JSX +
+  optional-chaining + nullish-coalescing plugins.
+- All three emit sites now confirmed via grep (L649, L1316, L1635 for
+  HOLDINGS_REFRESH; L654, L1321, L1640 for REBALANCE_EXECUTED).
+- Payload shape `{ userEmail, modelName, broker }` matches the REST and Fyers
+  path emissions verbatim.
+
+**Next:**
+- Port Phase B variant-threading fixes to `prod-alphaquark-github` (web has
+  the same gap in `BrokerPublisherButton.js` + `UpdateRebalanceModal.js`).
+- Phase D (PUBLISHER_POLL_CONFIG dead-export cleanup in `brokerPublisher.js`
+  + `RebalanceModal.js`) — small, low risk, separate commit.
+
+---
+
+## [unreleased] - 2026-05-12 (20)
+
+### Fix — `variant` field threaded through all Zerodha Kite Publisher paths (Phase B of basket-flow audit)
+
+**Why:** Phase A documented that variant tagging was missing from the Zerodha
+publisher paths across multiple modals. This commit closes the code gap.
+
+Pre-fix behaviour: the AMO pill (display-only marker showing the user that an
+order was submitted after market hours and will execute at market open as AMO)
+never appeared on orders placed via Kite Publisher, even when the user
+genuinely was placing after-hours. Reason: every publisher path stored raw
+`stockDetails` to AsyncStorage / persisted via `update-reco-with-zerodha-model-pf`
+WITHOUT tagging `variant`. By the time `checkZerodhaStatus` rehydrated and
+fired `/api/zerodha/publisher/record-orders`, the field was already lost.
+
+The REST paths in each modal correctly tag variant (e.g.
+`MPReviewTradeModal.js:354` builds `tradesWithVariant` for `process-trade`),
+but the Zerodha branch returns earlier from those handlers. RebalanceModal was
+the only modal that already threaded variant correctly through its Zerodha
+path (L958-963, since the 2026-05-01 work).
+
+**Fixed in five files:**
+
+- `src/components/AdviceScreenComponents/StockAdvices.js` (L578-595):
+  - Tag `variant` on stockDetails BEFORE the Zerodha branch's
+    `setZerodhaStockDetails` and `handleZerodhaRedirect(...)` call.
+  - Variant flows into: (1) `zerodhaStockDetails` state used by
+    `checkZerodhaStatus` → record-orders payload at L1329, (2) `update-trade-reco`
+    request body, (3) the basket build pipeline.
+
+- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` (L928, L994):
+  - Tag variant on stockDetails inside `handleZerodhaRedirect`, BEFORE
+    AsyncStorage write (so the rehydrated `zerodhaStockDetails` used by
+    `checkZerodhaStatus` → record-orders at L1141 carries variant).
+  - Also use the tagged version in the `update-reco-with-zerodha-model-pf`
+    payload at L994 — keeps the two persistence layers consistent.
+
+- `src/components/ModelPortfolioComponents/UserStrategySubscribeModal.js`
+  (L975, L1050, L1090):
+  - Tag variant at the top of `handleZerodhaRedirect`.
+  - Use tagged version in the `update-reco-with-zerodha-model-pf` request body.
+  - Add `variant: detail.variant || zerodhaVariant` to the
+    `filteredStockDetails` field-by-field mapping that builds the
+    AsyncStorage payload at L1090. Without this last addition, the explicit
+    field mapping would silently drop variant even if the backend echoed it
+    (which it may or may not).
+
+- `src/components/ReviewZerodhaTradeModal.js` (imports + L420):
+  - Added `computeTradeVariant` import.
+  - Belt-and-braces variant tagging before the AsyncStorage write at L420.
+    `StockAdvices.handleTrade` already pre-tags upstream, but the defensive
+    tag here covers (a) any future caller that doesn't pre-tag, (b) the
+    recovery path where this modal's AsyncStorage write is the only
+    persistence (user kills app mid-WebView, comes back, and
+    `checkZerodhaStatus` rehydrates from disk).
+  - Pattern: `variant: s?.variant || fallbackVariant` (preserves the
+    upstream-supplied variant when present, fills in from this modal's own
+    `allowAfterHoursOrders` config otherwise).
+
+- `src/screens/Drawer/IgnoreTradesScreen.js` (L745):
+  - Tag variant on stockDetails inside the local `handleZerodhaRedirect`
+    BEFORE the AsyncStorage write at L743. Same threading pattern as
+    StockAdvices.
+
+**What this doesn't change:**
+- Place-order payload shape sent to Kite Publisher is unchanged. Variant is a
+  display-only marker (`docs/APP_ARCHITECTURE.md § 4.5.2`), never a Kite
+  field. Every supported broker auto-converts after-hours orders to AMO
+  server-side.
+- REST paths in each modal already tagged variant correctly. No change there.
+- RebalanceModal already threads variant correctly through its Zerodha path
+  (L958-963). No change there.
+- Backend `/api/zerodha/publisher/record-orders` endpoint: forward-compat —
+  if it doesn't read the `variant` field, it's a silent ignore; if it does,
+  it now receives the correct tag.
+
+**Verification:**
+- All five files parse cleanly under `@babel/parser` with JSX + optional
+  chaining + nullish coalescing plugins.
+- `allowAfterHoursOrders` confirmed in scope at every fix site (top-level
+  destructure from `useConfig()` in each component).
+- No behavioural risk to non-Zerodha paths (every fix is inside a
+  Zerodha-only branch or function).
+
+**Next (Phase C, separate commit):**
+- Emit `portfolioEvents.HOLDINGS_REFRESH` + `REBALANCE_EXECUTED` from
+  `MPReviewTradeModal.checkZerodhaStatus` success path (line 1290) and the
+  catch block (Unknown response path) — currently MP's Zerodha publisher
+  path is the only success branch in the file that doesn't emit these
+  events. RebalanceModal's Zerodha path already emits at L969-977 — mirror
+  that pattern.
+
+---
+
+## [unreleased] - 2026-05-12 (19)
+
+### Docs — Kite Publisher basket flow alignment (Phase A of basket-flow audit)
+
+**Why:** the basket-flow audit (2026-05-12) surfaced three documentation gaps that
+would mislead any future contributor:
+
+1. `BASKETS_ARCHITECTURE.md § 13` claimed "Broker publisher: Not used for baskets"
+   on mobile. False — `StockAdvices.js:578` routes Zerodha basket execution
+   through Kite Publisher, and the same pattern exists in `AddtoCartModal.js:1059`,
+   `MPReviewTradeModal.js:838`, and `RebalanceModal.js:690`. The Component Map
+   (§ 2) and Order Placement Flow (§ 7) both omitted the publisher fork.
+
+2. The Kite Publisher polling fallback (~70 LOC in `RebalanceModal.js:148-217`,
+   plus the `publisherProcessedRef` double-fire guard) was completely undocumented.
+   No mention in REBALANCING.md, MODEL_PORTFOLIO_ARCHITECTURE.md, or
+   BASKETS_ARCHITECTURE.md. A future contributor removing it would silently
+   break the WebView-callback-missed recovery on bespoke rebalance.
+
+3. The server-side `add-user/status-check-queue` enrollment (the layer-2
+   recovery, present in all four publisher consumers) was mentioned in passing
+   in MP doc but not described as part of the WebView-callback-missed recovery
+   architecture.
+
+This commit aligns the docs without touching any code. Code fixes (variant
+threading, portfolioEvents emission gaps) are tracked separately as Phase B.
+
+**Files touched:**
+
+- `docs/BASKETS_ARCHITECTURE.md`:
+  - Header: bumped Last-updated to 2026-05-12, branch updated
+  - § 2 Component Map (Mobile): added `KitePublisherModal`, `brokerPublisher.js`
+    utilities, and per-file note that StockAdvices / AddtoCartModal /
+    MPReviewTradeModal each have their own `handleZerodhaRedirect` publisher fork
+  - § 7 Order Placement Flow (Mobile): split into "REST path" + new "Mobile
+    Zerodha Publisher fork" subsection — 5-step contract from pre-flight
+    validation through WebView callback to post-success ingestion + cleanup;
+    explicit note about WebView callback failure modes and recovery layers
+  - § 9 Failure Handling: added rows for missing-exchange, missing-API-key,
+    WebView-callback-missed, and record-orders HTTP failure; new subsection
+    "WebView callback missed (Zerodha publisher path)" detailing the three
+    failure scenarios and the two recovery layers
+  - § 13 Web vs Mobile Differences: corrected publisher row (was wrongly
+    "Not used for baskets"); added rows for publisher polling fallback,
+    server-side queue, market protection, exchange validation, variant
+    threading (with the current gap noted), and a more accurate
+    GTT-in-publisher note. Shared-patterns list updated to point at the
+    portfolioEvents gap in three of four publisher paths.
+
+- `docs/REBALANCING.md`:
+  - New section "Kite Publisher polling fallback — WebView callback recovery
+    (2026-05-12)": full contract for the polling implementation —
+    `POLL_INTERVAL_MS`/`POLL_TIMEOUT_MS` constants, baseline-order-ID capture,
+    `publisherProcessedRef` double-fire protection, cleanup contract, when
+    each layer fires, latency trade-offs. Includes the per-consumer
+    recovery-posture matrix (RebalanceModal vs MPReviewTradeModal vs
+    StockAdvices vs AddtoCartModal) showing which callers have client
+    polling vs only server queue, and which have the variant + portfolioEvents
+    gaps that Phase B will close.
+
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md`:
+  - § 8 STEP 3 (status-check-queue enrollment): added blockquote pointing at
+    the canonical polling doc in REBALANCING.md. Notes that MP currently has
+    only the server-side layer, not the client polling that RebalanceModal
+    has — for awareness, not as an immediate fix.
+
+**Verification:**
+- Cross-references mutual: BASKETS § 9 → REBALANCING polling section;
+  REBALANCING polling section → BASKETS § 9 + MP § 9; MP § 8 STEP 3 →
+  REBALANCING polling section + BASKETS § 9.
+- All `handleZerodhaRedirect` line numbers verified against current code
+  state at HEAD of `feature/sdk-plus-config_forkv2`.
+- No code changes; no behavioural risk.
+
+**Next (Phase B, separate commit):**
+- Tag `variant` on `stockDetails` before `setZerodhaStockDetails` /
+  `AsyncStorage.setItem` in StockAdvices, AddtoCartModal, MPReviewTradeModal
+  (RebalanceModal already does this at L958-963).
+
+---
+
+## [unreleased] - 2026-05-11 (18)
+
+### Feat — Repair-mode cautionary chip + Mark-as-Placed CTA in RebalanceModal (Task 4 mobile complete)
+
+**Why:** entries 16/17 shipped the repair shortcut and the ccxt fields needed for cautionary marking. The visual chip + CTA was the remaining polish to close out mobile-side Task 4 work.
+
+**Files touched:**
+- `src/components/AdviceScreenComponents/RebalanceModal.js`:
+  - Repair-mode `dataArray` builder now passes `orderStatusMessage`, `classification`, `originalQty`, `filledQty`, `isPartialFill` through from `failedTrades[i]` so per-row classification works.
+  - `ListItem` now renders a chip when `isRepairMode === true` AND row matches `isCautionaryListingMessage` / `isInsufficientFundsMessage` / `item.isPartialFill`. Chip colours: amber for cautionary, red for low-funds, amber for partial fill, green when marked done.
+  - Tap → two-step `Alert.alert` confirm → `PUT /api/model-portfolio-db-update/manual-placement` with the failed-trade qty + current LTP. Idempotent on backend. On success: local chip flips to "Marked as placed ✓", `getRebalanceRepair()` refreshes the source list, `portfolioEvents.emit(PORTFOLIO_EVENTS.HOLDINGS_REFRESH, …)` fans out to listeners.
+  - Loading spinner per-row while the PUT is in flight (`manualPlacementInFlight === item.symbol`); chip becomes non-tappable after success.
+  - New styles `chipBase` / `chipCautionary` / `chipLowFunds` / `chipPartial` / `chipDone` / `chipText` / `chipTextDone`.
+
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 6g` — extended with "LTP refresh on repair-mode open" + "Cautionary / LOW_FUNDS chip + Mark-as-Placed CTA" sub-sections (file:line refs, behaviour, data source). § 17.3 marked fully shipped on mobile.
+
+- `docs/WEB_MP_PARITY_TASKS.md` — Task 4 tracking row updated to reflect mobile completion; web refinements (chip + LTP refresh in `UpdateRebalanceModal`) remain open.
+
+**LTP refresh verification:** `useWebSocketCurrentPrice(wsSymbols)` and the `angelone/market-data` REST fallback in `RebalanceModal.js:339-394` fire on `visible` change, regardless of how `dataArray` was built. Repair-mode symbols get the same live-price subscription as fresh-calculate rows. No additional wiring needed — was already in place; verified the path covers repair-mode entries too.
+
+**Cross-repo / deploy notes:** no further backend changes. The ccxt-india `db_manager.repair()` extension (entry 17, commit `5a74b450`) is already live on tidi (`ccxt_prod.service` restarted). Mobile changes ship with the next APK build.
+
+---
+
+## [unreleased] - 2026-05-11 (17)
+
+### Feat — Repair-trades shortcut active on mobile (§ 17.3 cleared); cross-repo ccxt fields for cautionary marking
+
+**Why:** previous § 17.3 marked the Repair UI as "spec'd but not implemented". The wiring inside `RebalanceCard.handleAcceptClick:498` and `RebalanceAdvices.handleAcceptRebalance:770-787` was actually already in place — what was missing was the source data. Three components (`HomeScreen`, `PortfolioScreen`, `RebalanceAdvices`) each fetched `/rebalance/get-repair` into independent local state, but none of them flowed it to `RebalanceAdviceContent` which is where the per-card matching happens. So the repair shortcut never engaged.
+
+**Mobile changes (in this CHANGELOG cycle — see entries 16 + 17 commits):**
+
+Entry 17 (this entry, second mobile commit):
+- `ccxt-india/rebalancing/utils/db_manager.py:1738` — repair() now includes `orderStatusMessage` + `classification` on each failed_trade. Needed for client-side cautionary / LOW_FUNDS marking on review-modal rows. Cross-repo; ships when `alphaquark.service` is restarted on tidi.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 6g` — new sub-section documenting the full repair contract: auto-fetch trigger, skipRepairRef pattern, delta-pre-populate flow, failed-trade payload shape (including the new fields), no-TTL rationale, cross-repo parity refs, deferred polish.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.3` — marked active. Remaining 🟡 polish (LTP refresh + cautionary visual chip in the review modal) tracked in WEB_MP_PARITY_TASKS.
+- `docs/WEB_MP_PARITY_TASKS.md § Task 4` — status flipped to in-progress; tracking table updated.
+
+Entry 16 was earlier today (wiring centralisation; see previous CHANGELOG entries).
+
+**Deferred (call out so we don't claim full Task 4 completion):**
+1. LTP re-fetch inside `RebalanceModal` on repair-mode open. Backend now ships `orderStatusMessage` + `classification`; mobile work to subscribe to `MarketDataContext` per repair symbol and render a fresh-vs-original price column is the larger client-side change.
+2. Visual cautionary / LOW_FUNDS chip on repair rows, using the shared `isCautionaryListingMessage` / `isInsufficientFundsMessage` helpers. Data is now there; rendering is the open work.
+
+Both follow-ups are pure mobile work; no further backend changes needed.
+
+---
+
+## [unreleased] - 2026-05-11 (16)
+
+### Docs — Repair-trades UI spec'd; product decisions captured (§ 17.3 ready to implement)
+
+**Why:** the previous § 17.3 framing "Repair UI (both clients)" was inaccurate. Web is mostly implemented (`Home.js:364-393` auto-call, `ModalPFList.js:236` card flagging, `RebalanceCard.js:672-727` delta pre-populate). Mobile is the actual gap. Product decisions needed to be locked before either side could ship the refinements.
+
+**Decisions captured 2026-05-11 (in `docs/WEB_MP_PARITY_TASKS.md § Task 4`):**
+- **Semantics:** Option A — port web's pattern. Re-attempt the specific orders that failed last time, exact same qty/exchange. Backend already excludes manually-placed rows.
+- **New-rebalance bypass:** adopt web's `skipRepairRef` pattern. When the advisor publishes a new rebalance, the user moves to it; no time-based TTL needed.
+- **Cautionary / GSM rows:** show them but mark visually as "likely to fail again" and offer the § Task 1 manual-placement editor as the recovery CTA.
+- **Price / LTP refresh:** re-fetch LTP on repair-modal open; display fresh prices alongside the original failed-rebalance price for transparency. Keep qty unchanged.
+
+**Files:**
+- `docs/WEB_MP_PARITY_TASKS.md § Task 4` — replaced placeholder with full spec: current state per-client, decisions table, mobile implementation plan (file:line targets), web refinements, acceptance criteria, effort estimate (~1-1.5 days mobile + ~half day web refinements).
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.3` — rewritten to point to the spec; cleared "blocked on product decision".
+- `docs/WEB_MP_PARITY_TASKS.md` tracking table — Task 4 status flipped from "blocked on product decision" to "spec'd 2026-05-11".
+
+No code change in this entry; implementation work is unassigned and tracked in WEB_MP_PARITY_TASKS.md.
+
+---
+
+## [unreleased] - 2026-05-11 (15)
+
+### Fix (cross-repo, web) — advisor-side stamping on manual-confirm in web MPStatusModal (§ 17.2 cleared)
+
+**Why:** web's `MPStatusModal.confirmManualOrders` already wrote ccxt-side updates (PUT `/rebalance/update/user-portfolio/latest/keys`) when a user manually confirmed failed orders, but never wrote to aq_backend's `model_portfolio.rebalanceHistory[].adviceEntries[]`. That meant the advisor's dashboard kept showing failed-status rows even after the subscriber had placed them manually, and `subscriberExecutions[].status` never recomputed.
+
+**Fix (web side, `prod-alphaquark-github` — separate commit on that repo):**
+- `src/Home/ModelPortfolioSection/MPStatusModal.js` — augment `confirmManualOrders` to ALSO call `PUT /api/model-portfolio-db-update/manual-placement` (best-effort, idempotent) per confirmed failed stock after the existing ccxt PUT succeeds. Failures are logged but do not roll back the user-facing success. Requires new `modelId` prop.
+- `src/Home/ModelPortfolioSection/RebalanceCard.js` — pass `modelId={modelPortfolioModelId}` to `MPStatusModal` so the new endpoint can locate the rebalance entry.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 8.1` — new sub-section documenting the two-step manual-confirm flow with file:line references and the "why both steps" rationale.
+
+**This repo (mobile):**
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.2` — marked resolved; remaining gap (checkbox vs inline editor UX) downgraded to 🟡 polish.
+- `docs/WEB_MP_PARITY_TASKS.md` — Task 1 status updated; reframed original 🔴 as overstated (web wasn't blocked, just unsynced).
+
+**Backend (aq_backend_github):** no change needed; route already exists at `Routes/modalPortfolioOrderPlace.js:141` and is idempotent.
+
+---
+
+## [unreleased] - 2026-05-11 (14)
+
+### Docs — open web parity tasks captured in WEB_MP_PARITY_TASKS.md
+
+**Why:** the mobile MP audit (2026-05-11) surfaced 5 gaps where web `prod-alphaquark-github` lags mobile. Tracking them in a dedicated doc that the web team can pick up without re-doing the analysis.
+
+**Files added:**
+- `docs/WEB_MP_PARITY_TASKS.md` — 6 tasks with severity (🔴 / 🟡 / 🟢), mobile file:line references, backend payload shapes, acceptance criteria, estimated effort:
+  - 🔴 1 — Manual placement recovery in `MPStatusModal` (the remaining § 17.2 blocker).
+  - 🟡 2 — Cautionary-listing + LOW_FUNDS classification banners.
+  - 🟡 3 — Stale-broker banner on portfolio holdings tab.
+  - 🟡 4 — Repair-trades UI (blocked on product decision).
+  - 🟡 5 — SDK execute path on web (blocked on architecture decision).
+  - 🟢 6 — Three-MP-doc parity process reminder.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.2` already points here.
+
+---
+
+## [unreleased] - 2026-05-11 (13)
+
+### Fix — ccxt-india /rebalance/process-trade now echoes `variant` on each result (§ 17.4 🟡 cleared)
+
+**Why:** mobile `RecommendationSuccessModal` rendered the amber AMO pill via `resolveResultVariant` with a three-tier fallback: (1) `result.variant`, (2) `originalStockDetails` prop match, (3) default `REGULAR`. ccxt-india never echoed `variant` on its `process-trade` response, so tier 1 always missed and the MP lane relied on a fragile prop walk. Bespoke `RebalanceModal` doesn't thread `originalStockDetails`, so its AMO pill was REGULAR-only. Documented as 🟡 gap in `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.4`.
+
+**Fix (cross-repo, ccxt-india side):**
+- `ccxt-india/rebalancing/rebalancing.py:1191-` (`Rebalancing.process_trades`) — build `trade_variant_map` keyed by tradingSymbol from inbound `non_cash_trades` BEFORE calling `self.broker.process_trades`, then stamp `result['variant']` inside the existing per-result loop. Comment cross-links to `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.4`.
+
+**Mobile side:**
+- `src/utils/tradeVariant.js` — updated docstring on `resolveResultVariant` to clarify tier-1 is now the primary source (server-echoed since 2026-05-11); tiers 2-3 retained as defensive code for older ccxt-india deploys and cached responses.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.4` — marked fixed.
+
+**ccxt-india deploy note:** this change ships when `alphaquark.service` is restarted on tidi (`ssh tidi 'sudo systemctl restart alphaquark.service'` per memory `reference_tidi_backend_restart.md`). Mobile app needs no separate deploy — the defensive helper degrades gracefully.
+
+---
+
+## [unreleased] - 2026-05-11 (12)
+
+### Fix — MP rebalance lane now emits portfolio-refresh events (§ 17.1 🔴 blocker cleared)
+
+**Why:** the MP rebalance success path (`MPReviewTradeModal` → `RecommendationSuccessModal`) never emitted `HOLDINGS_REFRESH` / `REBALANCE_EXECUTED`. Listeners in `RebalanceAdvices.js:117,121` and `ModalPFCard` are subscribed but only fired by the bespoke `RebalanceModal.js`. After an MP rebalance, MP screens (MPCard, RebalanceAdvices, ModalPFCard) showed stale data until the user manually re-focused or pull-to-refreshed. Documented in `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 9c` (false claim that emission existed) and § 17.1 (blocker).
 
 **Fix:**
-1. Moved `try {` to immediately after `setLoading(true)` so all setup code and the axios call are inside the try-catch. The catch block's first statement is `setLoading(false)`, which now fires for any exception.
-2. Removed the orphaned inner `{` at line 430 (syntax error — `} catch` cannot follow a plain block).
-3. Added `latestRebalance?.model_Id` optional chaining (defensive — `latestRebalance` starts as `null` and is populated asynchronously).
+- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` — added `portfolioEvents` import; emit `HOLDINGS_REFRESH` + `REBALANCE_EXECUTED` at `:648-655` (main success branch) and `:1589-1596` (Fyers publisher success branch). Pattern mirrors `RebalanceModal.js:949+953`.
+- `src/components/ModelPortfolioComponents/RecommendationSuccessModal.js` — added `portfolioEvents` import; emit `HOLDINGS_REFRESH` only at `:340` after the manual-placement PUT returns. `REBALANCE_EXECUTED` intentionally NOT emitted here — manual placement mutates a single row, not a rebalance event.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 9c` — rewrote to describe the now-correct emit/listen contract with file:line table.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md § 17.1` — marked as fixed; § 17.2 retained as remaining 🔴 blocker (web parity, cross-repo work).
 
-**Files changed:**
-- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` — `try {` moved to line 319 (was 429), orphaned `{` removed, optional chaining on `latestRebalance?.model_Id`
+**Verification:** payload shape matches the bespoke pattern (`{ userEmail, modelName, broker }`). Listeners in `RebalanceAdvices.js` are idempotent re-fetchers.
+
+---
+
+## [unreleased] - 2026-05-11 (11)
+
+### Docs — MP architecture doc merge + accuracy pass
+
+**Why:** Two parallel MP docs (`MODEL_PORTFOLIO.md` 16 K + `MODEL_PORTFOLIO_ARCHITECTURE.md` 31 K) created source-of-truth ambiguity. `CLAUDE.md`'s blocking documentation contract only named the older `MODEL_PORTFOLIO.md`, so the newer architecture doc was effectively invisible to the contract. An audit also found several false claims and major gaps in the architecture doc.
+
+**Files touched:**
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md` — merged content from `MODEL_PORTFOLIO.md`; corrected § 9c (false `portfolioEvents.emit` claim — MP lane never emits `REBALANCE_EXECUTED` / `HOLDINGS_REFRESH`; logged as 🔴 § 17.1); rewrote § 14 differences table (4 wrong rows: broker publisher both, symbol conversion both, payment gateways web = Razorpay-only on MP subscribe, SDK execute mobile-only); added § 14a/b/c/d; added § 4c (`MPInvestNowModal` — Digio, payment-platform switcher, pending-payment recovery, GST, Telegram, PAN, design-system container/presentation split); added § 4d (Plans tab visibility); added § 5d–§ 5f (exchange-gate, RebalanceCard states, broker-connect intent TTL); added § 6d–§ 6f (transient service-window, cautionary + LOW_FUNDS + AMO, DummyBroker retry); added § 9e (AfterSubscriptionScreen flow + stale-broker banner); added § 10a (holdings data-source discrepancy); added basket-leg dedup under § 15; expanded § 13 with previously undocumented backend + ccxt routes; rewrote § 17 with 🔴 / 🟡 / 🟢 blocking-impact classification (manual-placement web parity gap and MP-lane event-emission gap surfaced as the two 🔴 blockers).
+- `docs/MODEL_PORTFOLIO.md` — replaced with one-line pointer stub redirecting to the canonical architecture doc.
+- `CLAUDE.md` — repointed docs table row, "When to update these docs" #2 list (added `MPInvestNowModal` + `UserStrategySubscribeModal` + `AfterSubscriptionScreen` + `ModelPortfolioService` + `tradeVariant.js` + backend Routes + ccxt-india apps + cross-repo update reminder), end-of-session checklist.
+- `docs/SDK_TRADE_EXECUTION_MIGRATION.md` — updated related-docs reference.
+
+**Backend cross-repo notes** (not committed here, recorded for visibility):
+- `aq_backend_github/Routes/modalPortfolioOrderPlace.js` — `PUT /manual-placement` route added (line 141) since the previous audit. Mobile consumer at `RecommendationSuccessModal.js:290` now matches a real backend route. Web has no consumer (gap logged as 🔴 § 17.2).
+- `prod-alphaquark-github/docs/MODEL_PORTFOLIO_ARCHITECTURE.md` (~80 K, independent) — not in this repo's tree; flagged in § 14d as needing cross-repo update on any backend/schema change.
+
+**Verification done before doc merge:**
+- All 17 file:line claims in § 2 component map verified against `src/`.
+- All 11 backend SDK routes verified at file:line in `aq_backend_github/Routes/sdk/v1/`.
+- All 10 client-consumed ccxt-india `/rebalance/*` routes verified at `apps/app_model_portfolio.py`.
+- Mongo schemas in `Models/modelPortfolioModel.js` / `modelPortfolioUser.js` checked.
+- `place-rebalance` post-chain (db-update → subscriber-execution → status-check-queue with `_postChain` diagnostic) confirmed at `Routes/sdk/v1/orders/index.js:284-451`.
+- Web app `prod-alphaquark-github/src/Home/{ModelPortfolioSection,Strategy}/` walked to verify each § 14 row.
+
+---
+
+## [unreleased] - 2026-05-08 (10)
+
+### Fix — Root-cause advisor mismatch + 15-min stale-order resolution cron
+
+**Root cause identified and fixed:** `model_portfolio_user.advisor` was stored as
+`"AlphaQuark"` (from `strategyDetails.advisor` in the DB) while `process-trades`
+sent `"prod"` (from `configData.REACT_APP_ADVISOR_SPECIFIC_TAG`). The mismatch
+caused `get_user_model_portfolio()` to return `None` → `user_doc_id = None` →
+`advice_executed_user_model_db()` modified 0 documents → DB never updated → repair
+always showed the same failed orders.
+
+**Fix — Mobile app (6 call sites):** All `insert-user-doc` and `get-repair` calls
+now use `configData?.config?.REACT_APP_HEADER_NAME` as the `advisor` field (the
+canonical subdomain slug), which matches what `process-trades` sends.
+
+**Fix — ccxt-india:** Removed the flaky advisor-agnostic fallback from
+`get_user_model_portfolio()`. Added `pending_with_order_id` guard in `repair()` to
+skip re-placing orders that already have a broker orderId (Axis OPEN timing race).
+Added `resolve_single_order_status()` DB method + `POST /rebalance/resolve-single-order`
+endpoint for targeted single-order DB updates.
+
+**Fix — Cron schedule:** Changed `cron_resolve_stale_orders.py` from once daily at
+4:30 PM IST to every 15 minutes during market hours (`*/15 3-11 * * 1-5` UTC).
+
+**Fix — Refresh button:** When the Refresh Status button gets a terminal status
+(COMPLETE/TRADED), it now also calls `/rebalance/resolve-single-order` to persist
+the result to DB immediately (fire-and-forget; 15-min cron is the safety net).
+
+**Files touched (mobile):**
+- `src/components/ModelPortfolioComponents/MPInvestNowModal.js`
+- `src/screens/Home/ModifyInvestment1.js`
+- `src/FunctionCall/services/ModelPFServices.js`
+- `src/screens/PortfolioScreen/PortfolioScreen.js`
+- `src/screens/Home/HomeScreen.js`
+- `src/components/AdviceScreenComponents/RebalanceAdvices.js`
+- `src/components/ModelPortfolioComponents/RecommendationSuccessModal.js`
+
+**Files touched (ccxt-india, tidi):**
+- `rebalancing/utils/db_manager.py` — removed fallback, added `pending_with_order_id` guard, added `resolve_single_order_status()`
+- `apps/app_model_portfolio.py` — added `POST /rebalance/resolve-single-order`
+- crontab: `0 11 * * 1-5` → `*/15 3-11 * * 1-5`
+
+---
+
+## [unreleased] - 2026-05-07 (9)
+
+### Docs — Model Portfolio & Baskets architecture documents
+
+**New files:**
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md` — complete architecture for Model Portfolio: subscribe/unsubscribe flows, rebalance (calculate → execute), failure handling & repair, manual override, DB update chain, refresh & status polling, broker migration, performance & P&L, SDK integration (Phase C/D), full API endpoint reference (aq_backend + ccxt-india + SDK routes), web vs mobile differences, state management, security.
+- `docs/BASKETS_ARCHITECTURE.md` — complete architecture for Baskets: lifecycle, MongoDB schema (basket_advice + to_trade_net + GTT/SLPT), basket processing logic (netting, expiry parsing, conflict filtering, closure detection), order placement flow, failure handling, GTT/SL/SLPT order types, DB update, web vs mobile differences.
+
+**Covers:** Alphab2bapp (mobile), prod-alphaquark-github (web), aq_backend_github (backend routes + MongoDB schemas), ccxt-india (rebalance/order endpoints).
+
+**Files touched:** `docs/MODEL_PORTFOLIO_ARCHITECTURE.md` (new), `docs/BASKETS_ARCHITECTURE.md` (new), `docs/CHANGELOG.md`
+
+---
+
+## [unreleased] - 2026-05-07 (8)
+
+### Added — Result modal: OPEN badge + Refresh Status button for pending orders
+
+**Mobile app change only (RecommendationSuccessModal.js).**
+
+When Axis (and any broker) returns `orderStatus='OPEN'` — caused by the order
+history API returning an empty list immediately after placement (timing race) —
+the order result card in `RecommendationSuccessModal` now shows:
+- An amber **OPEN** badge next to the stock name, distinguishing it from
+  confirmed (no badge) and rejected (red FAILURE badge) rows.
+- An inline **"Placed — awaiting broker confirmation"** amber info bar with a
+  **Refresh** button. Tapping Refresh calls `/<brokerSlug>/v2/single-order-status`
+  on ccxt-india with `{user_email, orderId}`. If the broker confirms a new status,
+  the row updates immediately. If still OPEN, a toast explains auto-update at 4:30 PM.
+
+`BROKER_SLUG_MAP` added as a module-level constant mapping all 14 supported
+broker display names to their ccxt route slugs.
+
+`refreshingIdx` state tracks which row's refresh is in flight, disabling the
+button while the request is pending. Error toasts cover network failures.
+
+The status also auto-resolves via `cron_resolve_stale_orders.py` at 4:30 PM IST —
+the Refresh button provides immediate confirmation without waiting for the cron.
+
+**Context — ADARSHPL "Bad Gateway":** The error `'Cash buy orders are not allowed
+on the security: ADARSHPLEQ for this profile.'` seen for ADARSHPL is an Axis
+account-level profile restriction (the test account cannot buy this security in
+cash/delivery mode). This is NOT a code bug — the error is correctly attributed to
+ADARSHPL and displays on that row. The earlier YESBANK confusion was from a
+pre-fix execution where the wrong scriptId (ADARSHPL's BSE scriptId) was
+being used for YESBANK due to the MCX scrip master collision (fixed in entry (4)).
+
+**Files (mobile app):**
+- `src/components/ModelPortfolioComponents/RecommendationSuccessModal.js`
+  — `BROKER_SLUG_MAP` const, `refreshingIdx` state, `refreshOrderStatus()` fn,
+    amber OPEN badge in `renderOrderItem`, Refresh button inline section
+
+---
+
+## [unreleased] - 2026-05-07 (7)
+
+### Fixed — Axis Securities: available cash shows 0 (funds response missing `data` wrapper)
+
+**Backend fix only (ccxt-india). No mobile app change.**
+
+`_parse_funds_response()` in `brokers/axis/axis.py` returned a flat dict:
+```json
+{ "status": 0, "availablecash": "12345.00", ... }
+```
+
+Every other broker (Zerodha, IIFL, HDFC, Groww, Upstox, Fyers, Kotak, XTS) wraps the funds fields inside a `"data"` key:
+```json
+{ "status": 0, "data": { "availablecash": "12345.00", ... } }
+```
+
+The mobile app reads `funds?.data?.availablecash` in every consumer (`SubscriptionScreen.js:476`, `MPPerformanceScreen.js:502`, `RebalanceAdvices.js:589/802`, `DdpiModal.js:2287`, `UserStrategySubscribeModal.js:329`). With a flat response, `funds?.data` is `undefined` → `availablecash` is `undefined` → displayed as `0`.
+
+Fix: wrap the mapped fields inside `"data": { ... }` in `_parse_funds_response`.
+
+**Files (ccxt-india):** `brokers/axis/axis.py` — `_parse_funds_response`
+**Deploy:** `ssh tidi` → `servers/server2/ccxtprod/ccxt-india` → `./pull_restart.sh`
+
+---
+
+## [unreleased] - 2026-05-07 (6)
+
+### Improved — AfterSubscriptionScreen: redesign Holdings tab + fix Distribution tab lock
+
+**Holdings tab — card redesign.** Replaced the horizontal-scroll table (fixed-width columns, truncated on small screens) with a vertical list of per-stock cards. Each card shows:
+- Symbol (with `-EQ`/`-BE` suffix stripped for readability) + returns badge (green/red pill) in the header
+- 2×2 grid of data cells: Current Price | Avg. Buy | Shares | Weight
+- Left accent border using `themeColor` (from `useConfig()`) so the card respects the advisor's branding
+- Subtle elevation/shadow to lift cards off the white background
+
+Cards scroll naturally via FlatList — no horizontal scroll, all data visible without interaction.
+
+**Distribution tab — lock when subscription not active.** `CustomTabbarMPPerformance` previously only locked `idx=0` (Holdings) when `isSubscriptionActive=true`. Changed `isDisabled = idx === 0 && isSubscriptionActive` → `isDisabled = isSubscriptionActive` so ALL tabs are locked when the premium gate is active.
+
+**Files:**
+- `src/screens/Home/AfterSubscriptionScreen.js` — Holdings card redesign + `themeColor` from config
+- `designs/default/composites/CustomTabbarMPPerformance.js` — lock all tabs when `isSubscriptionActive=true`
+
+---
+
+## [unreleased] - 2026-05-07 (5)
+
+### Fixed — AfterSubscriptionScreen: Portfolio Holdings showing "Premium Access Required" for subscribed users
+
+**Problem.** Subscribed users with no executed trades saw "Premium Access Required" in the Portfolio Holdings tab of `AfterSubscriptionScreen`. The `EmptyStateInfoMP` component's default title/subtitle was designed for pre-subscription access gates and was incorrectly inherited by the post-subscription empty state.
+
+`AfterSubscriptionScreen` is navigated to only for subscribed users. When `tableData` is empty (no executed trades — e.g. user subscribed but has not accepted and placed the first rebalance), the Holdings tab rendered `<EmptyStateInfoMP />` with no props, falling through to the default "Premium Access Required" title.
+
+**Fix.** Explicitly pass contextually correct title and subtitle to `EmptyStateInfoMP` in the Holdings empty-state branch: "No Holdings Yet" / "Accept and execute your first rebalance to start building your portfolio." This accurately describes the state (subscribed, no trades yet) without implying the user needs to purchase access.
+
+**Distribution tab unchanged.** The Distribution tab correctly shows `latestRebalance?.adviceEntries` (model strategy allocations), which is always valid to display for subscribed users regardless of trade history.
+
+**`isSubscriptionActive={false}` unchanged.** This prop on `CustomTabBarMPPerformance` means "premium gate is NOT active" — when `false`, no lock icon appears and both tabs are tappable. This is correct for a post-subscription screen.
+
+**Files:** `src/screens/Home/AfterSubscriptionScreen.js`
+
+---
+
+## [unreleased] - 2026-05-07 (4)
+
+### Fixed — Axis Securities: order placement misreported as failure (timing race + BSE no-orderId)
+
+**Backend fix only (ccxt-india) — no mobile app change.**
+
+Two bugs causing Axis orders to surface as failures in the app despite being placed:
+
+**Bug 1 — Timing race (YESBANK, GTLINFRA):**
+After order placement, `get_order_status()` calls Axis's `order.history` endpoint immediately. Axis returns HTTP 200 but an empty list — the order isn't yet visible in the history API (race condition). `_parse_order_status_response` converted `[]` → `{}` → `OrderStatusResponse(status=0, qty='0', orderId='')`. `check_order_status` returned this as apparent success with zeros; the app saw `orderId=''` / `qty=0` and marked the order as REJECTED with "Success" message — confusing and wrong.
+
+Fix: in `check_order_status` (`trading_logic/buy_sell_all_brokers.py`), detect `status=0` + empty `orderId` when the placement result has a real `orderId` → return placement result with `orderStatus='OPEN'` and `message_aq='Order placed (history pending)'`.
+
+**Bug 2 — BSE no-orderId (ADARSHPL):**
+Axis returned `statusCode:200` but `data.status="Internal Server Error"` with no `omsOrderId`. `_parse_order_response` treated any HTTP 200 as success, emitting `OrderResponse(orderId='', status=0)` — which made the order appear placed but untracked.
+
+Fix: in `_parse_order_response` (`brokers/axis/axis.py`), validate `omsOrderId` is non-empty after extracting it. If empty, return `ErrorResponse` with the embedded error message from `data.status`.
+
+**Files (ccxt-india):**
+- `brokers/axis/axis.py` — `_parse_order_response`, `_parse_order_status_response`
+- `trading_logic/buy_sell_all_brokers.py` — `check_order_status`
+
+---
+
+## [unreleased] - 2026-05-07 (3)
+
+### Fixed — MarketIndices: remove FinNifty + fix Sensex case-sensitivity
+
+**FinNifty removed from indices bar.** AngelOne WebSocket token 26037 (FINNIFTY/NSE) does not deliver live ticks — confirmed by pubsub monitoring (0 FINNIFTY messages in 80+ samples while NIFTY/BANKNIFTY/SENSEX stream normally). The `ltp:NSE:FINNIFTY` Redis key never populates. No other data source available. Removing FinNifty from `indicesConfig` eliminates the permanent "Loading..." card.
+
+**Sensex alternativeSymbols uppercased.** Mixed-case fallback aliases (`"Sensex"`) would cause the `subscribedSymbolsRef` Set gate to drop `ltp_update` events — the server emits the symbol normalized to uppercase (`"SENSEX"`) but the Set contained the original-case alias. Removed `"Sensex"` (only fallback that was mixed-case); kept `"BSE SENSEX"` and `"SENSEX 30"` which are already uppercase.
+
+**Files:** `src/components/HomeScreenComponents/MarketIndices.js`
+
+---
+
+## [unreleased] - 2026-05-07 (2)
+
+### Fixed — WebSocketManager: indices stuck on "Loading..." after connect_error
+
+**Problem.** Nifty 50 / Sensex / BankNifty showed "Loading..." indefinitely on cold start whenever the socket.io connection had a `connect_error` on its first attempt (network race, SSL handshake delay, etc.).
+
+Two compounding bugs in `WebSocketManager.js`:
+
+1. **Dangling Promise** — `connect_error` handler set `connectingPromise = null` but never resolved the Promise that was already returned to callers. Every `await this.connect()` inside `subscribeToAllSymbols` hung forever on the stale Promise. The `subscribe-array` HTTP POST that registers NIFTY/SENSEX/BANKNIFTY in Redis never fired, so those symbols were never recorded as user subscriptions. The server's `auto_sync` (every 5s) had nothing to join the client to.
+
+2. **`subscribedSymbols` populated too late** — symbols were added to the `subscribedSymbols` Map only after the `subscribe-array` POST succeeded. On the next socket reconnect, `resubscribeAll()` iterated `subscribedSymbols` — but NIFTY was missing, so it wasn't re-posted even after the socket recovered.
+
+**Fix (`WebSocketManager.js`):**
+- Store the Promise `resolve` callback in `connectResolve` outside the Promise constructor so `connect_error` can call it, unblocking all awaiting callers. The HTTP `subscribe-array` POST works fine without an active socket — it's a plain REST call to the WebSocket server.
+- In `subscribe()`, add symbol to `subscribedSymbols` immediately (before `subscribeToAllSymbols` is called), so `resubscribeAll()` picks it up on any subsequent reconnect regardless of whether the POST succeeded.
+
+**Result:** on cold start, if the first socket.io attempt fails, `subscribeToAllSymbols` unblocks, posts NIFTY/BANKNIFTY/SENSEX to `subscribe-array` (HTTP succeeds), and when the socket reconnects `subscribe_me` + `resubscribeAll` both fire with the full symbol list — indices load within ~1–2s of the reconnected handshake instead of staying stuck until manual navigation.
+
+**Files:** `src/components/AdviceScreenComponents/DynamicText/WebSocketManager.js`
+
+---
+
+## [unreleased] - 2026-05-07
+
+### Added — Per-row "Mark as Placed" inline editor for MP rebalance failures + DDPI sync
+
+**Problem.** Model-portfolio rebalance result modal (`RecommendationSuccessModal`) had no return path for FAILURE rows. When a broker rejected trades the user couldn't recover from automatically (cautionary listing, restricted scrip, low-funds, broker session expired), the user was told to "open your broker app and place manually" but there was no way to tell the app what was actually placed. Result: MP dashboard's failed-trades repair list kept showing those symbols indefinitely; users had to keep dismissing the same prompts. Bespoke flow already had this via `PUT /api/recommendation { trade_place_status: 'manually_placed' }`; MP flow was missing the equivalent.
+
+Separately, DDPI-active accounts kept seeing the "DDPI Inactive: Proceed with TPIN Mandate" modal because `userDetails.ddpi_enabled` stayed `false` in our DB even though SmartAPI's `verifyDis` returned `errorcode: AG1000` (DDPI active at broker). The DdpiModal auto-skip path was setting `is_authorized_for_sell: true` but never `ddpi_enabled: true` — so the next-day TPIN reset re-triggered the prompt despite DDPI being active server-side.
+
+**Fix — backend (`aq_backend_github/Routes/modalPortfolioOrderPlace.js`):** new endpoint `PUT /api/model-portfolio-db-update/manual-placement`. Body: `{ userEmail, modelId, modelName?, uniqueId?, user_broker, symbol, transactionType?, exchange?, actualQty, actualPrice }`. Behavior:
+- Finds the portfolio + rebalanceHistory entry by `modelId` + `subscribed_by`
+- Locates the matching `adviceEntry` by `symbol` (and `exchange` when supplied)
+- Flips `entry.status = 'executed'` so the trade drops out of the failed-trades repair list and the MP dashboard reflects it as completed
+- Stamps `manually_placed_at`, `actual_quantity`, `actual_price`, `manually_placed_transaction_type` for audit (Mongoose-strict-false friendly — added defensively)
+- Recomputes `subscriberExecutions[user_broker].status` (`executed` if all entries done, else `partial`)
+- Idempotent: re-marking an already-executed entry is a no-op
+
+**Fix — frontend (`src/components/ModelPortfolioComponents/RecommendationSuccessModal.js`):** per-row inline editor for ALL rejection types. New props: `userEmail`, `modelId`, `modelName`, `uniqueId`. New state: `manualEditingIdx`, `manualEditQty`, `manualEditPrice`, `submittingManualIdx`. New handlers: `startManualEdit` (defaults qty = original; price = LTP / rebalance_price), `cancelManualEdit`, `submitManualPlacement` (PUTs the new endpoint, on success mutates `orderResponse[idx]` to flip `orderStatus` from `FAILURE` to `manually_placed`). UI:
+- "Mark as Placed (manual)" button below the rejection-reason banner on every FAILURE row
+- Tap → inline editor with editable qty + price + Cancel/Confirm buttons
+- Confirm → toast "Marked as placed" → row flips to green/Pending card style
+- Gated on `modelId` prop being supplied — only MP flows render the editor; bespoke flow (`AddtoCartModal` callsite) keeps its existing UI since it uses `/api/recommendation` for its own manually_placed path
+
+**Fix — `src/utils/orderStatusUtils.js`:** added `'manually_placed'` and `'manually placed'` to `PENDING_STATUSES` so `isOrderPending` recognizes the flipped row → it counts toward `successCount` in `RecommendationSuccessModal` and renders with the green card style.
+
+**Fix — DDPI sync (`src/components/DdpiModal.js`):** `AngleOneTpinModal.handleProceed` now accepts an optional `ddpiActive` flag. When verifyDis returns `errorcode: 'AG1000'` (DDPI active at broker), the auto-skip path passes `ddpiActive: true`, which adds `ddpi_enabled: true` to the `PUT /api/update-edis-status` payload. Backend (`Routes/UpdateEdisStatus.js`) already supported `ddpi_enabled` in the body — frontend just wasn't passing it. Result: the RebalanceModal sell-auth gate (line 1357-1364) which predicates on `!ddpi_enabled && !is_authorized_for_sell` now stays skipped permanently as long as DDPI is active at the broker, instead of re-firing every day after the daily TPIN reset.
+
+Wired callsites:
+- `src/components/AdviceScreenComponents/RebalanceAdvices.js` — passes `userEmail`, `modelPortfolioModelId`, `storeModalName`, `calculatedPortfolioData?.uniqueId`
+- `src/components/AdviceScreenComponents/RebalanceAdviceContent.js` — same wiring
+
+**Files (this commit):**
+- `src/components/ModelPortfolioComponents/RecommendationSuccessModal.js`
+- `src/components/DdpiModal.js`
+- `src/components/AdviceScreenComponents/RebalanceAdvices.js`
+- `src/components/AdviceScreenComponents/RebalanceAdviceContent.js`
+- `src/utils/orderStatusUtils.js`
+- `../../aq_backend_github/Routes/modalPortfolioOrderPlace.js` (backend, deployed via scp + systemctl restart alphaquark.service)
+- `docs/CHANGELOG.md` (this entry)
+- `docs/SELL_AUTH_ARCHITECTURE.md` (DDPI sync row in § 9 quirks)
+
+---
+
+### Fixed — Angel One EDIS "Some data is missing in posted Form" (DDPI modal + ccxt verify_dis)
+
+**Problem.** User with previously-active DDPI saw the "DDPI Inactive: Proceed with TPIN Mandate" modal pop up, and on tapping Proceed the CDSL WebView rejected with "Some data is missing in posted Form". DDPI was actually still active on the broker side — the failure was upstream in our verify-edis chain.
+
+**Root cause — three bugs compounded.**
+
+1. **Frontend hammering.** `AngleOneTpinModal` in `src/components/DdpiModal.js` re-fired `/angelone/verify-edis` on every parent re-render because the useEffect dep was the `userDetails` object reference (which flips on most renders). Production logs (`ccxt_prod.service` 18:38–18:43 UTC) showed 30+ verify-edis calls in 5 minutes from a single client.
+2. **SmartAPI rate-limit cascade.** Angel One rate-limits both `getHolding` and `verifyDis` at ~1 req/sec. Hammered calls returned 403 "Access denied because of exceeding access rate". ccxt's `_request` raises `RATE_LIMITED` exception. When `getHolding` was the rate-limited call, `verify_dis()` propagated as 500. When `verifyDis` returned cleanly but holdings were briefly empty/in-flight, `verify_dis()` fell into `create_error_response('no holdings found for user.')` and returned `200 { edis: false, data: {} }`.
+3. **Truthy-empty UI gate.** `DdpiModal.js:1286` had `disabled={loading || !edisStatus?.data}` — but `!{}` is `false` in JS, so when the backend returned the empty-data error response, the Proceed button stayed enabled. User tapped, `buildFormHtml({})` produced a CDSL form with empty `DPId` / `ReqId` / `TransDtls`, and CDSL rejected.
+
+**Fix (frontend, `src/components/DdpiModal.js`):**
+- `useEffect` deps narrowed to primitive `jwtToken` + `userEmail` instead of the `userDetails` object reference.
+- New `verifyFiredRef = useRef(false)` guards the call: fires once per modal open, reset on close.
+- New `hasUsableEdisData` helper checks `data.DPId && data.ReqId && data.TransDtls`. Button enable + form-build path both use it.
+- On `data: {}` empty-success path: surface a clear toast — "Angel One temporarily busy. Wait 20 seconds and retry." — and clear the guard so re-opening the modal triggers a fresh verify call.
+- On rate-limit error path: detect "rate limit" / "exceeding access" / "RATE_LIMITED" in the upstream error, show "Angel One rate-limited" toast.
+- Imports: added `useRef` to the React import.
+
+**Fix (backend, `ccxt-india/brokers/angelone/angelone.py verify_dis`):** retry once with 1.5s backoff on rate-limit for both `getHolding` and `verifyDis`. If both retries fail, surface a clean `create_error_response('Angel One temporarily rate-limited verifyDis. Please wait 20s and retry.')` instead of a 500.
+
+**Files (in this commit):**
+- `src/components/DdpiModal.js` (frontend de-dup + button gate + rate-limit toasts)
+- `../../ccxt-india/brokers/angelone/angelone.py` (backend retry-on-rate-limit)
+- `docs/SELL_AUTH_ARCHITECTURE.md` (new quirks-table row 2026-05-07)
+- `docs/CHANGELOG.md` (this entry)
+
+**Lesson.** Empty object `{}` is truthy in JS — never use `!data` to gate UI when the data field is an object. Check the specific fields you actually need (`DPId && ReqId && TransDtls`). Same lesson applies to all sell-auth surfaces.
+
+---
+
+## [unreleased] - 2026-05-06
+
+### Fixed — SDK path revert: metro.config.js + package.json `../` → `../../`
+
+**Problem.** Commit `250eee6` (Vansh) changed `metro.config.js` SDK path from `../../alphaquark-mobile-sdk` to `../alphaquark-mobile-sdk`. Commit `edf0679` subsequently changed `package.json` to match. Both point to `codes/github/alphaquark-mobile-sdk` which does not exist on this machine (SDK lives at `codes/alphaquark-mobile-sdk`).
+
+**Fix.** Reverted both files to `../../alphaquark-mobile-sdk/packages/rn`. Updated the comment in `metro.config.js` to document the correct path. Vansh's machine has a different directory layout (`codes/Alphab2bapp` directly, not inside `codes/github/`); this is a local-setup divergence that should not be committed to the repo.
+
+**Files:** `metro.config.js`, `package.json`
+
+---
+
+### Fixed — WebSocket server: stale Nifty / BankNifty / FinNifty values (tidi `websocket-alphaquark`)
+
+**Problem.** The `/ws/indices` WebSocket broadcast sent stale values for `NIFTY_50` (~35 h old, yesterday's price), `NIFTY_BANK`, and `NIFTY_FIN_SERVICE`. Values oscillated between correct and incorrect because both fresh (`NIFTY`) and stale (`NIFTY 50`) keys were broadcast simultaneously — the mobile app intermittently consumed the stale key.
+
+**Root cause.** `INDICES_CONFIG` in `app.py` listed `"NIFTY 50"`, `"NIFTY BANK"`, and `"NIFTY FIN SERVICE"` as Redis symbols to read for their respective instruments. AngelOne's scripmaster maps these alias names to tokens `99926000`, `99926009`, `99926037` — tokens with the `999xxxxx` prefix that never receive live ticks from the exchange feed. The real ticks arrive on tokens `26000` (→ `ltp:NSE:NIFTY`), `26009` (→ `ltp:NSE:BANKNIFTY`), `26037` (→ `ltp:NSE:FINNIFTY`). Similarly, `_INDEX_INSTRUMENTS` (the startup resubscription list) included the alias names, subscribing useless tokens and omitting `FINNIFTY` (token 26037) entirely.
+
+**Fix (tidi `/home/ubuntu/servers/server2/websocket/app.py`):**
+- `INDICES_CONFIG`: changed `symbol` field for alias instruments to read from live Redis keys:
+  - `NIFTY_50` → reads `ltp:NSE:NIFTY` (was `ltp:NSE:NIFTY 50` — stale)
+  - `NIFTY_BANK` → reads `ltp:NSE:BANKNIFTY` (was `ltp:NSE:NIFTY BANK` — stale)
+  - `NIFTY_FIN_SERVICE` → reads `ltp:NSE:FINNIFTY` (was `ltp:NSE:NIFTY FIN SERVICE` — stale)
+  - `instrument` names unchanged (client receives same JSON shape)
+- `_INDEX_INSTRUMENTS`: removed alias names (`NIFTY 50`, `NIFTY BANK`, `NIFTY FIN SERVICE`); added `FINNIFTY` so all three real index tokens are subscribed on startup
+- `websocket-alphaquark.service` restarted; health check shows `connected: true, reconnecting: false`
+
+**Separate unresolved issue.** `srv940451.hstgr.cloud` (web app Hostinger server, IP `31.97.205.216`) polls `/market-data/ltp` every ~3 s and consistently receives HTTP 400 with `"Invalid exchange tokens."` — suggests the web dashboard is requesting a symbol that resolves to a `None` token in the scripmaster. Needs investigation on the web-app side.
+
+---
+
+## [unreleased] - 2026-05-06
+
+### Fixed — MPReviewTradeModal: Place Order spinner stuck forever (Axis Securities, all brokers) — two separate bugs
+
+**Bug 1 (commit `250eee6`, Vansh).**
+`placeOrder()` set `setLoading(true)` at line 317 then ran 112 lines of setup code (exchange validation, DDPI check, payload building) OUTSIDE any try-catch — `try {` didn't start until line 429 (the SDK executeAdvice block). For Axis broker, `latestRebalance.model_Id` threw TypeError when `latestRebalance` was null; that exception escaped the try-catch so `setLoading(false)` in the catch never ran → spinner stuck. Fix: moved `try {` to immediately after `setLoading(true)`, added `latestRebalance?.model_Id` optional chaining.
+
+**Bug 2 (commit this session, SDK fix).**
+Root cause: `REACT_APP_USE_SDK_EXECUTE_ADVICE=false → true` flipped in commit `bb416e8` (May 3), enabling the SDK execute-advice path for MP rebalances. The SDK's `AqSdkClient.request()` used `fetch()` with NO timeout. When Axis broker's ccxt-india backend was slow/timing-out, the mobile-side `fetch` waited indefinitely → spinner never stopped. This was the dominant cause seen in testing on the emulator (May 6), where Vansh's Bug 1 fix was already in place. Fix: added 120s `AbortController` timeout to `request()` in `alphaquark-mobile-sdk/packages/rn/src/client/AqSdkClient.ts` + rebuilt `lib/`.
+
+**Why it appeared to work before:** `REACT_APP_USE_SDK_EXECUTE_ADVICE=false` before May 3 → SDK path never taken → legacy axios (which already had `timeout: 120000`) handled all orders.
+
+**Files:**
+- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` (Bug 1, Vansh)
+- `../../alphaquark-mobile-sdk/packages/rn/src/client/AqSdkClient.ts` (Bug 2, SDK request timeout)
+
+### Fixed — Kotak V1→V2 API migration (backend-only, ccxt-india)
+
+**Problem.** ALL Kotak API calls (orders, funds, holdings) returned HTTP 502 with empty body. 0/26 orders succeeded. Rate-limit tuning and sId routing had no effect.
+
+**Root cause.** Kotak sunset their V1 API gateway (`gw-napi.kotaksecurities.com`) in October 2025. The V2 API uses the per-user dynamic `baseUrl` (e.g. `https://e43.kotaksecurities.com`) returned by `tradeApiValidate`, with shorter paths and minimal headers. Additionally, SEBI's April 2026 static IP mandate requires order API calls to originate from a whitelisted IP — our per-customer egress IPv6 is whitelisted but the server's default IPv4 is not.
+
+**Diagnosis steps:**
+1. Confirmed `gw-napi.kotaksecurities.com` returns 502 even on unauthenticated root URL
+2. Tested all Kotak endpoints: `mnapi` (522 timeout), `cnapi` (connection timeout), `e43` (200 on V2 paths)
+3. Discovered V2 SDK (`Kotak-Neo/Kotak-neo-api-v2`) documents the migration
+4. Confirmed `e43.kotaksecurities.com/quick/user/orders` returns 200 (V2 path works)
+5. Order placement on e43 returned `stCode:100008` (IP unauthorized) from default IP
+6. Switched to egress IPv6 → `stCode:100022` (expired session) → proves IP IS whitelisted
+
+**Fix (ccxt-india `brokers/kotak/kotak.py`):**
+- Route API calls through dynamic `baseUrl` instead of dead `gw-napi` gateway
+- V2 paths: `/quick/order/rule/ms/place` (no `/Orders/2.0/` prefix)
+- V2 headers: only `Sid` + `Auth` (dropped `Authorization: Bearer` and `neo-fin-key`)
+- Added `"os": "NEOTRADEAPI"` to order body (V2 requirement)
+- `neo_fin_key` simplified to always `"neotradeapi"`
+- `serverId` falls back to `dataCenter` when `hsServerId` is empty
+- `_parse_error_response` now reads V2 fields (`errMsg`/`stCode`/`desc`)
+
+**Result.** Orders now reach Kotak — user got proper "insufficient funds" rejections instead of 502s.
+
+**Files touched:** `ccxt-india/brokers/kotak/kotak.py`, `ccxt-india/common/broker_rate_limits.yml`
 
 ---
 

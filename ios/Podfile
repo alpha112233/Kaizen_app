@@ -20,15 +20,14 @@ target 'AlphaQuark' do
   pod 'FirebaseCoreInternal', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
   pod 'FirebaseCore', :modular_headers => true
-  pod 'GoogleSignIn', :modular_headers => true
-  pod 'GTMAppAuth', :modular_headers => true
-  pod 'GTMSessionFetcher', :modular_headers => true
-  pod 'AppAuth', :modular_headers => true
 
+  pod 'razorpay-pod', '1.5.0'
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :fabric_enabled => false,
+    :new_arch_enabled => false
   )
 
   target 'AlphaQuarkTests' do

@@ -100,9 +100,8 @@ export function getPublisherApiKey(broker, userBrokerClientCode) {
  *
  * Priority:
  *   1. `configData.customDomain` (custom advisor domain, if set)
- *   2. First origin in `REACT_APP_DOMAIN`
- *   3. `https://{subdomain}.alphaquark.in` (canonical advisor web origin)
- *   4. `https://kaizenalpha.in` (last-resort fallback for this fork)
+ *   2. `https://{subdomain}.alphaquark.in` (canonical advisor web origin)
+ *   3. `https://prod.alphaquark.in` (last-resort fallback)
  */
 export function getPublisherWebViewBaseUrl(configData) {
   const custom = configData?.customDomain;
@@ -111,11 +110,6 @@ export function getPublisherWebViewBaseUrl(configData) {
     const match = withScheme.match(/^https?:\/\/[^/]+/);
     if (match) return match[0];
   }
-  const domainOrigin = String(RNConfig.REACT_APP_DOMAIN || '')
-    .split(',')[0]
-    ?.trim()
-    ?.match(/^https?:\/\/[^/]+/);
-  if (domainOrigin) return domainOrigin[0];
   const subdomain =
     configData?.subdomain ||
     configData?.config?.REACT_APP_HEADER_NAME;

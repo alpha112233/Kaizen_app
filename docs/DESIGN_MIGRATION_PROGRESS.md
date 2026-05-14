@@ -19,6 +19,62 @@
 
 ---
 
+## 2026-05-09 — Whitelabel Phase 3: variant-overlay model formalized (docs-only)
+
+- **Phase**: meta — codifies the upstream-default + per-tenant fork-repo pattern.
+- **Surfaces touched**:
+  - `docs/WHITELABEL_RECIPE.md` (NEW) — canonical playbook. Covers what stays upstream vs in the fork, the native shell delta, the conventional `designs/registry.js` 2-line merge-conflict strategy (chosen over a `registry.local.js` extension point and over npm-package variants — rationale documented), the step-by-step "add a new whitelabel" procedure, the upstream sync workflow, and a `SYNC.md` template each fork ships.
+  - `docs/DESIGN_SYSTEM_ARCHITECTURE.md` — new "Where variant folders live — upstream-default + per-tenant fork repos" subsection under § Variant selection. Documents the conventional merge-conflict registry strategy with reasons. Asserts: a fork that edits any `src/` file is drift, not customization.
+  - `docs/DESIGN_COMPONENT_AUDIT.md` — added a scope note at the top: this audit covers upstream `designs/default/` only; per-fork audits live in fork repos. Upstream's job is the container-side viewModel + actions contract; widening verdicts (e.g. `clean-extract` → `needs-logic-extraction`) is the upstream side of a fork's override needing more data.
+  - `docs/CHANGELOG.md` — entry 13.
+  - (NOT done in this commit, intentionally) `CLAUDE.md` pointer — the recipe doc is referenced from arch + audit + this log; no need to add it to the top-level blocking-doc list yet because there's no _ongoing_ surface change rule attached to it. If WHITELABEL_RECIPE.md grows surfaces that need same-commit doc updates (similar to Phase 3 / SDK orchestration), revisit then.
+- **Verdict changes**: none — Phase 3 is docs-only.
+- **What shipped**: a written contract for whitelabeling. Anyone bootstrapping a new tenant fork can now follow `WHITELABEL_RECIPE.md` step-by-step. Anyone editing this repo knows what's the upstream's responsibility (the contract, the default variant, the infrastructure) vs the fork's responsibility (the variant folder, the native shell, the `.env`, the registry patch). The Alphanomy fork — which today still carries `src/assets/*` overwrites and lacks a `SYNC.md` — gets cleaned up in a separate session against that repo.
+- **Why a 2-line merge conflict on `designs/registry.js` instead of a `registry.local.js` extension point**: predictable, no infrastructure, no Metro-bundler dependency on conditional-require behavior, no "is the variant in the bundle or not" silent footgun. The conflict resolution is mechanical (keep both upstream's default and the fork's variant lines). The trade-off is real but small.
+- **Backend / ccxt**: no changes.
+- **Behavior change in app**: zero. Docs-only.
+- **Validation**: docs cross-link cleanly (CHANGELOG → arch + audit + recipe; recipe → arch + audit + progress + CLAUDE; arch + audit reference the recipe).
+- **Next**: cleanup pass against the Alphanomy fork repo (separate session): rebase fork onto upstream so it picks up Phase 1 + 2 + 3, revert its `src/assets/*` overwrites, add `designs/alphanomy/tokens/assets.js` pointing at `designs/alphanomy/assets/*` for its own logos, add a `SYNC.md`, and verify `designs/alphanomy/index.js` still resolves cleanly through the inherited registry shape.
+
+---
+
+## 2026-05-09 — Whitelabel Phase 2: logo asset-token slot (default-only)
+
+- **Phase**: A-extension (token bundle gains an `assets` family — same shape as `colors` / `spacing` / `typography` / `radii` / `shadows`)
+- **Surfaces touched**:
+  - `src/theme/assets.js` (NEW) — `DEFAULT_ASSETS = { logoPng, logoFadedPng }` + `buildAssets(config)` (config arg ignored, kept for builder symmetry).
+  - `src/theme/useTokens.js` — `useTokens()` now exposes `.assets`. Memo deps include `config.assetTokens` for future-symmetry (the field doesn't exist on `ConfigContext` today; resolution falls to defaults).
+  - `designs/default/tokens/index.js` — re-exports `DEFAULT_ASSETS` + `buildAssets`.
+  - `designs/default/screens/LoginScreen.js` — module-scope `const AlphaQuarkLogo = require(...)` removed; `renderLogo()` now takes `defaultLogo` as a third arg, fed by `tokens.assets.logoPng`.
+  - `designs/default/screens/SignupScreen.js` — same pattern.
+  - `designs/default/screens/ResetPassword.js` — same pattern.
+  - `designs/default/screens/ChangeAdvisor.js` — module-scope `const logo = require(...)` removed; component reads `tokens.assets.logoFadedPng` directly.
+  - `designs/default/composites/BasketCard.js` — top-level `import logo from ...` removed; component reads `tokens.assets.logoFadedPng` directly.
+- **Verdict changes**: new Section 7c in `DESIGN_COMPONENT_AUDIT.md` enumerates the asset slots and per-consumer status. No screen verdicts flipped.
+- **What shipped**: A variant overlay repo can now ship `designs/<variant>/tokens/assets.js` re-exporting `DEFAULT_ASSETS` with the variant's own logo paths, and the 5 design-side logo consumers above will pick up the variant's logo without any further code change. Closes the Phase 2 leak Alphanomy ran into when it overwrote `src/assets/AppLogo/logo.png`, `src/assets/logo.png`, and `src/assets/fadedlogo.png` directly — both repos can keep their own brand without stomping each other's shared files.
+- **Why these 5 consumers, not all 12 logo callsites**: `src/`-side consumers (SplashScreen, PlanCard, RebalanceCard, Config.js, ConfigContext.js) sit outside the variant-resolution surface. SplashScreen renders before providers; PlanCard and RebalanceCard already theme via `configData.logo` from `ConfigContext` (a parallel theming path that predates the design system). Migrating those without first splitting them into container + presentation would either crash (SplashScreen pre-providers) or redundantly theme (PlanCard / RebalanceCard already config-driven). Out of Phase 2 scope.
+- **Backend / ccxt**: no changes.
+- **Behavior change in app**: zero for default variant. A custom variant overlay gains the ability to swap the two logos without overwriting shared `src/assets/*` files.
+- **Validation**: grep confirms zero remaining direct logo imports in `designs/`. Default variant's `tokens.assets.logoPng` resolves to the same `src/assets/logo.png` that the old module-scope require did — byte-identical render output.
+- **Next**: Phase 3 — formalize the variant-overlay pattern in `docs/WHITELABEL_RECIPE.md`, document the conventional merge-conflict registry strategy in `DESIGN_SYSTEM_ARCHITECTURE.md`, and update audit docs to reflect that variant folders live in overlay repos, not upstream.
+
+---
+
+## 2026-05-09 — Whitelabel Phase 1: Navigation.js Plans-tab wrapper hoist
+
+- **Phase**: G-adjacent (Navigation surface is `clean-extract`-eligible plumbing, not a screen migration)
+- **Surfaces touched**:
+  - `src/components/Navigation.js` — hoisted `PlansTabWrapper` (`() => <ModelPortfolioScreen type="tab" />`) to module scope. The Plans `<Tab.Screen>` now passes `component={PlansTabWrapper}` instead of an inline render-prop child. Pure cleanup.
+- **Verdict changes**: `src/components/Navigation.js` is unaffected by the design-system migration scope (it's a navigator, not a UI surface), but the wrapper hoist is a generic perf cleanup that any variant benefits from.
+- **What shipped**: Inline render functions on `<Tab.Screen>` create a fresh component identity on every parent render → React Navigation remounts the nested screen tree every time. Hoisting to module scope makes the reference stable. Zero behavior change.
+- **Origin**: cherry-picked from the Alphanomy fork's `feature/prince` (commit `f30695a`). The other four pieces of Alphanomy's Phase 1 plumbing changes (HomeScreen viewModel enrichment, useHomePlanSummary raw exports, useHomeMarketSummary debug silencing, ModelPortfolioScreen tab-switch fix) all sit on top of a *prior* hook-extraction refactor (`src/screens/Home/hooks/useHomeMarketSummary.js`, `useHomePlanSummary.js`, `useNotificationFeed.js`) that exists only in Alphanomy. Those changes are deliberately deferred — backporting them without the hook extraction base is meaningless.
+- **Whitelabel context**: This is the first commit of the whitelabel-sync work. The model is: upstream (this repo) ships the `default` variant + design-system infrastructure only; each whitelabel (Alphanomy, future variants) lives in a fork repo containing its own `designs/<variant>/` folder + native shell. The pattern is being formalized in Phase 3 of the sync work; see `docs/WHITELABEL_RECIPE.md` (TBD).
+- **Validation**: change is a 5-line transformation; render-stable Tab.Screen `component` prop is a documented React Navigation idiom.
+- **Behavior change in app**: zero for default variant; eliminates a Plans-tab remount on every MainTabNavigator parent render.
+- **Next**: Phase 2 — logo asset-token slot in `designs/default/tokens/assets.js`. Phase 3 — formalize the variant-overlay pattern in `WHITELABEL_RECIPE.md` and update arch docs.
+
+---
+
 ## 2026-05-02 — Phase I: MPInvestNowModal container/presentation split (5364 LOC)
 
 - **Phase**: I — Model Portfolio (MP subscription + payment modal)

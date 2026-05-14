@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "174847117466",
+    "project_id": "kaizen-alpha-f0b2c",
+    "storage_bucket": "kaizen-alpha-f0b2c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174847117466:android:a36b05902978fd3ac07723",
+        "android_client_info": {
+          "package_name": "com.aq.kaizenalpha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174847117466-lqdhungc5nhoeuclvnlkq8ti2lc37h62.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aq.kaizenalpha",
+            "certificate_hash": "c778cd34b6c93a7d4440efa6594ad6d247b5a5b4"
+          }
+        },
+        {
+          "client_id": "174847117466-r587lhbmkpcpv7rhhvp295qqoj06d2f2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aq.kaizenalpha",
+            "certificate_hash": "b0c0e441e5a1dd32dd6d779e337910fd686292da"
+          }
+        },
+        {
+          "client_id": "174847117466-0e6dhmt698bm7suh3n2ani4h98bq1mm5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASR7--jWf9sBpq8SxjiImr1OQJJNwDLG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "174847117466-0e6dhmt698bm7suh3n2ani4h98bq1mm5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "174847117466-qd77f4l3pja385bbenfnoajltke95eh2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                  "bundle_id": "com.aq.kaizenalpha"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

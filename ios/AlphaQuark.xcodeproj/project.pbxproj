@@ -8,51 +8,49 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* AlphaQuarkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* AlphaQuarkTests.m */; };
-		0BCDA36E12C947088AF38E67 /* Poppins-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C94C5CD1DA3A4F54A4EE1ADD /* Poppins-BoldItalic.ttf */; };
-		0F53F59C9F414D89BD4F9980 /* Poppins-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0064A03FCC6543639377E272 /* Poppins-ThinItalic.ttf */; };
+		02369DE6B7344E4AAB3D74C7 /* ObviouslyNarrow-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = AC373AEB257F40038D0DDDCD /* ObviouslyNarrow-Black.otf */; };
+		02CFD144B50B478BACF9C566 /* Satoshi-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 498FDE1853CF4EA4A80C01E2 /* Satoshi-Medium.otf */; };
+		04557DA345CCBCC998701216 /* libPods-AlphaQuark-AlphaQuarkTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0F6AD59EE5F3F4247DAD3D6 /* libPods-AlphaQuark-AlphaQuarkTests.a */; };
+		0A84F0EB1692421D93930E0D /* Poppins-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C9706FB3E26448E58613E234 /* Poppins-MediumItalic.ttf */; };
+		0DBEA625124A4176ACE71A7E /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39CE7332A5374E69B99AD69C /* Poppins-SemiBold.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		18A5AC27C1784C289BC37B6F /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C543A6442C40428C9B7ABDAD /* Poppins-Bold.ttf */; };
-		1A5A2A03FFB34F1984682CC3 /* Poppins-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CA71EEF6C45946C182595258 /* Poppins-Italic.ttf */; };
-		27A13D794CA641CCB065782F /* Satoshi-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0C27E230E87F46818C540CB2 /* Satoshi-Light.otf */; };
-		29FD4DA0D9E142438E12AE2E /* ObviouslyNarrow-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 40DDC3930D384655B718FD26 /* ObviouslyNarrow-Black.otf */; };
-		3291009D740D4DFD8280C6EF /* Poppins-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 438333DD545641279F5938B1 /* Poppins-ExtraBoldItalic.ttf */; };
-		37E3C74555914B3DA401C595 /* Gillies.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2401563005CF4FA4B713A84A /* Gillies.ttf */; };
-		4FA28BFCCA2E4CA78C9CA25F /* Satoshi-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = DFE927E9725E4A89B5852C37 /* Satoshi-BoldItalic.otf */; };
-		514C56738DFB49AC869B7AA7 /* Poppins-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0033C8114B4F4615AB23A1CA /* Poppins-MediumItalic.ttf */; };
-		62885FA47F1C4BB4B76DF30E /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = E2359D1E4CDC4C9EABD426BD /* OFL.txt */; };
-		77FBBDC4A4784CA287797305 /* Poppins-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64E508A21DD54648B510056E /* Poppins-LightItalic.ttf */; };
-		787D914BA5FC4050A3C367A6 /* READ FIRST.txt in Resources */ = {isa = PBXBuildFile; fileRef = C96678D96CC0408FA9AD5A70 /* READ FIRST.txt */; };
-		814C67F10EE54A33BDC6CEF5 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 27D408B86B094580B0C5A690 /* Poppins-Light.ttf */; };
+		2116132E80DA47A9894706E3 /* Poppins-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2D1D5D333F774BCE9D34BA62 /* Poppins-SemiBoldItalic.ttf */; };
+		2121C2DA5BAE4A5787083817 /* Satoshi-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7D0AF73C09CC40E98FBDDA9C /* Satoshi-Light.otf */; };
+		2CEF13E2D9204ACAA62D3161 /* Poppins-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EC96E0AE3FA64E308D35B377 /* Poppins-BlackItalic.ttf */; };
+		2DBDDADACE9B43E7B06CB0BD /* Satoshi-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6B59A775659F4921BFF244FB /* Satoshi-Italic.otf */; };
+		3696DA85CB6E44B3B92D87F8 /* Satoshi-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6E1FBE8C699E49739C96A1D7 /* Satoshi-BlackItalic.otf */; };
+		382A1422E9C94BEE948AC380 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EB11504B0F5408FA5D66E85 /* Poppins-Light.ttf */; };
+		3BF68A83C9EE4C598380E05A /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A797E38856C2416D904C7D0A /* Poppins-Bold.ttf */; };
+		4370898B0D804F13B6A6F254 /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 07199214AF624B79BEF4BBC8 /* Poppins-ExtraLightItalic.ttf */; };
+		44D78B52410A4681B7129E48 /* Satoshi-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 100BAA6E2537489BB54FE4C7 /* Satoshi-MediumItalic.otf */; };
+		4CB4D2BCC66D47649F5F22B4 /* Poppins-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 72D4FCFEB8634673B91D3C51 /* Poppins-LightItalic.ttf */; };
+		5F0BB7EC4E1144AFB37288FE /* Poppins-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 62A11553F83741B59BF1E2B4 /* Poppins-ExtraBoldItalic.ttf */; };
+		5FE7406BE57B49B0AC7487AF /* Gillies.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 52B1CF0193E84107B0B4268F /* Gillies.ttf */; };
+		74D26153915848F9B2F75077 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A9E6472292494A048580D1FC /* Poppins-Regular.ttf */; };
+		757386F19EADBEE86B7A89B6 /* libPods-AlphaQuark.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F1C6502AF5322ED868B2C98 /* libPods-AlphaQuark.a */; };
+		7A5D461735FF4CE9BD3FDCFA /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 95DDB21342A34D16B098884A /* OFL.txt */; };
+		7D1A0812B41B4437B636BF19 /* Satoshi-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12BB7120BB0647839F622D21 /* Satoshi-Regular.ttf */; };
+		7F500A7294E14F538423211B /* ObviouslyDemo-NarrowBlack.otf in Resources */ = {isa = PBXBuildFile; fileRef = D6A8D41C2CAF491FB12AD050 /* ObviouslyDemo-NarrowBlack.otf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		84295175EF97466D92BDF6DD /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 261F9FE0F1D44C7398CFE764 /* Poppins-Thin.ttf */; };
-		8702E167B56E4F888F22294D /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 21BBF954CAFA4FB0945B1E88 /* Poppins-SemiBold.ttf */; };
-		951F63A603CF40F690EE805B /* Satoshi-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84468785C6664264B01CD2A9 /* Satoshi-Medium.otf */; };
-		96B09173C6724BB6A118941A /* Satoshi-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 29AB68581AE04B409296164B /* Satoshi-MediumItalic.otf */; };
-		9A294107C640495FAD96F70B /* Satoshi-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3E3D2133E2E841B1A9014AEA /* Satoshi-Regular.ttf */; };
-		9CF0DCCE3A17441FA41D1748 /* Satoshi-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1A5DDBC69B72427CBC704384 /* Satoshi-Regular.otf */; };
-		A4E80AF9A2794454B90F216D /* Satoshi-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = DC5ECD11FDA645BD8267692D /* Satoshi-Black.otf */; };
-		A91FC5AF544A44DD816BF6A1 /* Poppins-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5130A8A17CC405EADC17042 /* Poppins-BlackItalic.ttf */; };
-		AC24774662024EEABEB62F15 /* Satoshi-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D02044C8D6C64A9C8D6FC372 /* Satoshi-Variable.ttf */; };
-		AC2EC7CE4E104910A7916600 /* ObviouslyDemo-NarrowBlack.otf in Resources */ = {isa = PBXBuildFile; fileRef = C4882DBB61824CE9885789AB /* ObviouslyDemo-NarrowBlack.otf */; };
-		B1B8497549064187AD428206 /* Satoshi-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B860CC875A834766A747B8F4 /* Satoshi-Bold.otf */; };
-		BB525B4300204C3BA314CA48 /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0859DEEC86A4256B363FF34 /* Poppins-ExtraBold.ttf */; };
-		C60DEE94A99646B49EA0D712 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 950591E43DB846E69C2812D2 /* Poppins-Regular.ttf */; };
-		C89205C259B429AD96BDCF58 /* libPods-AlphaQuark-AlphaQuarkTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC409CAE17C341A227A1FDB /* libPods-AlphaQuark-AlphaQuarkTests.a */; };
-		C8E535502D954C3EA9286440 /* Satoshi-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = BA9193CBA667482B9A027D89 /* Satoshi-Italic.otf */; };
-		CF8FB79645A04B8DB36BB512 /* Satoshi-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = DF3915A07D8343F9A1E5215B /* Satoshi-LightItalic.otf */; };
-		D56B686FD92F4DEBAE943E82 /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 72C430DE846E4919A8446D1D /* Poppins-ExtraLight.ttf */; };
-		D79EE96409A24C4E894E6340 /* Azonix.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7831F3428DA0457D92043BFA /* Azonix.otf */; };
+		8C665D4D89CA44C38305D86A /* Poppins-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FC7DEEB6EAE64ADEA742DDE2 /* Poppins-BoldItalic.ttf */; };
+		9087DE2C038D4220A217927B /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FD7E5732FD0C4F2D8BDA2C7F /* Poppins-Black.ttf */; };
+		A85BE641256942DCA2DB3455 /* Satoshi-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5FAC8588E10C4C638F1B0568 /* Satoshi-LightItalic.otf */; };
+		B165BB54C12443C69C195B72 /* Satoshi-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = A611C6F9C475432D8F9C6D4B /* Satoshi-Black.otf */; };
+		B66FBA95704C414584920587 /* Satoshi-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3613FB82B3AB4155B65B0FC3 /* Satoshi-Medium.ttf */; };
+		BB4E79D6804B4D228ADDECB0 /* Satoshi-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9582CEBA47184C7D93CED4A4 /* Satoshi-Variable.ttf */; };
+		C669DD94B72C4D0D8D13DCDB /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74D782F67829403895FFA928 /* Poppins-ExtraBold.ttf */; };
+		C6B662DC522141D88B441818 /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2AC1BB35A3B4422E936E3E3A /* Poppins-Thin.ttf */; };
+		CFDD6B479CC443EE975F4CF5 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D0CB8A9EA60A410C84897F1C /* Poppins-Medium.ttf */; };
+		D4B17B76ADAB43CD94F9ADD4 /* Satoshi-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B902CF87E8045C68A29CBFB /* Satoshi-BoldItalic.otf */; };
 		D8A0BD217E9436B7292EE4A6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B6D3BB8FE6334C7B29DAA3C1 /* PrivacyInfo.xcprivacy */; };
 		D8DDBE9F2D96FAFF00F55270 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D8DDBE9E2D96FAFF00F55270 /* GoogleService-Info.plist */; };
-		DA0761F24D7B4E7A80AA99BE /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 794B4FDBB1304FEFA58AE9DC /* Poppins-Medium.ttf */; };
-		DE6DA4CC87FE41FD9E999E4E /* Satoshi-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 48755F6548874D96B3F0507F /* Satoshi-BlackItalic.otf */; };
-		E35F02CB235A46B285DEB9F5 /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5A8D75A7ADA84417A14FF92F /* Poppins-ExtraLightItalic.ttf */; };
-		E419E7EDE9F342539D9714CE /* Satoshi-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4DDD326F7888494BA7E51357 /* Satoshi-Medium.ttf */; };
-		E4DA44A84BE24775B0A22F65 /* Poppins-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3883839CF42B43AEA4DA6B28 /* Poppins-SemiBoldItalic.ttf */; };
-		E53B52C9F0F2480684DF9AB9 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B282B70569374773A42F11D3 /* Poppins-Black.ttf */; };
-		EC0E2987DAAEF31298CC6728 /* libPods-AlphaQuark.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 103D59F027E549BC88381706 /* libPods-AlphaQuark.a */; };
+		DAC186E5FC7C429BB85E3C3D /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 46BB4D64A1A24BCAAD538519 /* Poppins-ExtraLight.ttf */; };
+		DBDC2973147B43CBA669623C /* Poppins-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D15982DCA0B340869CE20252 /* Poppins-ThinItalic.ttf */; };
+		DF4C36DB7B5F47B785E47A17 /* Satoshi-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3833C0649C7140AAA39B4557 /* Satoshi-Bold.otf */; };
+		E44DD19B7EED445C85738A4B /* Poppins-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E17748BDD6104BFAB2A1A884 /* Poppins-Italic.ttf */; };
+		F5854BA6AECB4631A8B9F9F7 /* Satoshi-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2C15EBBCBF094A4EA7E89BE4 /* Satoshi-Regular.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,13 +64,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0033C8114B4F4615AB23A1CA /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../src/assets/fonts/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
-		0064A03FCC6543639377E272 /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ThinItalic.ttf"; path = "../src/assets/fonts/Poppins-ThinItalic.ttf"; sourceTree = "<group>"; };
 		00E356EE1AD99517003FC87E /* AlphaQuarkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlphaQuarkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* AlphaQuarkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaQuarkTests.m; sourceTree = "<group>"; };
-		0C27E230E87F46818C540CB2 /* Satoshi-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Light.otf"; path = "../src/assets/fonts/Satoshi-Light.otf"; sourceTree = "<group>"; };
-		103D59F027E549BC88381706 /* libPods-AlphaQuark.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AlphaQuark.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		07199214AF624B79BEF4BBC8 /* Poppins-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLightItalic.ttf"; path = "../src/assets/fonts/Poppins-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		0F1C6502AF5322ED868B2C98 /* libPods-AlphaQuark.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AlphaQuark.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		100BAA6E2537489BB54FE4C7 /* Satoshi-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-MediumItalic.otf"; path = "../src/assets/fonts/Satoshi-MediumItalic.otf"; sourceTree = "<group>"; };
+		12BB7120BB0647839F622D21 /* Satoshi-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Regular.ttf"; path = "../src/assets/fonts/Satoshi-Regular.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* AlphaQuark.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlphaQuark.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AlphaQuark/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = AlphaQuark/AppDelegate.mm; sourceTree = "<group>"; };
@@ -80,54 +78,52 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AlphaQuark/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AlphaQuark/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = AlphaQuark/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		1A5DDBC69B72427CBC704384 /* Satoshi-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Regular.otf"; path = "../src/assets/fonts/Satoshi-Regular.otf"; sourceTree = "<group>"; };
-		21BBF954CAFA4FB0945B1E88 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../src/assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
-		2401563005CF4FA4B713A84A /* Gillies.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Gillies.ttf; path = ../src/assets/fonts/Gillies.ttf; sourceTree = "<group>"; };
-		261F9FE0F1D44C7398CFE764 /* Poppins-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Thin.ttf"; path = "../src/assets/fonts/Poppins-Thin.ttf"; sourceTree = "<group>"; };
-		27D408B86B094580B0C5A690 /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../src/assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
-		29AB68581AE04B409296164B /* Satoshi-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-MediumItalic.otf"; path = "../src/assets/fonts/Satoshi-MediumItalic.otf"; sourceTree = "<group>"; };
-		2EAD898B14FE8CC9E73B5161 /* Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig"; path = "Target Support Files/Pods-AlphaQuark-AlphaQuarkTests/Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig"; sourceTree = "<group>"; };
-		3883839CF42B43AEA4DA6B28 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
-		3E3D2133E2E841B1A9014AEA /* Satoshi-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Regular.ttf"; path = "../src/assets/fonts/Satoshi-Regular.ttf"; sourceTree = "<group>"; };
-		40DDC3930D384655B718FD26 /* ObviouslyNarrow-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ObviouslyNarrow-Black.otf"; path = "../src/assets/fonts/ObviouslyNarrow-Black.otf"; sourceTree = "<group>"; };
-		438333DD545641279F5938B1 /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
-		48755F6548874D96B3F0507F /* Satoshi-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-BlackItalic.otf"; path = "../src/assets/fonts/Satoshi-BlackItalic.otf"; sourceTree = "<group>"; };
-		49B9FA3E67984158F27E2908 /* Pods-AlphaQuark.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark.release.xcconfig"; path = "Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark.release.xcconfig"; sourceTree = "<group>"; };
-		4DDD326F7888494BA7E51357 /* Satoshi-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Medium.ttf"; path = "../src/assets/fonts/Satoshi-Medium.ttf"; sourceTree = "<group>"; };
-		5A8D75A7ADA84417A14FF92F /* Poppins-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLightItalic.ttf"; path = "../src/assets/fonts/Poppins-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
-		64E508A21DD54648B510056E /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../src/assets/fonts/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
-		72C430DE846E4919A8446D1D /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLight.ttf"; path = "../src/assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
-		7831F3428DA0457D92043BFA /* Azonix.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Azonix.otf; path = ../src/assets/fonts/Azonix.otf; sourceTree = "<group>"; };
-		794B4FDBB1304FEFA58AE9DC /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../src/assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; };
+		2AC1BB35A3B4422E936E3E3A /* Poppins-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Thin.ttf"; path = "../src/assets/fonts/Poppins-Thin.ttf"; sourceTree = "<group>"; };
+		2C15EBBCBF094A4EA7E89BE4 /* Satoshi-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Regular.otf"; path = "../src/assets/fonts/Satoshi-Regular.otf"; sourceTree = "<group>"; };
+		2D1D5D333F774BCE9D34BA62 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		3613FB82B3AB4155B65B0FC3 /* Satoshi-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Medium.ttf"; path = "../src/assets/fonts/Satoshi-Medium.ttf"; sourceTree = "<group>"; };
+		3833C0649C7140AAA39B4557 /* Satoshi-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Bold.otf"; path = "../src/assets/fonts/Satoshi-Bold.otf"; sourceTree = "<group>"; };
+		39CE7332A5374E69B99AD69C /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../src/assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
+		46BB4D64A1A24BCAAD538519 /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLight.ttf"; path = "../src/assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
+		498FDE1853CF4EA4A80C01E2 /* Satoshi-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Medium.otf"; path = "../src/assets/fonts/Satoshi-Medium.otf"; sourceTree = "<group>"; };
+		52B1CF0193E84107B0B4268F /* Gillies.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Gillies.ttf; path = ../src/assets/fonts/Gillies.ttf; sourceTree = "<group>"; };
+		563F6D14FA6AF388FBD72F69 /* Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig"; path = "Target Support Files/Pods-AlphaQuark-AlphaQuarkTests/Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5FAC8588E10C4C638F1B0568 /* Satoshi-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-LightItalic.otf"; path = "../src/assets/fonts/Satoshi-LightItalic.otf"; sourceTree = "<group>"; };
+		62A11553F83741B59BF1E2B4 /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		6B59A775659F4921BFF244FB /* Satoshi-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Italic.otf"; path = "../src/assets/fonts/Satoshi-Italic.otf"; sourceTree = "<group>"; };
+		6E1FBE8C699E49739C96A1D7 /* Satoshi-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-BlackItalic.otf"; path = "../src/assets/fonts/Satoshi-BlackItalic.otf"; sourceTree = "<group>"; };
+		72D4FCFEB8634673B91D3C51 /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../src/assets/fonts/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
+		74D782F67829403895FFA928 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../src/assets/fonts/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
+		7D0AF73C09CC40E98FBDDA9C /* Satoshi-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Light.otf"; path = "../src/assets/fonts/Satoshi-Light.otf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = AlphaQuark/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		84468785C6664264B01CD2A9 /* Satoshi-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Medium.otf"; path = "../src/assets/fonts/Satoshi-Medium.otf"; sourceTree = "<group>"; };
-		950591E43DB846E69C2812D2 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../src/assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
-		B282B70569374773A42F11D3 /* Poppins-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Black.ttf"; path = "../src/assets/fonts/Poppins-Black.ttf"; sourceTree = "<group>"; };
-		B381009450F41CB66D6A7DAB /* Pods-AlphaQuark.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark.debug.xcconfig"; path = "Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark.debug.xcconfig"; sourceTree = "<group>"; };
-		B5130A8A17CC405EADC17042 /* Poppins-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BlackItalic.ttf"; path = "../src/assets/fonts/Poppins-BlackItalic.ttf"; sourceTree = "<group>"; };
+		8B902CF87E8045C68A29CBFB /* Satoshi-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-BoldItalic.otf"; path = "../src/assets/fonts/Satoshi-BoldItalic.otf"; sourceTree = "<group>"; };
+		9582CEBA47184C7D93CED4A4 /* Satoshi-Variable.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Variable.ttf"; path = "../src/assets/fonts/Satoshi-Variable.ttf"; sourceTree = "<group>"; };
+		95DDB21342A34D16B098884A /* OFL.txt */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = OFL.txt; path = ../src/assets/fonts/OFL.txt; sourceTree = "<group>"; };
+		9638A465C2AC9079A3E50C9D /* Pods-AlphaQuark.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark.debug.xcconfig"; path = "Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark.debug.xcconfig"; sourceTree = "<group>"; };
+		9EB11504B0F5408FA5D66E85 /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../src/assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
+		A611C6F9C475432D8F9C6D4B /* Satoshi-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Black.otf"; path = "../src/assets/fonts/Satoshi-Black.otf"; sourceTree = "<group>"; };
+		A797E38856C2416D904C7D0A /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../src/assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
+		A9E6472292494A048580D1FC /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../src/assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
+		AC373AEB257F40038D0DDDCD /* ObviouslyNarrow-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ObviouslyNarrow-Black.otf"; path = "../src/assets/fonts/ObviouslyNarrow-Black.otf"; sourceTree = "<group>"; };
 		B6D3BB8FE6334C7B29DAA3C1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = AlphaQuark/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		B860CC875A834766A747B8F4 /* Satoshi-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Bold.otf"; path = "../src/assets/fonts/Satoshi-Bold.otf"; sourceTree = "<group>"; };
-		BA9193CBA667482B9A027D89 /* Satoshi-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Italic.otf"; path = "../src/assets/fonts/Satoshi-Italic.otf"; sourceTree = "<group>"; };
-		BAC409CAE17C341A227A1FDB /* libPods-AlphaQuark-AlphaQuarkTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AlphaQuark-AlphaQuarkTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C13873F7D4685A4DF70802CB /* Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig"; path = "Target Support Files/Pods-AlphaQuark-AlphaQuarkTests/Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig"; sourceTree = "<group>"; };
-		C4882DBB61824CE9885789AB /* ObviouslyDemo-NarrowBlack.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ObviouslyDemo-NarrowBlack.otf"; path = "../src/assets/fonts/ObviouslyDemo-NarrowBlack.otf"; sourceTree = "<group>"; };
-		C543A6442C40428C9B7ABDAD /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../src/assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
-		C94C5CD1DA3A4F54A4EE1ADD /* Poppins-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BoldItalic.ttf"; path = "../src/assets/fonts/Poppins-BoldItalic.ttf"; sourceTree = "<group>"; };
-		C96678D96CC0408FA9AD5A70 /* READ FIRST.txt */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "READ FIRST.txt"; path = "../src/assets/fonts/READ FIRST.txt"; sourceTree = "<group>"; };
-		CA71EEF6C45946C182595258 /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../src/assets/fonts/Poppins-Italic.ttf"; sourceTree = "<group>"; };
-		D02044C8D6C64A9C8D6FC372 /* Satoshi-Variable.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Variable.ttf"; path = "../src/assets/fonts/Satoshi-Variable.ttf"; sourceTree = "<group>"; };
+		C1327922650A9D83DDC9A644 /* Pods-AlphaQuark.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark.release.xcconfig"; path = "Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark.release.xcconfig"; sourceTree = "<group>"; };
+		C9706FB3E26448E58613E234 /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../src/assets/fonts/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
+		D0CB8A9EA60A410C84897F1C /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../src/assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; };
+		D15982DCA0B340869CE20252 /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ThinItalic.ttf"; path = "../src/assets/fonts/Poppins-ThinItalic.ttf"; sourceTree = "<group>"; };
+		D600D54C2E6194ECE773B262 /* Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig"; path = "Target Support Files/Pods-AlphaQuark-AlphaQuarkTests/Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig"; sourceTree = "<group>"; };
+		D6A8D41C2CAF491FB12AD050 /* ObviouslyDemo-NarrowBlack.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ObviouslyDemo-NarrowBlack.otf"; path = "../src/assets/fonts/ObviouslyDemo-NarrowBlack.otf"; sourceTree = "<group>"; };
 		D89803732D7CD4AE0049FDFF /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AntDesign.ttf; sourceTree = "<group>"; };
 		D89803752D7CD5020049FDFF /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
 		D89803792D7CD5710049FDFF /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = EvilIcons.ttf; sourceTree = "<group>"; };
 		D898037B2D7CD57B0049FDFF /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.ttf; sourceTree = "<group>"; };
 		D8DDBE9E2D96FAFF00F55270 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D8DDBEA02D96FC2200F55270 /* AlphaQuark.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = AlphaQuark.entitlements; path = AlphaQuark/AlphaQuark.entitlements; sourceTree = "<group>"; };
-		DC5ECD11FDA645BD8267692D /* Satoshi-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Black.otf"; path = "../src/assets/fonts/Satoshi-Black.otf"; sourceTree = "<group>"; };
-		DF3915A07D8343F9A1E5215B /* Satoshi-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-LightItalic.otf"; path = "../src/assets/fonts/Satoshi-LightItalic.otf"; sourceTree = "<group>"; };
-		DFE927E9725E4A89B5852C37 /* Satoshi-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-BoldItalic.otf"; path = "../src/assets/fonts/Satoshi-BoldItalic.otf"; sourceTree = "<group>"; };
-		E2359D1E4CDC4C9EABD426BD /* OFL.txt */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = OFL.txt; path = ../src/assets/fonts/OFL.txt; sourceTree = "<group>"; };
+		E0F6AD59EE5F3F4247DAD3D6 /* libPods-AlphaQuark-AlphaQuarkTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AlphaQuark-AlphaQuarkTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E17748BDD6104BFAB2A1A884 /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../src/assets/fonts/Poppins-Italic.ttf"; sourceTree = "<group>"; };
+		EC96E0AE3FA64E308D35B377 /* Poppins-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BlackItalic.ttf"; path = "../src/assets/fonts/Poppins-BlackItalic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F0859DEEC86A4256B363FF34 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../src/assets/fonts/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
+		FC7DEEB6EAE64ADEA742DDE2 /* Poppins-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BoldItalic.ttf"; path = "../src/assets/fonts/Poppins-BoldItalic.ttf"; sourceTree = "<group>"; };
+		FD7E5732FD0C4F2D8BDA2C7F /* Poppins-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Black.ttf"; path = "../src/assets/fonts/Poppins-Black.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,7 +131,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C89205C259B429AD96BDCF58 /* libPods-AlphaQuark-AlphaQuarkTests.a in Frameworks */,
+				04557DA345CCBCC998701216 /* libPods-AlphaQuark-AlphaQuarkTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,7 +139,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EC0E2987DAAEF31298CC6728 /* libPods-AlphaQuark.a in Frameworks */,
+				757386F19EADBEE86B7A89B6 /* libPods-AlphaQuark.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,43 +166,41 @@
 		12FE9BA1C867498ABC44881D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				7831F3428DA0457D92043BFA /* Azonix.otf */,
-				C4882DBB61824CE9885789AB /* ObviouslyDemo-NarrowBlack.otf */,
-				40DDC3930D384655B718FD26 /* ObviouslyNarrow-Black.otf */,
-				DC5ECD11FDA645BD8267692D /* Satoshi-Black.otf */,
-				48755F6548874D96B3F0507F /* Satoshi-BlackItalic.otf */,
-				B860CC875A834766A747B8F4 /* Satoshi-Bold.otf */,
-				DFE927E9725E4A89B5852C37 /* Satoshi-BoldItalic.otf */,
-				BA9193CBA667482B9A027D89 /* Satoshi-Italic.otf */,
-				0C27E230E87F46818C540CB2 /* Satoshi-Light.otf */,
-				DF3915A07D8343F9A1E5215B /* Satoshi-LightItalic.otf */,
-				84468785C6664264B01CD2A9 /* Satoshi-Medium.otf */,
-				29AB68581AE04B409296164B /* Satoshi-MediumItalic.otf */,
-				1A5DDBC69B72427CBC704384 /* Satoshi-Regular.otf */,
-				2401563005CF4FA4B713A84A /* Gillies.ttf */,
-				B282B70569374773A42F11D3 /* Poppins-Black.ttf */,
-				B5130A8A17CC405EADC17042 /* Poppins-BlackItalic.ttf */,
-				C543A6442C40428C9B7ABDAD /* Poppins-Bold.ttf */,
-				C94C5CD1DA3A4F54A4EE1ADD /* Poppins-BoldItalic.ttf */,
-				F0859DEEC86A4256B363FF34 /* Poppins-ExtraBold.ttf */,
-				438333DD545641279F5938B1 /* Poppins-ExtraBoldItalic.ttf */,
-				72C430DE846E4919A8446D1D /* Poppins-ExtraLight.ttf */,
-				5A8D75A7ADA84417A14FF92F /* Poppins-ExtraLightItalic.ttf */,
-				CA71EEF6C45946C182595258 /* Poppins-Italic.ttf */,
-				27D408B86B094580B0C5A690 /* Poppins-Light.ttf */,
-				64E508A21DD54648B510056E /* Poppins-LightItalic.ttf */,
-				794B4FDBB1304FEFA58AE9DC /* Poppins-Medium.ttf */,
-				0033C8114B4F4615AB23A1CA /* Poppins-MediumItalic.ttf */,
-				950591E43DB846E69C2812D2 /* Poppins-Regular.ttf */,
-				21BBF954CAFA4FB0945B1E88 /* Poppins-SemiBold.ttf */,
-				3883839CF42B43AEA4DA6B28 /* Poppins-SemiBoldItalic.ttf */,
-				261F9FE0F1D44C7398CFE764 /* Poppins-Thin.ttf */,
-				0064A03FCC6543639377E272 /* Poppins-ThinItalic.ttf */,
-				4DDD326F7888494BA7E51357 /* Satoshi-Medium.ttf */,
-				3E3D2133E2E841B1A9014AEA /* Satoshi-Regular.ttf */,
-				D02044C8D6C64A9C8D6FC372 /* Satoshi-Variable.ttf */,
-				E2359D1E4CDC4C9EABD426BD /* OFL.txt */,
-				C96678D96CC0408FA9AD5A70 /* READ FIRST.txt */,
+				FD7E5732FD0C4F2D8BDA2C7F /* Poppins-Black.ttf */,
+				EC96E0AE3FA64E308D35B377 /* Poppins-BlackItalic.ttf */,
+				A797E38856C2416D904C7D0A /* Poppins-Bold.ttf */,
+				FC7DEEB6EAE64ADEA742DDE2 /* Poppins-BoldItalic.ttf */,
+				74D782F67829403895FFA928 /* Poppins-ExtraBold.ttf */,
+				62A11553F83741B59BF1E2B4 /* Poppins-ExtraBoldItalic.ttf */,
+				46BB4D64A1A24BCAAD538519 /* Poppins-ExtraLight.ttf */,
+				07199214AF624B79BEF4BBC8 /* Poppins-ExtraLightItalic.ttf */,
+				E17748BDD6104BFAB2A1A884 /* Poppins-Italic.ttf */,
+				9EB11504B0F5408FA5D66E85 /* Poppins-Light.ttf */,
+				72D4FCFEB8634673B91D3C51 /* Poppins-LightItalic.ttf */,
+				D0CB8A9EA60A410C84897F1C /* Poppins-Medium.ttf */,
+				C9706FB3E26448E58613E234 /* Poppins-MediumItalic.ttf */,
+				A9E6472292494A048580D1FC /* Poppins-Regular.ttf */,
+				39CE7332A5374E69B99AD69C /* Poppins-SemiBold.ttf */,
+				2D1D5D333F774BCE9D34BA62 /* Poppins-SemiBoldItalic.ttf */,
+				2AC1BB35A3B4422E936E3E3A /* Poppins-Thin.ttf */,
+				D15982DCA0B340869CE20252 /* Poppins-ThinItalic.ttf */,
+				A611C6F9C475432D8F9C6D4B /* Satoshi-Black.otf */,
+				6E1FBE8C699E49739C96A1D7 /* Satoshi-BlackItalic.otf */,
+				3833C0649C7140AAA39B4557 /* Satoshi-Bold.otf */,
+				8B902CF87E8045C68A29CBFB /* Satoshi-BoldItalic.otf */,
+				6B59A775659F4921BFF244FB /* Satoshi-Italic.otf */,
+				7D0AF73C09CC40E98FBDDA9C /* Satoshi-Light.otf */,
+				5FAC8588E10C4C638F1B0568 /* Satoshi-LightItalic.otf */,
+				498FDE1853CF4EA4A80C01E2 /* Satoshi-Medium.otf */,
+				100BAA6E2537489BB54FE4C7 /* Satoshi-MediumItalic.otf */,
+				2C15EBBCBF094A4EA7E89BE4 /* Satoshi-Regular.otf */,
+				3613FB82B3AB4155B65B0FC3 /* Satoshi-Medium.ttf */,
+				12BB7120BB0647839F622D21 /* Satoshi-Regular.ttf */,
+				9582CEBA47184C7D93CED4A4 /* Satoshi-Variable.ttf */,
+				D6A8D41C2CAF491FB12AD050 /* ObviouslyDemo-NarrowBlack.otf */,
+				AC373AEB257F40038D0DDDCD /* ObviouslyNarrow-Black.otf */,
+				52B1CF0193E84107B0B4268F /* Gillies.ttf */,
+				95DDB21342A34D16B098884A /* OFL.txt */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -231,8 +225,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				103D59F027E549BC88381706 /* libPods-AlphaQuark.a */,
-				BAC409CAE17C341A227A1FDB /* libPods-AlphaQuark-AlphaQuarkTests.a */,
+				0F1C6502AF5322ED868B2C98 /* libPods-AlphaQuark.a */,
+				E0F6AD59EE5F3F4247DAD3D6 /* libPods-AlphaQuark-AlphaQuarkTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -240,10 +234,10 @@
 		398A4EA9AA66AA608C34ACEB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				B381009450F41CB66D6A7DAB /* Pods-AlphaQuark.debug.xcconfig */,
-				49B9FA3E67984158F27E2908 /* Pods-AlphaQuark.release.xcconfig */,
-				2EAD898B14FE8CC9E73B5161 /* Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig */,
-				C13873F7D4685A4DF70802CB /* Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig */,
+				9638A465C2AC9079A3E50C9D /* Pods-AlphaQuark.debug.xcconfig */,
+				C1327922650A9D83DDC9A644 /* Pods-AlphaQuark.release.xcconfig */,
+				563F6D14FA6AF388FBD72F69 /* Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig */,
+				D600D54C2E6194ECE773B262 /* Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -300,12 +294,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "AlphaQuarkTests" */;
 			buildPhases = (
-				363D23D123F79C3241EB3D80 /* [CP] Check Pods Manifest.lock */,
+				AFE05989990B9C0FB702A3DB /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				D57857293DA465CB28049BFA /* [CP] Embed Pods Frameworks */,
-				EF73E37B100AB9B9796A8858 /* [CP] Copy Pods Resources */,
+				C0D238F47B76EFCF91592BD6 /* [CP] Embed Pods Frameworks */,
+				F94C1C86E173118049D769C6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -321,14 +315,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "AlphaQuark" */;
 			buildPhases = (
-				A13464940D9E57EA5F64DC94 /* [CP] Check Pods Manifest.lock */,
+				11E16B0F98CAAA0B654C3114 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				CFF29BCD9494AB7BB3FD45C6 /* [CP] Embed Pods Frameworks */,
-				252ADB93A65DFBD36F0E00ED /* [CP] Copy Pods Resources */,
-				B6F25099BFA5E5C892472BB1 /* [CP-User] [RNFB] Core Configuration */,
+				36E203E87F15AD1A8B97FBD1 /* [CP] Embed Pods Frameworks */,
+				FB374EB414784FF512F5BFD7 /* [CP] Copy Pods Resources */,
+				A04926F2534682A29C41F951 /* [CP-User] [RNFB] Core Configuration */,
 			);
 			buildRules = (
 			);
@@ -392,45 +386,43 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				9087DE2C038D4220A217927B /* Poppins-Black.ttf in Resources */,
+				2CEF13E2D9204ACAA62D3161 /* Poppins-BlackItalic.ttf in Resources */,
+				3BF68A83C9EE4C598380E05A /* Poppins-Bold.ttf in Resources */,
+				8C665D4D89CA44C38305D86A /* Poppins-BoldItalic.ttf in Resources */,
+				C669DD94B72C4D0D8D13DCDB /* Poppins-ExtraBold.ttf in Resources */,
+				5F0BB7EC4E1144AFB37288FE /* Poppins-ExtraBoldItalic.ttf in Resources */,
+				DAC186E5FC7C429BB85E3C3D /* Poppins-ExtraLight.ttf in Resources */,
+				4370898B0D804F13B6A6F254 /* Poppins-ExtraLightItalic.ttf in Resources */,
+				E44DD19B7EED445C85738A4B /* Poppins-Italic.ttf in Resources */,
+				382A1422E9C94BEE948AC380 /* Poppins-Light.ttf in Resources */,
+				4CB4D2BCC66D47649F5F22B4 /* Poppins-LightItalic.ttf in Resources */,
+				CFDD6B479CC443EE975F4CF5 /* Poppins-Medium.ttf in Resources */,
+				0A84F0EB1692421D93930E0D /* Poppins-MediumItalic.ttf in Resources */,
+				74D26153915848F9B2F75077 /* Poppins-Regular.ttf in Resources */,
+				0DBEA625124A4176ACE71A7E /* Poppins-SemiBold.ttf in Resources */,
+				2116132E80DA47A9894706E3 /* Poppins-SemiBoldItalic.ttf in Resources */,
+				C6B662DC522141D88B441818 /* Poppins-Thin.ttf in Resources */,
+				DBDC2973147B43CBA669623C /* Poppins-ThinItalic.ttf in Resources */,
+				B165BB54C12443C69C195B72 /* Satoshi-Black.otf in Resources */,
+				3696DA85CB6E44B3B92D87F8 /* Satoshi-BlackItalic.otf in Resources */,
+				DF4C36DB7B5F47B785E47A17 /* Satoshi-Bold.otf in Resources */,
+				D4B17B76ADAB43CD94F9ADD4 /* Satoshi-BoldItalic.otf in Resources */,
+				2DBDDADACE9B43E7B06CB0BD /* Satoshi-Italic.otf in Resources */,
+				2121C2DA5BAE4A5787083817 /* Satoshi-Light.otf in Resources */,
+				A85BE641256942DCA2DB3455 /* Satoshi-LightItalic.otf in Resources */,
+				02CFD144B50B478BACF9C566 /* Satoshi-Medium.otf in Resources */,
+				44D78B52410A4681B7129E48 /* Satoshi-MediumItalic.otf in Resources */,
 				D8DDBE9F2D96FAFF00F55270 /* GoogleService-Info.plist in Resources */,
+				F5854BA6AECB4631A8B9F9F7 /* Satoshi-Regular.otf in Resources */,
+				B66FBA95704C414584920587 /* Satoshi-Medium.ttf in Resources */,
+				7D1A0812B41B4437B636BF19 /* Satoshi-Regular.ttf in Resources */,
+				BB4E79D6804B4D228ADDECB0 /* Satoshi-Variable.ttf in Resources */,
+				7F500A7294E14F538423211B /* ObviouslyDemo-NarrowBlack.otf in Resources */,
+				02369DE6B7344E4AAB3D74C7 /* ObviouslyNarrow-Black.otf in Resources */,
+				5FE7406BE57B49B0AC7487AF /* Gillies.ttf in Resources */,
+				7A5D461735FF4CE9BD3FDCFA /* OFL.txt in Resources */,
 				D8A0BD217E9436B7292EE4A6 /* PrivacyInfo.xcprivacy in Resources */,
-				D79EE96409A24C4E894E6340 /* Azonix.otf in Resources */,
-				AC2EC7CE4E104910A7916600 /* ObviouslyDemo-NarrowBlack.otf in Resources */,
-				29FD4DA0D9E142438E12AE2E /* ObviouslyNarrow-Black.otf in Resources */,
-				A4E80AF9A2794454B90F216D /* Satoshi-Black.otf in Resources */,
-				DE6DA4CC87FE41FD9E999E4E /* Satoshi-BlackItalic.otf in Resources */,
-				B1B8497549064187AD428206 /* Satoshi-Bold.otf in Resources */,
-				4FA28BFCCA2E4CA78C9CA25F /* Satoshi-BoldItalic.otf in Resources */,
-				C8E535502D954C3EA9286440 /* Satoshi-Italic.otf in Resources */,
-				27A13D794CA641CCB065782F /* Satoshi-Light.otf in Resources */,
-				CF8FB79645A04B8DB36BB512 /* Satoshi-LightItalic.otf in Resources */,
-				951F63A603CF40F690EE805B /* Satoshi-Medium.otf in Resources */,
-				96B09173C6724BB6A118941A /* Satoshi-MediumItalic.otf in Resources */,
-				9CF0DCCE3A17441FA41D1748 /* Satoshi-Regular.otf in Resources */,
-				37E3C74555914B3DA401C595 /* Gillies.ttf in Resources */,
-				E53B52C9F0F2480684DF9AB9 /* Poppins-Black.ttf in Resources */,
-				A91FC5AF544A44DD816BF6A1 /* Poppins-BlackItalic.ttf in Resources */,
-				18A5AC27C1784C289BC37B6F /* Poppins-Bold.ttf in Resources */,
-				0BCDA36E12C947088AF38E67 /* Poppins-BoldItalic.ttf in Resources */,
-				BB525B4300204C3BA314CA48 /* Poppins-ExtraBold.ttf in Resources */,
-				3291009D740D4DFD8280C6EF /* Poppins-ExtraBoldItalic.ttf in Resources */,
-				D56B686FD92F4DEBAE943E82 /* Poppins-ExtraLight.ttf in Resources */,
-				E35F02CB235A46B285DEB9F5 /* Poppins-ExtraLightItalic.ttf in Resources */,
-				1A5A2A03FFB34F1984682CC3 /* Poppins-Italic.ttf in Resources */,
-				814C67F10EE54A33BDC6CEF5 /* Poppins-Light.ttf in Resources */,
-				77FBBDC4A4784CA287797305 /* Poppins-LightItalic.ttf in Resources */,
-				DA0761F24D7B4E7A80AA99BE /* Poppins-Medium.ttf in Resources */,
-				514C56738DFB49AC869B7AA7 /* Poppins-MediumItalic.ttf in Resources */,
-				C60DEE94A99646B49EA0D712 /* Poppins-Regular.ttf in Resources */,
-				8702E167B56E4F888F22294D /* Poppins-SemiBold.ttf in Resources */,
-				E4DA44A84BE24775B0A22F65 /* Poppins-SemiBoldItalic.ttf in Resources */,
-				84295175EF97466D92BDF6DD /* Poppins-Thin.ttf in Resources */,
-				0F53F59C9F414D89BD4F9980 /* Poppins-ThinItalic.ttf in Resources */,
-				E419E7EDE9F342539D9714CE /* Satoshi-Medium.ttf in Resources */,
-				9A294107C640495FAD96F70B /* Satoshi-Regular.ttf in Resources */,
-				AC24774662024EEABEB62F15 /* Satoshi-Variable.ttf in Resources */,
-				62885FA47F1C4BB4B76DF30E /* OFL.txt in Resources */,
-				787D914BA5FC4050A3C367A6 /* READ FIRST.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,46 +445,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		252ADB93A65DFBD36F0E00ED /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		363D23D123F79C3241EB3D80 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-AlphaQuark-AlphaQuarkTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A13464940D9E57EA5F64DC94 /* [CP] Check Pods Manifest.lock */ = {
+		11E16B0F98CAAA0B654C3114 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -514,20 +467,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B6F25099BFA5E5C892472BB1 /* [CP-User] [RNFB] Core Configuration */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "[CP-User] [RNFB] Core Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_analytics_storage\n  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_analytics_storage\")\n  if [[ $_ANALYTICS_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_storage\n  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_storage\")\n  if [[ $_ANALYTICS_AD_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_user_data\n  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_user_data\")\n  if [[ $_ANALYTICS_AD_USER_DATA ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_USER_DATA\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.analytics_registration_with_ad_network_enabled\n  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_registration_with_ad_network_enabled\")\n  if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_REGISTRATION_WITH_AD_NETWORK\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
-		};
-		CFF29BCD9494AB7BB3FD45C6 /* [CP] Embed Pods Frameworks */ = {
+		36E203E87F15AD1A8B97FBD1 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -544,7 +484,42 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D57857293DA465CB28049BFA /* [CP] Embed Pods Frameworks */ = {
+		A04926F2534682A29C41F951 /* [CP-User] [RNFB] Core Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Core Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_analytics_storage\n  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_analytics_storage\")\n  if [[ $_ANALYTICS_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_storage\n  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_storage\")\n  if [[ $_ANALYTICS_AD_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_user_data\n  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_user_data\")\n  if [[ $_ANALYTICS_AD_USER_DATA ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_USER_DATA\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.analytics_registration_with_ad_network_enabled\n  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_registration_with_ad_network_enabled\")\n  if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_REGISTRATION_WITH_AD_NETWORK\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
+		};
+		AFE05989990B9C0FB702A3DB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AlphaQuark-AlphaQuarkTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C0D238F47B76EFCF91592BD6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -561,7 +536,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark-AlphaQuarkTests/Pods-AlphaQuark-AlphaQuarkTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EF73E37B100AB9B9796A8858 /* [CP] Copy Pods Resources */ = {
+		F94C1C86E173118049D769C6 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -576,6 +551,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark-AlphaQuarkTests/Pods-AlphaQuark-AlphaQuarkTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FB374EB414784FF512F5BFD7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AlphaQuark/Pods-AlphaQuark-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -611,7 +603,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2EAD898B14FE8CC9E73B5161 /* Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig */;
+			baseConfigurationReference = 563F6D14FA6AF388FBD72F69 /* Pods-AlphaQuark-AlphaQuarkTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -638,7 +630,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C13873F7D4685A4DF70802CB /* Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig */;
+			baseConfigurationReference = D600D54C2E6194ECE773B262 /* Pods-AlphaQuark-AlphaQuarkTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -662,17 +654,17 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B381009450F41CB66D6A7DAB /* Pods-AlphaQuark.debug.xcconfig */;
+			baseConfigurationReference = 9638A465C2AC9079A3E50C9D /* Pods-AlphaQuark.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AlphaQuark/AlphaQuark.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SL68CKX7BC;
+				CURRENT_PROJECT_VERSION = 13;
+				DEVELOPMENT_TEAM = 6H43CN8AV6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AlphaQuark/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Kaizen Alpha";
+				INFOPLIST_KEY_CFBundleDisplayName = AlphaQuark;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -684,7 +676,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizenalpha;
-				PRODUCT_NAME = KaizenAlpha;
+				PRODUCT_NAME = AlphaQuark;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -693,16 +685,16 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49B9FA3E67984158F27E2908 /* Pods-AlphaQuark.release.xcconfig */;
+			baseConfigurationReference = C1327922650A9D83DDC9A644 /* Pods-AlphaQuark.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AlphaQuark/AlphaQuark.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SL68CKX7BC;
+				CURRENT_PROJECT_VERSION = 13;
+				DEVELOPMENT_TEAM = 6H43CN8AV6;
 				INFOPLIST_FILE = AlphaQuark/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Kaizen Alpha";
+				INFOPLIST_KEY_CFBundleDisplayName = AlphaQuark;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -714,7 +706,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizenalpha;
-				PRODUCT_NAME = KaizenAlpha;
+				PRODUCT_NAME = AlphaQuark;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

@@ -159,7 +159,7 @@ const getBottomSheetPosition = (insets) => {
   );
 };
 
-const selectedVariant = Config?.APP_VARIANT || 'kaizenalpha'; // Default to "rgxresearch" if not set
+const selectedVariant = Config?.APP_VARIANT || 'kaizenalpha'; // Default to "kaizenalpha" if not set
 // Ensure the variant exists in APP_VARIANTS, otherwise use 'kaizenalpha'
 const validVariant = APP_VARIANTS[selectedVariant] ? selectedVariant : 'kaizenalpha';
 const {
@@ -357,9 +357,18 @@ if (state.routes[state.index]?.state) {
 
 const currentKey = currentTabRoute?.key || "";
 const currentName = currentTabRoute?.name || "";
+  // Variant-gated chrome: the legacy CustomToolbar (greeting + cart + bell +
+  // avatar + ticker strip) wraps every tab screen in the default variant.
+  // Variants that ship their own in-screen header (e.g. alphanomy's _AppHeader
+  // helper used by HomeScreen / OrderScreen / ModelPortfolioScreen) suppress
+  // it to avoid the duplicate-header look. Tenants who want the legacy
+  // chrome simply leave DESIGN_VARIANT unset (or set it to "default").
+  const showLegacyToolbar =
+    !Config?.DESIGN_VARIANT || Config.DESIGN_VARIANT === 'default';
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <CustomToolbar currentRoute={currentName} />
+      {showLegacyToolbar && <CustomToolbar currentRoute={currentName} />}
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={({route}) => ({
@@ -413,8 +422,8 @@ const currentName = currentTabRoute?.name || "";
           <Tab.Screen
             key="plans-screen"
             name="Plans"
-            component={PlansTabWrapper}
             options={{headerShown: false}}
+            component={PlansTabWrapper}
           />
         )}
         <Tab.Screen
@@ -477,6 +486,10 @@ const CustomDrawerContent = props => {
   const [imageUrl, setImageUrl] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
   const isDrawerOpen = useDrawerStatus(); // Use hook to determine drawer status
+  const wasEverOpenedRef = useRef(false);
+  if (isDrawerOpen === 'open') {
+    wasEverOpenedRef.current = true;
+  }
   useEffect(() => {
     if (auth.currentUser) {
       setUserEmail(auth.currentUser.email);
@@ -623,6 +636,15 @@ const CustomDrawerContent = props => {
       </TouchableOpacity>
     );
   };
+
+  // Defer rendering the drawer body until the drawer has actually been
+  // opened at least once. React Navigation v7's drawer panel is mounted
+  // even while "closed" and on iOS the off-screen translate can take one
+  // frame to settle — without this guard, the menu flashes visibly on
+  // top of the home tab right after login (`navigation.replace('Home')`).
+  if (!wasEverOpenedRef.current && isDrawerOpen !== 'open') {
+    return null;
+  }
 
   return (
     <LinearGradient
@@ -985,16 +1007,18 @@ screenOptions={{
 }
 
 const DrawerNavigator = () => {
+  const {width: windowWidth, height: windowHeight} = Dimensions.get('window');
   return (
     <Drawer.Navigator
       drawerContent={props => <CustomDrawerContent {...props} />}
+      defaultStatus="closed"
       screenOptions={{
         swipeEnabled: false,
         drawerPosition: 'right',
         drawerStyle: {
-          backgroundColor: 'red',
-          width: '100%',
-          height: '100%',
+          backgroundColor: 'transparent',
+          width: windowWidth,
+          height: windowHeight,
         },
         drawerLabelStyle: {
           fontSize: 18,

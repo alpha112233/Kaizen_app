@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {View, Image, StyleSheet, Dimensions} from 'react-native';
 import ProgressBar from 'react-native-progress-bar-horizontal';
 import Config from 'react-native-config';
-import KaizenAlphaLogo from '../assets/AppLogo/kaizenalpha.png';
+import AlphaQuarkLogo from '../assets/logo.png';
+import AlphanomyLogo from './AlphanomyLogo';
 import auth from '@react-native-firebase/auth';
 import axios from 'axios';
 import {useNavigation} from '@react-navigation/native';
@@ -138,7 +139,17 @@ export default function SplashScreen() {
     <View style={styles.container}>
       {/* Logo Section - Wait for config to load before showing logo */}
       <View style={styles.logoContainer}>
-        {configLoading ? (
+        {/*
+          Alphanomy variant: short-circuit the config-driven logo
+          cascade and render the JS-drawn brand mark (gradient + bolt).
+          The alphanomy fork doesn't ship a finalized PNG, and the
+          shared default at src/assets/logo.png is the AlphaQuark
+          asset — falling through any of the branches below would show
+          the wrong tenant's logo on splash.
+        */}
+        {Config?.DESIGN_VARIANT === 'alphanomy' ? (
+          <AlphanomyLogo size={150} />
+        ) : configLoading ? (
           // Show nothing or a placeholder while config is loading
           <View style={{width: 150, height: 150}} />
         ) : LogoComponent && typeof LogoComponent === 'function' ? (
@@ -164,14 +175,9 @@ export default function SplashScreen() {
             source={LogoComponent}
             style={{width: 150, height: 150, resizeMode: 'contain'}}
           />
-        ) : LogoComponent && typeof LogoComponent === 'number' ? (
-          <Image
-            source={LogoComponent}
-            style={{width: 150, height: 150, resizeMode: 'contain'}}
-          />
         ) : (
           <Image
-            source={KaizenAlphaLogo}
+            source={AlphaQuarkLogo}
             style={{width: 150, height: 150, resizeMode: 'contain'}}
           />
         )}
@@ -182,11 +188,11 @@ export default function SplashScreen() {
         <ProgressBar
           progress={progress}
           borderWidth={1}
-          fillColor="#A199FF"
-          unfilledColor="#2D2B5A"
+          fillColor="#000"
+          unfilledColor="#E9E9E9"
           height={7}
           width={screenWidth * 0.5}
-          borderColor="#2D2B5A"
+          borderColor="#E9E9E9"
           duration={150}
         />
       </View>
@@ -200,7 +206,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#fff',
   },
   logoContainer: {
     justifyContent: 'center',

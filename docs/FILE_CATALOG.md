@@ -76,13 +76,6 @@ This document catalogs all files in the AlphaPro app organized by their function
 | `websocketPriceMP.js` | 6.0 KB | WebSocket for real-time prices |
 | `ref.js` | 4.2 KB | Reference utilities |
 
-### UI Components for Rebalance
-**Location:** `/src/UIComponents/RebalanceAdvicesUI/`
-
-| File Name | Description |
-|-----------|-------------|
-| `RebalanceCard.js` | Rebalance action card — execution status guards, button state derivation, broker-match logic |
-
 ### Dynamic Price Updates
 **Location:** `/src/components/AdviceScreenComponents/DynamicText/`
 
@@ -415,30 +408,6 @@ This document catalogs all files in the AlphaPro app organized by their function
 
 ---
 
-## 🧰 UTILITY FILES
-
-**Location:** `/src/utils/`
-
-| File Name | Description |
-|-----------|-------------|
-| `basketUtils.js` | FnO basket utilities: `parseExpiryFromSymbol`, `isBasketExpired`, `netBasketTrades` (ported from web) |
-| `brokerAuth.js` | OAuth state generation, nonce management, callback registration |
-| `brokerPublisher.js` | Publisher SDK utilities (Kite, Fyers) |
-| `brokerSessionUtils.js` | Broker session validation, token freshness checks |
-| `brokerSupport.js` | Per-broker feature matrix (order types, GTT, OCO) |
-| `ProcessTrades.js` | Centralized order placement pipeline |
-| `rebalanceHelpers.js` | Rebalance error detection, broker payload builder, decryption |
-| `orderStatusUtils.js` | Order status normalization across brokers |
-| `portfolioEvents.js` | Structured event emitter for portfolio lifecycle |
-| `tradeUtils.js` | Trade data standardization |
-| `SecurityTokenManager.js` | JWT token generation |
-| `storageUtils.js` | AsyncStorage wrapper with retry logic |
-| `serverConfig.js` | Server endpoints configuration |
-| `Config.js` | App variant configuration |
-| `isMarketHours.js` | Market hours check (9:15 AM - 3:30 PM IST) |
-
----
-
 ## 📊 FILE STATISTICS
 
 ### By Feature Area
@@ -512,6 +481,6 @@ src/
 
 ---
 
-**Last Updated:** April 2026  
+**Last Updated:** November 2024  
 **Total Files Cataloged:** 150+  
 **Total Code Size:** ~2+ MB

@@ -15,7 +15,7 @@ const ExploreSection = ({
   setOpenpdf,
   setOpenvideos,
 }) => {
-  const selectedVariant = Config?.APP_VARIANT || 'alphaquark';
+  const selectedVariant = Config?.APP_VARIANT || 'kaizenalpha';
   const navigate = useNavigation();
 
   // Get dynamic config from API

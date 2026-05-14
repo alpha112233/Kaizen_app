@@ -42,9 +42,11 @@ import Text from '../primitives/Text';
 import Icon from '../primitives/Icon';
 import Spinner from '../primitives/Spinner';
 
-const KaizenAlphaLogo = require('../../../src/assets/AppLogo/kaizenalpha.png');
+// Default-variant logo now resolved via `useTokens().assets.logoPng` and
+// passed in as `defaultLogo`. See Phase 2 (whitelabel-sync, 2026-05-09) and
+// docs/DESIGN_SYSTEM_ARCHITECTURE.md § Variant assets.
 
-const renderLogo = (LogoComponent, configLoading) => {
+const renderLogo = (LogoComponent, configLoading, defaultLogo) => {
     if (configLoading) return <View style={styles.logo} />;
     if (LogoComponent && typeof LogoComponent === 'function') {
         return <LogoComponent style={styles.logo} />;
@@ -61,10 +63,7 @@ const renderLogo = (LogoComponent, configLoading) => {
     if (LogoComponent && typeof LogoComponent === 'object') {
         return <Image source={LogoComponent} style={styles.logo} resizeMode="contain" />;
     }
-    if (LogoComponent && typeof LogoComponent === 'number') {
-        return <Image source={LogoComponent} style={styles.logo} resizeMode="contain" />;
-    }
-    return <Image source={KaizenAlphaLogo} style={styles.logo} resizeMode="contain" />;
+    return <Image source={defaultLogo} style={styles.logo} resizeMode="contain" />;
 };
 
 const SignupScreen = ({ viewModel, actions }) => {
@@ -121,7 +120,7 @@ const SignupScreen = ({ viewModel, actions }) => {
 
                     <View style={styles.content}>
                         <View style={styles.logoContainer}>
-                            {renderLogo(logoComponent, configLoading)}
+                            {renderLogo(logoComponent, configLoading, tokens.assets.logoPng)}
                             <Text variant="title" style={styles.logoText}>
                                 {whiteLabelText || Config?.REACT_APP_WHITE_LABEL_TEXT}
                             </Text>
