@@ -22,11 +22,27 @@
           }
         },
         {
+          "client_id": "174847117466-pe6gg9go5kq73mn8anuhamjfufri8fob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aq.kaizenalpha",
+            "certificate_hash": "d002c6edfb1990e7189b144070d2648c75ddcdd4"
+          }
+        },
+        {
           "client_id": "174847117466-r587lhbmkpcpv7rhhvp295qqoj06d2f2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.aq.kaizenalpha",
             "certificate_hash": "b0c0e441e5a1dd32dd6d779e337910fd686292da"
+          }
+        },
+        {
+          "client_id": "174847117466-rmlg250r8q8dj8fq0m82v2hrj4biblbu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aq.kaizenalpha",
+            "certificate_hash": "5aab8464d64ec97a7fabf8f608a5d968609ad293"
           }
         },
         {
@@ -50,7 +66,7 @@
               "client_id": "174847117466-qd77f4l3pja385bbenfnoajltke95eh2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                  "bundle_id": "com.aq.kaizenalpha"
+                "bundle_id": "com.aq.kaizenalpha"
               }
             }
           ]
