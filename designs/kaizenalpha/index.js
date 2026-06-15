@@ -21,16 +21,28 @@
 
 import * as tokens from './tokens';
 import HomeScreen from './screens/HomeScreen';
+import OrderScreen from './screens/OrderScreen';
+import PortfolioScreen from './screens/PortfolioScreen';
+import ModelPortfolioScreen from './screens/ModelPortfolioScreen';
 
 const variant = {
     name: 'kaizenalpha',
     tokens,
     components: {
-        // Variant-local HomeScreen wraps the default presentation with the
-        // kaizenalpha top bar (logo + greeting + Nifty/Sensex ticker strip).
-        // The default presentation has no header; this override is purely
-        // additive — every section inside renders unchanged.
+        // Each tab screen wraps its default presentation with the
+        // kaizenalpha top bar (logo + greeting + Nifty/Sensex/BankNifty
+        // ticker strip). The wrappers are purely additive — the default
+        // presentation renders unchanged inside, so every section, modal,
+        // and tab interaction behaves exactly as upstream. AccountSettings
+        // ("More" tab) is intentionally skipped — its default presentation
+        // already paints a full-page brand gradient that would clash with
+        // a stacked header. The Plans tab wrapper only stacks the header
+        // when the default is NOT drawing its own gradient header
+        // (`!viewModel.showHeader`); see ./screens/ModelPortfolioScreen.js.
         'screens.HomeScreen': HomeScreen,
+        'screens.OrderScreen': OrderScreen,
+        'screens.PortfolioScreen': PortfolioScreen,
+        'screens.ModelPortfolioScreen': ModelPortfolioScreen,
     },
     // No SDK widget overrides yet — default's `sdk/` bundle flows through
     // via the registry's `sdk` fallback. Override individual slots by
