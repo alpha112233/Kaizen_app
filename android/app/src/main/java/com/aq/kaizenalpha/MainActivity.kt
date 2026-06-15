@@ -16,7 +16,13 @@ class MainActivity : ReactActivity() {
    * rendering of the component.
    */
   override fun getMainComponentName(): String = "KaizenAlpha"
- 
+
+  // react-native-screens requires this: pass `null` so Android doesn't try to
+  // restore Screen fragments across process recreation, which crashes with
+  // "Screen fragments should never be restored." See react-native-screens#17.
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(null)
+  }
 
   /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]

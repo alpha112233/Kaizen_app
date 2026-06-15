@@ -20,12 +20,17 @@
  */
 
 import * as tokens from './tokens';
+import HomeScreen from './screens/HomeScreen';
 
 const variant = {
     name: 'kaizenalpha',
     tokens,
     components: {
-        // No component overrides yet — defaults flow through automatically.
+        // Variant-local HomeScreen wraps the default presentation with the
+        // kaizenalpha top bar (logo + greeting + Nifty/Sensex ticker strip).
+        // The default presentation has no header; this override is purely
+        // additive — every section inside renders unchanged.
+        'screens.HomeScreen': HomeScreen,
     },
     // No SDK widget overrides yet — default's `sdk/` bundle flows through
     // via the registry's `sdk` fallback. Override individual slots by
