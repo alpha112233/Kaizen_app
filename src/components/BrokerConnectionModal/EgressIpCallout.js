@@ -91,7 +91,7 @@ const BROKER_DEV_PORTAL_URLS = {
   angelone: 'https://smartapi.angelone.in/',
   fyers: 'https://fyers.in/web/api-dashboard/user-apps',
   motilaloswal: 'https://openapi.motilaloswal.com/',
-  kotak: 'https://npapi.kotaksecurities.com/',
+  kotak: 'https://napi.kotaksecurities.com/',
   icicidirect: 'https://api.icicidirect.com/apiuser/home',
   iifl: 'https://api.iiflsecurities.com/',
   hdfcsec: 'https://developer.hdfcsky.com/',
