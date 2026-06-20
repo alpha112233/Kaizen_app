@@ -94,7 +94,7 @@ const BROKER_DEV_PORTAL_URLS = {
   kotak: 'https://npapi.kotaksecurities.com/',
   icicidirect: 'https://api.icicidirect.com/apiuser/home',
   iifl: 'https://api.iiflsecurities.com/',
-  hdfcsec: 'https://developer.hdfcsec.com/',
+  hdfcsec: 'https://developer.hdfcsky.com/',
   groww: 'https://groww.in/trade-api/api-keys',
 };
 

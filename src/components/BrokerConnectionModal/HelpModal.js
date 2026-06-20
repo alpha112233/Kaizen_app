@@ -276,7 +276,7 @@ const HelpModal = ({ broker, visible, onClose }) => {
                 style={styles.instruction}
               >
                 1. Go to{" "}
-                <LinkifiedUrl url="https://developer.hdfcsec.com/" />
+                <LinkifiedUrl url="https://developer.hdfcsky.com/" />
               </Text>
               <Text style={styles.instruction}>
                 2. Log in with your ID, password, and OTP.
@@ -404,14 +404,14 @@ your broker.
         </View>
 
         <Text style={styles.instruction1}>
-          Register for TOTP, verify mobile via OTP, select account, scan QR via authenticator app (e.g. Google Authenticator), and submit TOTP.
+          On the Kotak Neo API Dashboard (the Trade API page), click "TOTP Registration". Verify your mobile via OTP, select your account, scan the QR with an authenticator app (e.g. Google Authenticator), and submit the TOTP to register.
         </Text>
 
         {/* STEP 4 */}
         <Text style={styles.instruction}>Step 4: Linking account to Kotak NEO Apis</Text>
 
         <Text style={styles.instruction1}>
-          (i) Go to broker settings in your app, select Kotak, and input Unique Client Code, Consumer Key & Secret obtained earlier, and your MPIN.
+          (i) Go to broker settings in your app, select Kotak, and input your Unique Client Code (UCC), Consumer Key & Secret obtained earlier, and your MPIN. Tip: your Client Code (UCC) is shown in your Kotak Neo Profile (or in the "Select Client Code" prompt that appears during TradeAPI setup).
         </Text>
 
         <Text style={styles.instruction1}>
