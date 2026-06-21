@@ -407,6 +407,11 @@ export const ConfigProvider = ({ children }) => {
                         // version; falls back to Play Store / App Store scraping when null.
                         // ============================================================================
                         latestAppVersion: apiData.latestAppVersion || null,
+                        // Multi-advisor RA-ID onboarding gate. Only the master
+                        // app (b2b / subdomain "prod") sets this true in
+                        // appadvisors; every white-label defaults false → the
+                        // SignUpRADetails screen self-redirects to Home.
+                        raIdOnboardingEnabled: apiData.raIdOnboardingEnabled === true,
                     };
 
                     console.log('✅ Using newConfig from API for APP_VARIANTS:', {
