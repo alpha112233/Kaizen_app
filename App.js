@@ -26,6 +26,7 @@ import {GstConfigProvider} from './src/context/GstConfigContext';
 import ModalManager from './src/GlobalUIModals/ModalManager';
 import BrokerAlertModal from './src/GlobalUIModals/BrokerAlertModal';
 import {AppUpdateChecker} from './src/UpdateAppModal';
+import SupportWidget from './src/components/SupportWidget/SupportWidget';
 import SdkProviderRoot, {
   isSdkIntegrationEnabled,
 } from './src/sdk/SdkProviderRoot';
@@ -250,6 +251,7 @@ const App = () => {
                         <ModalManager />
                         <BrokerAlertModal />
                         <AppUpdateChecker />
+                        <SupportWidget userEmail={userEmail} visible={!!user} />
                       </SdkOn>
                     ) : (
                       <>
@@ -264,6 +266,7 @@ const App = () => {
                         <ModalManager />
                         <BrokerAlertModal />
                         <AppUpdateChecker />
+                        <SupportWidget userEmail={userEmail} visible={!!user} />
                       </>
                     )}
                   </ModalProvider>

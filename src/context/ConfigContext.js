@@ -365,6 +365,11 @@ export const ConfigProvider = ({ children }) => {
                             apiData.advisorLogo || Config.REACT_APP_ADVISOR_LOGO || '',
                         whiteLabelText:
                             apiData.whiteLabelText || apiData.appName || Config.REACT_APP_WHITE_LABEL_TEXT || initialConfig.appName,
+
+                        // In-app support widget (chat + voice). Tenant-configurable
+                        // via appadvisors.voiceSupportUserEnabled in supportAQ.
+                        // Default OFF — widget renders nothing unless explicitly enabled.
+                        voiceSupportUserEnabled: apiData.voiceSupportUserEnabled === true,
                         advisorSpecifier:
                             apiData.advisorSpecifier || apiData.apiKeys?.advisorSpecifier || Config.REACT_APP_ADVISOR_SPECIFIER || 'RA',
                         advisorSpecificTag:
