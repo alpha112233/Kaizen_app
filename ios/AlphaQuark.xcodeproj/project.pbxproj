@@ -661,7 +661,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AlphaQuark/AlphaQuark.entitlements;
 				CURRENT_PROJECT_VERSION = 13;
-				DEVELOPMENT_TEAM = 6H43CN8AV6;
+				DEVELOPMENT_TEAM = KB2V932D6F;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AlphaQuark/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AlphaQuark;
@@ -675,7 +675,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizenalpha;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizen;
 				PRODUCT_NAME = AlphaQuark;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -692,7 +692,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AlphaQuark/AlphaQuark.entitlements;
 				CURRENT_PROJECT_VERSION = 13;
-				DEVELOPMENT_TEAM = 6H43CN8AV6;
+				DEVELOPMENT_TEAM = KB2V932D6F;
 				INFOPLIST_FILE = AlphaQuark/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AlphaQuark;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -705,7 +705,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizenalpha;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizen;
 				PRODUCT_NAME = AlphaQuark;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
