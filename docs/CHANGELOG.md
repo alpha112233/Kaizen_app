@@ -8,6 +8,44 @@ where applicable.
 
 ---
 
+## [unreleased] - 2026-07-14 — Tier 7 sync from Alphab2bapp: logo fallback (b198035 + 1199403)
+
+**Source:** upstream `b2b/feature/sdk-plus-config_forkv2` commits `b198035`
+(2026-07-13) + `1199403` (2026-07-13). Ported together — both add fallbacks
+to the same render path.
+
+### `designs/default/screens/LoginScreen.js`
+
+- New `RemoteLogoImage` wrapper component — `<Image source={{uri}}>` with
+  `onError` fallback to the bundled `defaultLogo`. Replaces the two direct
+  `<Image>` renders inside `renderLogo` for string and `{uri}` shapes.
+- `renderLogo` `configLoading` branch now returns the bundled `defaultLogo`
+  instead of `<View style={styles.logo} />`, so the brand mark is visible
+  during config load instead of a blank white box.
+
+### `src/components/CustomToolbar.js`
+
+- Header toolbar logo now tracks `remoteLogoFailed` state and flips to the
+  bundled variant asset when the backend URL's `<Image>` fires `onError`.
+- `onError={() => setRemoteLogoFailed(true)}` added on the remote-URL
+  `<Image>` render path.
+
+### Why
+
+Some tenants (e.g. markup — `Markup_falcon.png`) serve private S3 URLs for
+`logo` / `toolbarlogo` that 403 on the RN `<Image>` fetch. Without the
+fallback, the login screen shows a blank white circle and the header shows
+nothing. Proper fix is backend (re-upload publicly / fix ACLs); this ships
+the graceful client fallback in the meantime.
+
+### Docs
+
+- `docs/CHANGELOG.md` — this entry.
+- No architecture doc touched (these are cosmetic render-path guards; no new
+  design-system slot or SDK contract).
+
+---
+
 ## [unreleased] - 2026-07-14 — Tier 2 sync from Alphab2bapp: centralize Zerodha sell-auth gate (4-commit series)
 
 **Source:** upstream `b2b/feature/sdk-plus-config_forkv2` commits `2815061`

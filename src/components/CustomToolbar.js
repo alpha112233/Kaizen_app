@@ -64,8 +64,15 @@ const CustomToolbar = React.memo(({count, currentRoute}) => {
   const validVariant = APP_VARIANTS[selectedVariant] ? selectedVariant : 'rgxresearch';
   const fallbackConfig = APP_VARIANTS[validVariant] || {};
 
-  // Get toolbarlogo from config (S3) or fallback
-  const toolbarLogo = config?.toolbarlogo || fallbackConfig.toolbarlogo || config?.logo || fallbackConfig.logo;
+  // Toolbar logo: prefer the backend (S3) logo, but fall back to the bundled
+  // variant asset when that URL fails to load. Private/403 S3 objects (e.g. the
+  // markup tenant's Markup_falcon.png, 2026-07-13) would otherwise render a
+  // blank white circle. `remoteLogoFailed` flips on the <Image> onError below.
+  const remoteToolbarLogo = config?.toolbarlogo || config?.logo; // backend URL (may 403)
+  const bundledToolbarLogo = fallbackConfig.toolbarlogo || fallbackConfig.logo; // bundled require
+  const [remoteLogoFailed, setRemoteLogoFailed] = useState(false);
+  const toolbarLogo =
+    !remoteLogoFailed && remoteToolbarLogo ? remoteToolbarLogo : bundledToolbarLogo;
 
   // Get dynamic gradient colors from config
   const gradient1 = config?.gradient1 || fallbackConfig.gradient1 || 'rgba(0, 86, 183, 1)';
@@ -204,6 +211,7 @@ const CustomToolbar = React.memo(({count, currentRoute}) => {
             {toolbarLogo && typeof toolbarLogo === 'string' ? (
               <Image
                 source={{uri: toolbarLogo}}
+                onError={() => setRemoteLogoFailed(true)}
                 style={{
                   width: 30,
                   height: 30,
