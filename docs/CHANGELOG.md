@@ -8,6 +8,70 @@ where applicable.
 
 ---
 
+## [unreleased] - 2026-07-14 — Tier 3 sync from Alphab2bapp: Methodology tab + T+1 settlement heads-up (c08d07e + 4af676c)
+
+**Source:** upstream `b2b/feature/sdk-plus-config_forkv2` commits `c08d07e`
+(2026-06-22) + `4af676c` (2026-06-30).
+
+### `src/screens/Home/AfterSubscriptionScreen.js` — Methodology tab (upstream `c08d07e`)
+
+**Web parity fix:** subscribers reported that after subscribing, the
+performance graph / methodology / ratios disappeared. Cause:
+`AfterSubscriptionScreen` had only Holdings + Distribution tabs and set
+`performance_data` raw (field-alias mapping missing).
+
+- Adds a new "Methodology" tab (3rd route). `CustomTabbarMPPerformance`
+  already maps routes dynamically, so no tab-bar change needed.
+- Content: Overview + methodology sections (definingUniverse, research,
+  constituentScreening, weighting, rebalance, assetAllocation) + full
+  metrics (Returns/Risk/Drawdown/Ratios/Timing) + the existing-but-unused
+  `PerformanceChart` (perf-vs-index).
+- New `normalizePerformanceData()` at fetch — mirrors web
+  `mapPerformanceData` field aliasing
+  (`totalReturnCumulative→total`, `volatilityAnnual→volatility`,
+  `drawdowns.*→drawdown.*`, `timings.*→timing.*`) so metric tiles populate.
+- Local `MetricTile` / `MethodologyCard` / `formatMetric` helpers + styles.
+
+**Also carried along in the verbatim copy:** the small `bfa5175`
+(mpCardColorMap) tweaks to this file that yesterday's `89414c8` sync missed
+(3 hardcoded gradient/theme colors → `useTokens()`, Overview method title
+themed). ~12 LOC of design-system consistency with Kaizen's earlier sync.
+
+**Port method:** verbatim copy of `b2b/feature/sdk-plus-config_forkv2:HEAD`
+`src/screens/Home/AfterSubscriptionScreen.js`. Kaizen's prior file was
+byte-identical to upstream snapshot `76b943d`, so the delta is exactly
+`c08d07e + bfa5175`'s changes to this one file (1104 → 1418 lines).
+
+### `src/components/AdviceScreenComponents/RebalanceModal.js` — T+1 settlement heads-up (upstream `4af676c`)
+
+Adds a one-time info toast before submitting a rebalance that both sells
+and buys (`isMixedPre` branch). Message: "Cash from today's sells settles
+tomorrow (T+1). If a few buys don't go through now, just re-run the
+rebalance tomorrow — you don't need to add more funds." Informational
+only, does not block the rebalance. Mirrors the web
+`BrokerPublisherButton` notice (prod-alphaquark-github 2026-06-30).
+
+Inserted right before the `matchingRepairTrade` computation, using the
+existing `Toast` import (already present in Kaizen — no new dep).
+
+### Overlap verified
+
+Kaizen's `e17e556` (2026-06-22 — "View More opens on Overview; methodology
+first; shorter disclaimer; lock Portfolio by key") touches a DIFFERENT
+file (`src/screens/Drawer/MPPerformanceScreen.js`, the pre-subscribe plan
+detail view). The fork's `c08d07e` touches `AfterSubscriptionScreen.js`
+(post-subscribe view). No conflict — the two commits cover complementary
+surfaces.
+
+### Docs
+
+- `docs/CHANGELOG.md` — this entry.
+- `docs/MODEL_PORTFOLIO_ARCHITECTURE.md` — not updated (Methodology tab
+  is a self-contained render add; no new SDK contract, backend endpoint,
+  or persistence schema).
+
+---
+
 ## [unreleased] - 2026-07-14 — Tier 6 sync from Alphab2bapp: bespoke label seam (f3b38cb + 933cab9)
 
 **Source:** upstream `b2b/feature/sdk-plus-config_forkv2` commits `f3b38cb` +
