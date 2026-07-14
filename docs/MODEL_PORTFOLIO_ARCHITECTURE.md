@@ -364,6 +364,34 @@ checkPendingPaymentRecovery()
 ```
 Without this guard, a user who Force-Quits during the Razorpay/Cashfree callback can be billed without becoming subscribed.
 
+> ⚠️ **Bespoke card pricing must always start from the PRE-GST base.**
+> `MPCardBespoke.js` `getPricingOptions()` builds each frequency option from
+> `data.pricingWithoutGst.<freq>` (the base). The card then renders the base +
+> a `+ GST` / `including GST` suffix driven by `gstConfigure` /
+> `gstWithTextConfigure`. **Do NOT read `data.pricing.<freq>`** here — that
+> field is GST-**inclusive**, so pairing it with the `+ GST` label
+> double-counts GST. This was the 2026-07-03 bug where a ₹20000/yr plan showed
+> `₹23600 + GST` (20000 × 1.18) — the **yearly** branch alone was reading
+> `data.pricing.yearly` while monthly/quarterly/half-yearly read
+> `pricingWithoutGst`. Fixed to `pricingWithoutGst.yearly` (fallback to
+> `pricing.yearly` only for legacy plans without the without-GST field).
+
+> ⚠️ **Payment-confirmation architecture (all clients).** Immediate completion
+> is client-driven with the real Razorpay checkout signature. Recovery is
+> gateway-verified — when the checkout dies without a callback (out-of-band
+> UPI charge) or the first `completeSinglePayment` throws, the app polls
+> `GET /api/admin/razorpay/order-status/:orderId` (backend queries the
+> Razorpay Orders API, the authority) and, if paid, completes with the
+> `razorpay_signature: "verified_signature"` sentinel — which the backend
+> re-verifies against Razorpay server-side
+> (`SubscriptionRouter.js` complete-one-time-payment). Final server-side net
+> is `CronPaymentReconciliation` (15 min). No per-app or per-gateway webhooks
+> — the gateway webhook remains `webhook.alphaquark.in` (ccxt) feeding
+> `clientlistdatas`. Post-payment processing (`completeSinglePayment` /
+> `completeSubscription`) MUST run OUTSIDE the Razorpay-checkout `try/catch`,
+> so a processing error after a captured charge can never alert
+> "Payment Failed" over the success screen (2026-07-07 arfs incident).
+
 **GST handling** — `withGst()`, `gstLabel()` from `src/utils/gstHelpers.js`. Adds 18% GST to displayed strategy price and embeds GST line items in payment payload (per `GstConfigContext.js`).
 
 **Telegram collection** (L221-1271)
