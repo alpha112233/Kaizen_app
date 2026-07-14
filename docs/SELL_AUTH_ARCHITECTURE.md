@@ -253,7 +253,41 @@ new auto-import flow), it MUST follow #1's pattern.
 | **tidi_new** | `lib/components/home/portfolio/RebalanceReviewPage.dart` | Switch on `brokerLower`; live-check brokers (Zerodha, Angel One, Dhan) call broker-specific `_check<Broker>EdisStatus`; flag-only brokers read `effectiveBroker.isAuthorizedForSell`. If `canSell == false`, navigate to `DdpiAuthPage`. |
 | **Alphab2bapp** | `src/components/AdviceScreenComponents/RebalanceModal.js` | Per-broker if-blocks read `userDetails.is_authorized_for_sell` (top-level). Opens broker-specific TPIN modal. **2026-05-03: derivatives (NFO/BFO/MCX exchanges, MIS/NRML product types) excluded from EDIS/DDPI checks** — only equity delivery (CNC) sells trigger the gate. DdpiModal auto-fetches `verify-edis` and short-circuits when `edis: true`. Zerodha WebView CDSL flow fixed: confirmation overlay no longer shows prematurely (waits for callback_url or user close). |
 | **SDK** | `@alphaquark/mobile-sdk` `SellAuthGate.tsx` `requireSellAuth()` | **2026-05-03: derivatives excluded** — filters to equity delivery (CNC) sells before checking DDPI flags. NFO/BFO/MCX exchanges and MIS/NRML product types pass through without sell-auth gate. |
-| **Alphab2bapp** (initial allocation) | `src/components/ModelPortfolioComponents/UserStrategySubscribeModal.js:218-310` | DDPI-priority gate added 2026-05-03. Pre-blocks ONLY for Zerodha (`!is_authorized_for_sell && !ddpi_status in ['physical','ddpi']`) + Angel One (`!ddpi_enabled && !is_authorized_for_sell`) + 8 portal-side brokers (`!is_authorized_for_sell`). **Dhan + Fyers NOT pre-blocked** — optimistic placement per § 7d below. |
+| **Alphab2bapp** (initial allocation) | `src/components/ModelPortfolioComponents/UserStrategySubscribeModal.js:218-310` | DDPI-priority gate added 2026-05-03. Pre-blocks ONLY for Zerodha (via `isZerodhaSellAuthorized(userDetails)` — see § 7e) + Angel One (`!ddpi_enabled && !is_authorized_for_sell`) + 8 portal-side brokers (`!is_authorized_for_sell`). **Dhan + Fyers NOT pre-blocked** — optimistic placement per § 7d below. |
+
+### 7e. Zerodha sell-auth gate — centralized util (2026-07-14, Tier-2 sync)
+
+Single source of truth for the Zerodha `demat_consent` policy:
+**`src/utils/zerodhaDdpiGate.js`** exports
+`isZerodhaSellAuthorized(userDetails)` and `SELL_AUTHORIZED_DDPI_STATUSES = ['physical', 'ddpi']`.
+
+**Callsites (8 in Kaizen, all migrated):**
+- `src/components/AdviceScreenComponents/RebalanceModal.js` — 1 site
+- `src/components/AdviceScreenComponents/StockAdvices.js` — 4 sites
+- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` — 2 sites
+- `src/components/ModelPortfolioComponents/UserStrategySubscribeModal.js` — 1 site
+
+**Outlier kept inline (matches upstream fork):**
+`src/components/AdviceScreenComponents/AddtoCartModal.js:442` still uses
+`['physical','ddpi'].includes(userDetails?.ddpi_status)` directly. Fork chose
+not to migrate this one because it doesn't check `is_authorized_for_sell`
+(it's a status-only gate). Value corrected here — was previously
+`['consent','physical','ddpi']` which wrongly skipped the TPIN flow.
+
+**Policy: `demat_consent = "consent"` is NOT standing authorization.**
+Per Zerodha (Kite forum + docs), `demat_consent = "consent"` means "go through
+CDSL flow for authorization" — i.e. the customer MUST complete CDSL TPIN/eDIS
+for each sell. Only `"physical"` (POA/DDPI on file) and `"ddpi"` are standing
+auth. Historically some callsites accepted `"consent"` here and skipped the
+TPIN prompt → the CDSL sell was then rejected server-side.
+
+**Keep in sync with:**
+- web: `prod-alphaquark-github/src/utils/zerodhaDdpiGate.js`
+- backend: `ccxt-india/common/db_manager.py` `CcxtDbManager.SELL_AUTHORIZED_DDPI_STATUSES`
+- upstream doc: `prod-alphaquark-github/docs/DDPI_EDIS_SELL_AUTH_ARCHITECTURE.md § 6.8`
+
+Rule changes happen in the util file alone; do not duplicate the array inline
+at new callsites.
 
 ### 7d. DDPI-priority semantics (canonical, 2026-05-03)
 

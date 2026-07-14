@@ -46,6 +46,7 @@ import { isOrderSuccess, isOrderRejected } from '../../utils/orderStatusUtils';
 import { validateBrokerSession } from '../../utils/brokerSessionUtils';
 import { validateStockExchanges, applyKiteMarketProtection, getPublisherWebViewBaseUrl, resolveZerodhaSymbol } from '../../utils/brokerPublisher';
 import useZerodhaSymbolMap from '../../hooks/useZerodhaSymbolMap';
+import { isZerodhaSellAuthorized } from '../../utils/zerodhaDdpiGate';
 import useKitePublisherPolling from '../../hooks/useKitePublisherPolling';
 import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import { convertResponse } from '../../utils/tradeUtils';
@@ -1325,8 +1326,7 @@ const RebalanceModal = ({
     }
 
     // If user has completed TPIN authorization or has active DDPI, proceed
-    const canSellZerodha = userDetails?.is_authorized_for_sell ||
-      ['physical', 'ddpi'].includes(userDetails?.ddpi_status);
+    const canSellZerodha = isZerodhaSellAuthorized(userDetails);
     if (broker === 'Zerodha' && (allSellPre || isMixedPre) && !canSellZerodha) {
       setShowDdpiModal && setShowDdpiModal(true);
       setOpenRebalanceModal(false);

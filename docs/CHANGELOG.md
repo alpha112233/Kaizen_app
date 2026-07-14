@@ -8,6 +8,64 @@ where applicable.
 
 ---
 
+## [unreleased] - 2026-07-14 — Tier 2 sync from Alphab2bapp: centralize Zerodha sell-auth gate (4-commit series)
+
+**Source:** upstream `b2b/feature/sdk-plus-config_forkv2` commits `2815061`
+→ `09230dd` → `7585ff3` → `4dd9e66` (2026-06-24, all in one day). Ported as
+one commit here since only the final state matters — the interim SHAs are
+intra-day iterations.
+
+### New utility
+
+**`src/utils/zerodhaDdpiGate.js`** (created verbatim from fork HEAD) —
+exports `isZerodhaSellAuthorized(userDetails)` +
+`SELL_AUTHORIZED_DDPI_STATUSES = ['physical', 'ddpi']`. Single source of
+truth for the "can this Zerodha user sell without a per-trade TPIN?" gate.
+Previously the rule was inlined at 8 sites which drifted: one site was
+missing `'consent'`, and `AddtoCartModal.js` had it in the wrong (consent-first)
+order which the centralization sweep missed.
+
+### Callsites migrated to `isZerodhaSellAuthorized`
+
+- `src/components/AdviceScreenComponents/RebalanceModal.js` — 1 site
+- `src/components/AdviceScreenComponents/StockAdvices.js` — 4 sites
+- `src/components/ModelPortfolioComponents/MPReviewTradeModal.js` — 2 sites
+- `src/components/ModelPortfolioComponents/UserStrategySubscribeModal.js` — 1 site
+
+### Fixed outlier
+
+- `src/components/AdviceScreenComponents/AddtoCartModal.js:442` — value
+  corrected from `['consent', 'physical', 'ddpi']` to `['physical', 'ddpi']`.
+  Kept inline (not migrated to util) to match fork HEAD exactly — this site
+  is a status-only gate, doesn't check `is_authorized_for_sell`, so the util
+  fits worse than the inline check.
+
+### Policy note (upstream `7585ff3`)
+
+`demat_consent = "consent"` is **not** standing authorization. Per Zerodha
+(Kite forum + docs), `"consent"` means "go through CDSL flow for authorization"
+— i.e. the user MUST complete CDSL TPIN/eDIS for each sell. Including
+`"consent"` in the "can sell" set wrongly skipped the TPIN prompt and CDSL
+then rejected the sell server-side. Only `"physical"` and `"ddpi"` are
+standing auth.
+
+### Kaizen prior state
+
+Notably, all 8 primary callsites in Kaizen already had `['physical', 'ddpi']`
+(no `'consent'`) — some earlier sync had sniped the final value locally. Only
+`AddtoCartModal.js` still carried the buggy consent-first pattern. This port
+adds the util + centralizes the 8 sites regardless, so future rule changes
+touch one file instead of 9.
+
+### Docs
+
+- `docs/SELL_AUTH_ARCHITECTURE.md § 7e` — new section documenting the util,
+  its callsites, the `AddtoCartModal.js` outlier, the `"consent"` policy, and
+  the cross-repo sync contract (web + ccxt-india).
+- `docs/CHANGELOG.md` — this entry.
+
+---
+
 ## [unreleased] - 2026-07-14 — Tier 1 sync from Alphab2bapp: payment recovery + bespoke yearly GST fix
 
 **Source:** upstream `b2b/feature/sdk-plus-config_forkv2` commits `8000cfc` + `1c856e6` (2026-07-08) and `5673096` (2026-07-04).
