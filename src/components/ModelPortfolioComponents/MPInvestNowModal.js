@@ -750,9 +750,140 @@ const MPInvestNowModal = ({
     }
   };
 
+  // Refs mirroring the latest config-loading/kycBlockingEnabled state, kept in
+  // sync via the effect below. Needed because `resolveKycBlockingEnabled` is an
+  // async function that may await across several ticks (polling for a slow
+  // config load) — a plain closed-over `config` value is frozen at call time
+  // and would never observe the load actually finishing, so the wait would
+  // just spin uselessly for the full timeout. Refs mutate in place and are
+  // always read fresh. Mirrors web's resolveKycBlockingEnabled hardening
+  // (prod-alphaquark-github PricingPage.js) and markup_app's parallel fix.
+  const configLoadingRef = useRef(config?.configLoading);
+  const kycBlockingEnabledRef = useRef(config?.kycBlockingEnabled === true);
+  useEffect(() => {
+    configLoadingRef.current = config?.configLoading;
+    kycBlockingEnabledRef.current = config?.kycBlockingEnabled === true;
+  }, [config?.configLoading, config?.kycBlockingEnabled]);
+
+  // Waits out a still-in-flight config load (up to 6s, matching the provider's
+  // own frontend-config fetch timeout) before trusting `kycBlockingEnabled`.
+  // Without this, a user who reaches step 1 before ConfigContext's initial
+  // fetch resolves would read the pre-fetch default (false) and silently skip
+  // the gate. If config is still loading after the wait, treat the gate as OFF
+  // (not a verification failure — most advisors default off anyway, so
+  // "unknown" reasonably means "assume default").
+  const resolveKycBlockingEnabled = async () => {
+    if (!configLoadingRef.current) return kycBlockingEnabledRef.current === true;
+    const start = Date.now();
+    while (configLoadingRef.current && Date.now() - start < 6000) {
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return kycBlockingEnabledRef.current === true;
+  };
+
+  // Checkout-time blocking KYC gate — verify PAN+DoB against the KRA BEFORE
+  // moving past the KYC step to payment/Digio. Gated by `kycBlockingEnabled`
+  // (default OFF). Blocks on an active KRA mismatch AND on a genuine call
+  // failure (network/timeout/malformed response — no verification signal at
+  // all). A clean backend `unavailable`/`not_found` classification (e.g. CVL
+  // WEBERR-001, a known/tracked access gap) still proceeds. Mirrors web
+  // PricingPage.runKycBlockingGate.
+  const runKycBlockingGate = async () => {
+    const gateOn = await resolveKycBlockingEnabled();
+    if (!gateOn) return true;
+
+    const pan = (panNumber || '').trim().toUpperCase();
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+      setPanError('Please enter a valid PAN (format ABCDE1234F) to continue.');
+      return false;
+    }
+    // birthDate is a Date object in this modal; the KRA expects a date string.
+    const dobStr =
+      birthDate instanceof Date
+        ? `${birthDate.getFullYear()}-${String(birthDate.getMonth() + 1).padStart(2, '0')}-${String(birthDate.getDate()).padStart(2, '0')}`
+        : String(birthDate || '').trim();
+    if (!dobStr) {
+      Toast.show({
+        type: 'error',
+        text1: 'Date of birth required',
+        text2: 'Please enter your date of birth to verify your PAN with the KRA.',
+      });
+      return false;
+    }
+
+    try {
+      Toast.show({
+        type: 'info',
+        text1: 'Verifying PAN…',
+        text2: 'Checking your PAN and date of birth with the KRA.',
+      });
+      const advisor = configData?.config?.REACT_APP_HEADER_NAME;
+      const res = await axios.post(
+        `${server.ccxtServer.baseUrl}misc/kyc/kra/verify-pan/${advisor}/${encodeURIComponent(
+          userEmail || '',
+        )}`,
+        { panNo: pan, dob: dobStr, mobile: mobileNumber || '' },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Advisor-Subdomain': configData?.config?.REACT_APP_HEADER_NAME,
+            'aq-encrypted-key': generateToken(
+              Config.REACT_APP_AQ_KEYS,
+              Config.REACT_APP_AQ_SECRET,
+            ),
+          },
+          timeout: 15000,
+        },
+      );
+      if (res?.data?.kycOutcome === 'mismatch') {
+        Alert.alert(
+          'PAN verification failed',
+          res?.data?.message ||
+            "We couldn't verify this PAN with the date of birth entered. Please check and enter the correct PAN and date of birth to continue.",
+        );
+        return false;
+      }
+      if (res?.data?.kycOutcome === 'unavailable') {
+        // Fail-CLOSED (product decision 2026-07-16, parity with web
+        // PricingPage): if the KRA couldn't verify the PAN — a transient KRA
+        // outage OR a persistent access error like CVL WEBERR-001 "Access
+        // Privilege Not Set" — we cannot confirm the customer, so do NOT
+        // onboard. Customer can retry; a persistent failure means the advisor's
+        // KRA access needs fixing. Generic message — never surface raw WEBERR.
+        Alert.alert(
+          'Unable to verify PAN',
+          "We're unable to verify your PAN right now. Please try again in a moment — if this keeps happening, contact support.",
+        );
+        return false;
+      }
+      // verified | not_found → allow.
+      return true;
+    } catch (e) {
+      // Fail-CLOSED (product decision 2026-07-16): a network/exception failure
+      // means we have NO verification signal — proceeding would let "skipped"
+      // read as "passed", defeating a SEBI KYC gate. Block; the user can retry.
+      console.error('[MPInvestNow] KYC gate error (blocking, no verification signal):', e?.message);
+      Alert.alert(
+        'Unable to verify PAN',
+        "We're unable to verify your PAN right now. Please try again in a moment — if this keeps happening, contact support.",
+      );
+      return false;
+    }
+  };
+
   const completeStep = async stepId => {
     if (isStepTransitioning) return;
     setIsStepTransitioning(true);
+
+    // Blocking KYC gate (SEBI onboarding): must pass before leaving the
+    // PAN/DoB step (step 1) toward consent/payment/Digio.
+    if (stepId === 1) {
+      const kycOk = await runKycBlockingGate();
+      if (!kycOk) {
+        setIsStepTransitioning(false);
+        return;
+      }
+    }
 
     // Smooth transition animation
     await new Promise(resolve => setTimeout(resolve, 300));
