@@ -20,6 +20,7 @@ import { useTrade } from '../TradeContext';
 import { useConfig } from '../../context/ConfigContext';
 import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import { getStoredCampaign } from '../../utils/smartLink';
+import { validateEmail } from '../../utils/emailValidation';
 import { useComponent } from '../../design/useDesign';
 import {
     checkAndFetchAdvisorConfig,
@@ -151,9 +152,21 @@ const SignupScreen = () => {
             setLoading(false);
             return;
         }
+        // Gate malformed emails at the joining UI so they never reach
+        // clientlistdatas. Firebase accepts "x@gmailcom" / "x@gmail" (no TLD
+        // dot); those bad addresses later break ClientModel validation in the
+        // Telegram removal cron, making the customer un-removable on expiry.
+        // Mirrors web SignUpEmail.js (365f7501) + CUSTOMER_MASTER_ARCHITECTURE §8.
+        const { ok: emailOk, error: emailError, normalized: normalizedEmail } = validateEmail(email);
+        if (!emailOk) {
+            setError(emailError);
+            setErrorShow(true);
+            setLoading(false);
+            return;
+        }
 
         try {
-            const response = await auth().createUserWithEmailAndPassword(email, password);
+            const response = await auth().createUserWithEmailAndPassword(normalizedEmail, password);
             if (response) {
                 const user = response.user;
 
@@ -254,6 +267,10 @@ const SignupScreen = () => {
                 logoComponent: LogoComponent,
                 configLoading,
                 whiteLabelText: Config?.REACT_APP_WHITE_LABEL_TEXT,
+                // Variant-facing tagline overrides — alphanomy reads these
+                // to swap its built-in tenant copy. See
+                // src/context/ConfigContext.js § TENANT TAGLINES for the shape.
+                taglines: config?.taglines?.signup || null,
             }}
             actions={{
                 onEmailChange: setEmail,

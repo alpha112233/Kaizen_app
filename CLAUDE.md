@@ -1,5 +1,32 @@
 # CLAUDE.md — AlphaQuark B2B Mobile App
 
+## 🔴 BLOCKING: 16 KB page-size check — run before EVERY Play Store release
+
+This app sets `targetSdkVersion 35`, so Google Play requires **16 KB page-size
+compatibility**: every native `.so` under **`lib/arm64-v8a/`** (and x86_64) must have
+ELF LOAD-segment alignment **`2**14` (16 KB)**. `armeabi-v7a` is 32-bit and **EXEMPT**
+(ignore its UNALIGNED lines). An unaligned arm64 lib crashes on 16 KB-page devices and
+Play warns/blocks the release.
+
+**MANDATORY before every release** — run from the repo root on the built artifact:
+```bash
+bash check_elf_alignment.sh android/app/build/outputs/bundle/release/app-release.aab
+# (or the APK: android/app/build/outputs/apk/release/app-release.apk)
+```
+PASS = every `lib/arm64-v8a/*.so` prints `ALIGNED (2**14)`. If ANY `arm64-v8a` lib is
+`UNALIGNED (2**12)`, do NOT ship — fix it first. (`check_elf_alignment.sh` lives in the
+repo root.)
+
+**KNOWN ISSUE (2026-06):** `lib/arm64-v8a/libjingle_peerconnection_so.so` is `UNALIGNED
+(2**12 / 4 KB)`. It comes from `@daily-co/react-native-webrtc@118.0.3-daily.4`, which is
+**hard-pinned by `@vapi-ai/react-native@0.3.0`** (the voice-support stack). The
+16 KB-aligned webrtc is the `124.x` line, but Vapi's latest (0.3.0) still pins 118 — so
+there is **no clean bump yet**. Until Vapi ships a 124-based release, options are:
+(a) force `@daily-co/react-native-webrtc@124.x` and re-test voice (peer-dep mismatch —
+risky), or (b) remove the Vapi/daily/webrtc deps until voice goes live. Every other
+arm64-v8a lib is already aligned. **Re-run the check after ANY change to the voice /
+WebRTC deps.**
+
 ## 🔴 When broker-connect or order-placement times out → check egress /128s on the GRE tunnel
 
 > **First debugging stop** for any "Couldn't connect to <Broker>" /
@@ -157,7 +184,7 @@
 > - `docs/SDK_ORCHESTRATION_PHASES.md` — sequenced migration plan (Phases C/D/E/F with done-when gates and rollback).
 >
 > **Mirror docs in sibling repos** (point back to the canonical trio):
-> - `../alphaquark-mobile-sdk/docs/ORCHESTRATION_REFERENCE.md`
+> - `../../alphaquark-mobile-sdk/docs/ORCHESTRATION_REFERENCE.md`
 > - `../tidi_new/tidistockmobileapp/docs/SDK_ORCHESTRATION_REFERENCE.md`
 >
 > Every commit that touches an orchestrator surface in any of the four
@@ -187,7 +214,7 @@
 >   move under `sdk.reauth()` / `sdk.validateBrokerSession()` in Phase E.
 > - **Backend SDK routes**: `aq_backend_github/Routes/sdk/v1/orders/`,
 >   `sell-auth/`, `connections/`, helpers under `_helpers/`.
-> - **SDK package**: `../alphaquark-mobile-sdk/packages/rn/src/orders/`,
+> - **SDK package**: `../../alphaquark-mobile-sdk/packages/rn/src/orders/`,
 >   `connections/`, `sell-auth/`, `client/AqSdkClient.ts` /
 >   `aq_sdk_client.dart`, hooks/widgets under each domain folder.
 >
@@ -252,11 +279,11 @@ This is the **AlphaQuark B2B Mobile App** — a React Native application enablin
 Run this mental pass at the end of a coding session:
 
 - [ ] Have I updated `docs/CHANGELOG.md` with an entry covering what I shipped today?
-- [ ] Have I updated the relevant architecture `.md` file's content (BROKER_CONNECTION.md for broker work, MODEL_PORTFOLIO.md for MP work, REBALANCING.md for rebalance flows, APP_ARCHITECTURE.md for anything system-level)?
+- [ ] Have I updated the relevant architecture `.md` file's content (BROKER_CONNECTION.md for broker work, **MODEL_PORTFOLIO_ARCHITECTURE.md** for MP work — note: merged 2026-05-11, the older `MODEL_PORTFOLIO.md` is now a pointer stub, REBALANCING.md for rebalance flows, APP_ARCHITECTURE.md for anything system-level)?
 - [ ] If I touched ccxt-india / aq_backend_github / scripmaster DB on tidi, did I document that here too (file paths on tidi, what was patched, why)?
 - [ ] If I added a new file (hook, utility), did I describe it in the architecture doc AND add a header docstring that references the doc?
 - [ ] If I changed the tidi_new Flutter app in parallel, did I update its `docs/BROKER_TRADING_ARCHITECTURE.md` as well?
-- [ ] **If I touched Phase 3 surfaces** (`Phase3SdkBrokerModal.js`, `ModalManager.js` SDK_ELIGIBLE_MODALS / SDK_LEGACY_FALLBACK / re-auth bypass, `REACT_APP_USE_SDK_BROKER_FLOW`, SDK widgets in `../alphaquark-mobile-sdk/packages/rn/src/components/`, `aq_backend_github/Routes/sdk/v1/connections.js`), did I update **all three** of `docs/PHASE3_ARCHITECTURE.md`, `docs/PHASE3_BROKER_AUDIT.md` (relevant broker rows + verdicts), and `docs/PHASE3_PROGRESS.md` (work log entry) in the SAME commit?
+- [ ] **If I touched Phase 3 surfaces** (`Phase3SdkBrokerModal.js`, `ModalManager.js` SDK_ELIGIBLE_MODALS / SDK_LEGACY_FALLBACK / re-auth bypass, `REACT_APP_USE_SDK_BROKER_FLOW`, SDK widgets in `../../alphaquark-mobile-sdk/packages/rn/src/components/`, `aq_backend_github/Routes/sdk/v1/connections.js`), did I update **all three** of `docs/PHASE3_ARCHITECTURE.md`, `docs/PHASE3_BROKER_AUDIT.md` (relevant broker rows + verdicts), and `docs/PHASE3_PROGRESS.md` (work log entry) in the SAME commit?
 - [ ] **If I touched design-system surfaces** (`designs/<variant>/`, `src/design/`, the `DesignProvider` registry, a container/presentation split in `src/screens/` or `src/components/`, `src/theme/` extensions for the token bundle, or an audit-task pass), did I update **all three** of `docs/DESIGN_SYSTEM_ARCHITECTURE.md`, `docs/DESIGN_COMPONENT_AUDIT.md` (relevant rows + verdicts), and `docs/DESIGN_MIGRATION_PROGRESS.md` (work log entry) in the SAME commit? **MP surfaces are in scope** as of 2026-05-01 — verdict by data deps, not by MP-coupling. Only `SDK-bound-skip` (Phase 3 lane) surfaces are off-limits.
 
 If ANY box is unchecked, the session's work is not done.
@@ -307,7 +334,7 @@ If ANY box is unchecked, the session's work is not done.
 > - **Adding a broker to `SDK_ELIGIBLE_MODALS`** requires its row in `PHASE3_BROKER_AUDIT.md` to read verdict = SDK-clean, with the gap analysis row showing every legacy surface mapped to a working SDK equivalent. No "we'll fix it later" merges. If verdict is SDK-with-gap or SDK-broken, the broker stays out of the allowlist.
 > - **Removing a broker from `SDK_ELIGIBLE_MODALS` (rollback)** requires updating its row's verdict and adding a `PHASE3_PROGRESS.md` entry explaining what regressed and why legacy is now the right path.
 > - **Editing `Phase3SdkBrokerModal.js`** requires updating `PHASE3_ARCHITECTURE.md § Phase3SdkBrokerModal contract` if the change affects the component's props, layout, IP-callout logic, or close behavior. Cosmetic-only changes (colors, spacing) still need a `PHASE3_PROGRESS.md` entry.
-> - **Editing the SDK widgets in `../alphaquark-mobile-sdk/packages/rn/src/components/`** that affect Phase 3 brokers (`BrokerCredentialForm`, `WebViewBrokerAuthFlow`, `brokerFormSchema`) requires the SAME-commit update to `PHASE3_ARCHITECTURE.md § SDK widget contract` AND every audit row in `PHASE3_BROKER_AUDIT.md` whose gap analysis depended on the changed behavior — re-evaluate verdict.
+> - **Editing the SDK widgets in `../../alphaquark-mobile-sdk/packages/rn/src/components/`** that affect Phase 3 brokers (`BrokerCredentialForm`, `WebViewBrokerAuthFlow`, `brokerFormSchema`) requires the SAME-commit update to `PHASE3_ARCHITECTURE.md § SDK widget contract` AND every audit row in `PHASE3_BROKER_AUDIT.md` whose gap analysis depended on the changed behavior — re-evaluate verdict.
 > - **Adding a Phase 3 backend route on `aq_backend_github`** (`Routes/sdk/v1/connections.js`) requires `PHASE3_ARCHITECTURE.md § Backend routes` to be updated with the route, request/response shape, auth model (SecurityTokenManager JWT vs raw key), and which legacy ccxt endpoint it proxies. Backend was uploaded via scp — that is NOT a substitute for documenting it here.
 > - **Re-auth path changes** (`reauthConfig` plumbing in `ManageConnectionsModal` / `ModalManager` / per-broker modals) MUST be documented in `PHASE3_ARCHITECTURE.md § Re-auth flow`. Re-auth has its own routing rule (always legacy regardless of flag) and any change to that rule is a fan-out change across all 13 brokers.
 >
@@ -346,13 +373,14 @@ All architecture docs are in the `docs/` folder:
 | [APP_ARCHITECTURE.md](docs/APP_ARCHITECTURE.md) | System architecture, broker flows, trade execution, state management |
 | [BROKER_CONNECTION.md](docs/BROKER_CONNECTION.md) | Per-broker auth details, WebView OAuth, credential flows |
 | [REBALANCING.md](docs/REBALANCING.md) | Rebalancing flow, decryption, broker payload building |
-| [MODEL_PORTFOLIO.md](docs/MODEL_PORTFOLIO.md) | Model portfolio subscription, basket execution, review trade flow |
+| [MODEL_PORTFOLIO_ARCHITECTURE.md](docs/MODEL_PORTFOLIO_ARCHITECTURE.md) | **Canonical MP doc** (merged 2026-05-11). Subscription, payment + Digio orchestration, basket execution, review trade flow, manual override, broker migration, SDK Phase C, web/mobile divergences, known limitations. Supersedes the older `MODEL_PORTFOLIO.md` (now a pointer stub). |
 | [PHASE3_ARCHITECTURE.md](docs/PHASE3_ARCHITECTURE.md) | Phase 3 SDK migration design — routing, allowlist, re-auth, SDK widget contract, backend routes |
 | [PHASE3_BROKER_AUDIT.md](docs/PHASE3_BROKER_AUDIT.md) | Per-broker legacy → SDK comparison matrix with verdicts (SDK-clean / SDK-with-gap / SDK-broken) |
 | [PHASE3_PROGRESS.md](docs/PHASE3_PROGRESS.md) | Phase 3 chronological work log — commits, broker verdict changes, regressions, rollbacks |
 | [DESIGN_SYSTEM_ARCHITECTURE.md](docs/DESIGN_SYSTEM_ARCHITECTURE.md) | Design-system migration design — 4-layer model, `DesignProvider` registry, container/presentation split, SDK boundary, MP-freeze rule |
 | [DESIGN_COMPONENT_AUDIT.md](docs/DESIGN_COMPONENT_AUDIT.md) | Per-surface verdict matrix (clean-extract / needs-logic-extraction / SDK-bound-skip / SDK-pending / defer) |
 | [DESIGN_MIGRATION_PROGRESS.md](docs/DESIGN_MIGRATION_PROGRESS.md) | Design-system chronological work log — phases, surfaces touched, verdict changes |
+| [WHITELABEL_RECIPE.md](docs/WHITELABEL_RECIPE.md) | Canonical playbook for adding a new whitelabel — what stays upstream vs in the fork, native-shell delta, registry merge-conflict strategy, step-by-step bootstrap, SYNC.md template. Read this before bootstrapping a fork or before merging a fork's `src/` patch. |
 | [BROKER_FLOW_AUDIT.md](docs/BROKER_FLOW_AUDIT.md) | Per-broker deep flow walkthrough — legacy vs SDK side-by-side with file:line references for every API call, WebView intercept, encryption envelope, IP-callout, reauth handling. Source of truth for any per-broker SDK migration step. |
 | [CHANGELOG.md](docs/CHANGELOG.md) | All changes, fixes, and updates with dates |
 
@@ -366,12 +394,18 @@ All architecture docs are in the `docs/` folder:
    - `src/utils/basketUtils.js`, `src/utils/portfolioEvents.js`
    - Any new screen, context, or global state change
 
-2. **MODEL_PORTFOLIO.md** — update when changing:
+2. **MODEL_PORTFOLIO_ARCHITECTURE.md** (canonical, merged from the older `MODEL_PORTFOLIO.md` on 2026-05-11) — update when changing:
    - `src/UIComponents/RebalanceAdvicesUI/RebalanceCard.js`
    - `src/components/AdviceScreenComponents/RebalanceAdvices.js`
-   - `src/components/ModelPortfolioComponents/` (any file)
+   - `src/components/ModelPortfolioComponents/` (any file — including `MPInvestNowModal.js`, `UserStrategySubscribeModal.js`, `MPReviewTradeModal.js`, `RecommendationSuccessModal.js`, `HoldingsMigrationModal.js`)
    - `src/screens/PortfolioScreen/ModelPFCard.js`
-   - `src/screens/Drawer/MPPerformanceScreen.js`
+   - `src/screens/Drawer/MPPerformanceScreen.js`, `src/screens/Drawer/ModelPortfolioScreen.js`
+   - `src/screens/Home/AfterSubscriptionScreen.js` (stale-broker banner — § 9e)
+   - `src/services/ModelPortfolioService.js`
+   - `src/utils/tradeVariant.js` (AMO computation)
+   - `aq_backend_github/Routes/modelPortfolio.js`, `Routes/modalPortfolioOrderPlace.js`, `Routes/sdk/v1/portfolios.js`, `Routes/sdk/v1/rebalance.js`, `Routes/sdk/v1/orders/index.js` (any MP-affecting handler)
+   - `ccxt-india apps/app_model_portfolio.py` `/rebalance/*` endpoints (request/response shape changes)
+   - **Cross-repo:** also update `prod-alphaquark-github/docs/MODEL_PORTFOLIO_ARCHITECTURE.md` (independent web copy) and `ccxt-india/docs/MODEL_PORTFOLIO_ARCHITECTURE.md` (pointer-grade) in the same commit cycle when backend / schema / ccxt endpoints change.
 
 3. **REBALANCING.md** — update when changing:
    - `src/components/AdviceScreenComponents/RebalanceModal.js`
@@ -389,7 +423,7 @@ All architecture docs are in the `docs/` folder:
    - `src/GlobalUIModals/ModalManager.js` (SDK_ELIGIBLE_MODALS, SDK_LEGACY_FALLBACK, re-auth bypass, `useSdkBrokerFlow`, `useSharedAngelOneKey`)
    - `src/components/BrokerConnectionModal/Phase3SdkBrokerModal.js` (any prop, layout, IP-callout, close-button change)
    - `.env` lines `REACT_APP_USE_SDK_BROKER_FLOW`, `REACT_APP_USE_SHARED_ANGEL_ONE_KEY`, `REACT_APP_SDK_*`
-   - `../alphaquark-mobile-sdk/packages/rn/src/components/` widgets when the change affects Phase 3 brokers (`BrokerCredentialForm`, `WebViewBrokerAuthFlow`, `brokerFormSchema`)
+   - `../../alphaquark-mobile-sdk/packages/rn/src/components/` widgets when the change affects Phase 3 brokers (`BrokerCredentialForm`, `WebViewBrokerAuthFlow`, `brokerFormSchema`)
    - `../aq_backend_github/Routes/sdk/v1/connections.js` (any route shape, auth model, or broker dispatch change)
    - Re-auth plumbing in `ManageConnectionsModal` and per-broker modals consuming `reauthConfig`
 
@@ -511,6 +545,26 @@ src/
 Zerodha, Angel One, Upstox, ICICI Direct, Kotak, Dhan, Fyers, IIFL Securities, AliceBlue, Motilal Oswal, Hdfc Securities, Groww, Axis Securities, DummyBroker (simulation)
 
 ## Build & Run
+
+> **🔴 BUILD BRANCH: `feature/sdk-plus-config_forkv2`** — this is the SINGLE
+> branch BOTH the iOS and Android release artifacts (AAB/IPA) are built from
+> (confirmed 2026-06-25). Apply all RN app changes here; it is the source the
+> other forks/branches sync from. `feature/V2.5_brokerScreen` and
+> `feature/ios2.5` are legacy/deprecated — do NOT build from them or
+> double-maintain them unless explicitly told.
+>
+> **🔴 MANDATORY: dispatch multi-app iOS CI builds SEQUENTIALLY, never in
+> parallel** (user directive 2026-07-08). When the same change fans out to
+> several app repos (Alphab2bapp, Alphanomy, arfs_app, markup_app,
+> new_magnus_app, alphaquarkapp — they share the `ios-build.yml` template),
+> run ONE "iOS Build" workflow, confirm its TestFlight upload actually
+> succeeded (the altool "No errors uploading" line — NOT just a green step;
+> see the 2026-07-07 Alphanomy fake-green incident), and only then dispatch
+> the next repo's build. Rationale: a shared-template failure (version-train
+> rejection, toolchain break, SDK checkout) burns every parallel macOS runner
+> at once and produces N identical failures instead of one fixable one;
+> parallel macOS runners also contend for the org runner quota and slow each
+> other. Fix-once-then-fan-out.
 
 ```bash
 # Install dependencies

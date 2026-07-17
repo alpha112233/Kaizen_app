@@ -59,13 +59,22 @@ const LoginScreen = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const navigation = useNavigation();
 
-    const WEB_CLIENT_ID =
-        config?.googleWebClientId ||
-        '892331696104-e26pu9iotqrjk1o6jq4ifd4e95fasil1.apps.googleusercontent.com';
-
     React.useEffect(() => {
-        GoogleSignin.configure({ webClientId: WEB_CLIENT_ID });
-    }, [WEB_CLIENT_ID]);
+        if (config?.googleWebClientId) {
+            GoogleSignin.configure({
+                webClientId: config.googleWebClientId,
+                // iOS GoogleSignIn needs the project's OWN client ID (NOT the web
+                // client ID) or GIDSignIn raises an NSException and crashes on
+                // signIn(). Sourced per-tenant from config.googleIosClientId
+                // (backend appadvisors.googleIosClientId or the variant's
+                // googleIosClientId). Omitted when unset — a harmless no-op on
+                // Android and for tenants without an iOS build.
+                ...(config.googleIosClientId
+                    ? { iosClientId: config.googleIosClientId }
+                    : {}),
+            });
+        }
+    }, [config?.googleWebClientId]);
 
     const storeLoginTime = async () => {
         try {
@@ -452,6 +461,10 @@ const LoginScreen = () => {
                 configLoading,
                 whiteLabelText: Config?.REACT_APP_WHITE_LABEL_TEXT,
                 showAppleButton: Platform.OS === 'ios',
+                // Variant-facing tagline overrides — alphanomy reads these
+                // to swap its built-in tenant copy. See
+                // src/context/ConfigContext.js § TENANT TAGLINES for the shape.
+                taglines: config?.taglines?.login || null,
             }}
             actions={{
                 onEmailChange: setEmail,

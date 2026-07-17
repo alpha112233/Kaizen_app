@@ -43,8 +43,17 @@ android {
         versionName "3.9.65"
 
         missingDimensionStrategy "store", "play"
+        // ABI note (2026-06-08, web-parity emulator smoke): release APKs ship
+        // arm64-v8a + armeabi-v7a ONLY (no x86/x86_64) to keep size down. These
+        // install on real phones but NOT on an x86_64 emulator. To smoke-test on an
+        // x86_64 emulator, TEMPORARILY add "x86_64" to abiFilters below and build:
+        //   ./gradlew assembleRelease -PreactNativeArchitectures=x86_64 \
+        //     -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64
+        //   (the override is needed because org.gradle.java.home in gradle.properties
+        //    is a macOS path; on Linux/CI point it at the local JDK 17.)
+        // Then `git checkout` this file before committing — x86_64 must NOT ship.
         ndk {
-            abiFilters "x86_64"
+            abiFilters "arm64-v8a", "armeabi-v7a"
         }
     }
 
@@ -72,11 +81,15 @@ android {
         }
 
         release {
-            if (project.hasProperty("MYAPP_UPLOAD_STORE_FILE")) {
-                storeFile file(MYAPP_UPLOAD_STORE_FILE)
-                storePassword MYAPP_UPLOAD_STORE_PASSWORD
-                keyAlias MYAPP_UPLOAD_KEY_ALIAS
-                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            def releaseStoreFile = project.findProperty("MYAPP_UPLOAD_STORE_FILE")
+            def releaseStorePassword = project.findProperty("MYAPP_UPLOAD_STORE_PASSWORD")
+            def releaseKeyAlias = project.findProperty("MYAPP_UPLOAD_KEY_ALIAS")
+            def releaseKeyPassword = project.findProperty("MYAPP_UPLOAD_KEY_PASSWORD")
+            if (releaseStoreFile && releaseStorePassword && releaseKeyAlias && releaseKeyPassword) {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
                 v1SigningEnabled true
                 v2SigningEnabled true
             }

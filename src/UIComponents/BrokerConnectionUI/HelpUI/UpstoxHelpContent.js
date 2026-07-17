@@ -46,7 +46,7 @@ const UpstoxHelpContent = ({expanded, onExpandChange, brokerConnectRedirectURL: 
           <>
             <Text style={styles.instruction}>
               3. Click on the "New App" button. Fill in the "App Name" field
-              with "{Config?.REACT_APP_WHITE_LABEL_TEXT || 'Kaizen Alpha'}" or a name of your choice. Paste your
+              with "{Config?.REACT_APP_WHITE_LABEL_TEXT || 'AlphaQuark'}" or a name of your choice. Paste your
               dedicated static IP (claimed in the IP-whitelist panel above)
               into the "Allowed IPs" field — Upstox rejects every order from
               a non-whitelisted IP with UDAPI1154 "static IP mismatch", so

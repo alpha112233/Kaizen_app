@@ -1243,7 +1243,9 @@ Check for advisor_ra_code on user record
             │  Looks up central email_advisor_map (common DB)
             │
             ├── Single advisor match → auto-set RA code → Home
-            ├── Multiple advisors → show RA ID screen (user picks)
+            ├── Multiple advisors → disambiguate by the build's subdomain
+            │       (X-Advisor-Subdomain): if exactly one mapping matches →
+            │       auto-set RA code → Home; else show RA ID screen
             └── Not found → show RA ID screen (manual entry)
 ```
 
@@ -1264,7 +1266,33 @@ The `email_advisor_map` collection in the `common` database maintains a central 
 | `Routes/userRoutes.js` | `GET /resolve-advisor/:email` endpoint |
 | App: `src/utils/storageUtils.js` | `tryResolveAdvisor()` — called from Signup, Login, and Splash screens |
 
-**Fallback rule:** If an email maps to multiple advisors, the RA ID screen is always shown to let the user choose.
+**Multi-advisor disambiguation (2026-06-22):** A single email can map to
+several advisors (a client subscribed via multiple advisors, or an internal
+test account — e.g. `pratik@alphaquark.in` maps to 5: `zamzamcapital`, `prod`,
+`rgxresearch`, `demo-alphaquark`, `alphanomy`). Each whitelabel build is
+dedicated to ONE advisor, so `resolve-advisor` now reads the request's
+`X-Advisor-Subdomain` header (case-insensitive) and, when the email maps to
+multiple advisors, **prefers the single mapping whose `advisor_subdomain`
+matches the requesting build** (response includes `disambiguated_by:
+"subdomain"`). Only when no single subdomain match exists does it fall back to
+`reason: "multiple_advisors"` → RA ID screen.
+
+> **Why this was broken (the "no Plans" bug):** the app's `tryResolveAdvisor()`
+> previously sent `X-Advisor-Subdomain: REACT_APP_WHITE_LABEL_TEXT` — the
+> *display name* (e.g. "Alphanomy" / "Zamzam Capital"), which never equals the
+> subdomain ("alphanomy" / "zamzamcapital") — and the backend ignored the
+> header entirely, returning `multiple_advisors` for any >1 mapping. Combined
+> effect: the per-user advisor was never selected, so
+> `configData.config.REACT_APP_ADVISOR_SPECIFIC_TAG` (advisorTag) stayed empty
+> and `useHomePlanSummary`'s `fetchCatalog()` returned `[]` *without an API
+> call* → **"Recommendations not available" / no Plans**, even though the
+> alphanomy mapping existed. Fixed by (a) the app sending `REACT_APP_HEADER_NAME`
+> (the real subdomain) in `src/utils/storageUtils.js` `tryResolveAdvisor()`,
+> and (b) the backend disambiguating by that subdomain in
+> `Routes/userRoutes.js` `GET /resolve-advisor/:email`. Reported 2026-06-22 on
+> the alphanomy build. **Note:** the live index/LTP staleness reported at the
+> same time is a *separate* issue — the index feed is scoped by the subdomain
+> config (which loads fine), not by the per-user advisor.
 
 ---
 
@@ -1836,3 +1864,80 @@ ccxt's `/order/{cancel,status,book}` endpoints take `userId: int`, NOT `user_ema
 | Alphab2bapp (this) | feature/sdk-plus-config-ui worktree | `docs/CHANGELOG.md` | dated entry |
 
 See `docs/CHANGELOG.md § PHASE-B-1-SDK-LIFT` for the dated entry.
+
+---
+
+## Market-indices header — prev-close base & day-boundary refresh (2026-06-22)
+
+The HomeScreen market-indices header (NIFTY / SENSEX / BANKNIFTY) shows each
+index's live value plus its change vs **previous close**. Two surfaces render
+this, with mirrored logic:
+
+- `src/components/HomeScreenComponents/MarketIndices.js` — the scrollable index
+  chips used across variants.
+- `src/screens/Home/hooks/useHomeMarketSummary.js` — the alphanomy-variant Home
+  header (tickers + P&L hero).
+
+### Data sources
+
+| Datum | Source | Cadence |
+|-------|--------|---------|
+| Live value (LTP) | WebSocket `ltp_update` via `WebSocketManager` singleton | continuous during market hours |
+| Previous close (the **base**) | `POST ${ccxtServer}misc/indices-previous-close` (REST), body `{symbols:[{symbol,exchange}]}`, headers incl. `aq-encrypted-key` | fetched on mount + on foreground (see below) |
+
+The WebSocket feed carries **only** the current LTP — never OHLC or any close
+value. The change indicator is computed purely client-side:
+
+```
+change   = liveLTP − previousClose
+change % = (change / previousClose) × 100
+```
+
+`previousClose` is the **last completed trading session's** settled close. It
+rolls over to the new value shortly after each day's market close (settlement
+publish), **not** at the next open. There is no 9:15 / market-open trigger
+anywhere in the app — time of day is never the variable.
+
+### Comparison modes
+
+- `prevClose` — endpoint returned a valid base; chips show change vs yesterday.
+- `opening` — base fetch failed after 3 retries; the FIRST live LTP per index
+  becomes the baseline (change starts at 0, grows intraday). Degraded fallback.
+- `loading` — before either resolves.
+
+Both surfaces MERGE base values across (re)fetches rather than replacing, so a
+partial endpoint response never drops an already-known base (see the inline
+NIFTY-flicker / SENSEX-alias incident comments).
+
+### Day-boundary / foreground refresh (2026-06-22) — the fix
+
+**Bug:** the base was fetched **once on mount** and held in memory for the whole
+session, with no day-boundary refresh. A session left open across the
+close→open rollover kept a STALE base. Reported 2026-06-22: app opened Friday
+*pre-close* → base = Thursday's close → still showing Thursday's close on Monday
+morning; only a manual logout/login (which remounts → re-fetches) cleared it.
+
+**Fix:** both surfaces re-fetch the prev-close base when the app returns to the
+**foreground** (`AppState` `'active'`), throttled by `PREV_CLOSE_REFRESH_MS`
+(15 min). The existing retry+merge fetch is left intact and exposed via a ref so
+the `AppState` listener re-triggers it without duplicating logic:
+
+- `lastPrevCloseFetchRef` — ms timestamp of the last successful fetch (0 = never).
+- `fetchPrevCloseRef` (MarketIndices) / `fetchPrevRef` (useHomeMarketSummary) —
+  holds the latest fetch fn.
+- On `'active'`, if `Date.now() − lastFetch ≥ PREV_CLOSE_REFRESH_MS`, re-fetch.
+
+A same-session refresh returns the same base (no chip flicker — the recompute
+produces an identical change); the value only differs across a session that
+spans a market close, which is exactly the stale-base case. The 15-min throttle
+also makes a post-close foreground (>15 min after the last fetch) pick up
+today's freshly-settled close, so the intraday close→evening rollover is covered
+too, not just overnight/weekend.
+
+**Not addressed (by design):** an app kept continuously in the foreground across
+the 15:30 close without ever backgrounding won't refresh until the next
+foreground transition — acceptable, since the reported failure mode
+(overnight/weekend) always involves a background→foreground transition.
+
+**Applies to both repos** — Alphanomy (whitelabel fork) and Alphab2bapp
+(upstream); the two files are byte-identical and were patched together.

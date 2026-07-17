@@ -25,6 +25,8 @@ import { convertResponse } from '../../utils/tradeUtils';
 import { useGstConfig } from '../../context/GstConfigContext';
 import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import { useComponent } from '../../design/useDesign';
+import { getSubscriptionStatusString } from '../../utils/subscriptionStatus';
+import { useConfig } from '../../context/ConfigContext';
 
 const screenWidth = Dimensions.get('window').width;
 const ScreenHeight = Dimensions.get('window').height;
@@ -39,6 +41,7 @@ const colorPalette = [
 const BespokePerformanceScreen = ({ route }) => {
     const { modelName, specificPlan } = route.params;
     const { configData } = useTrade();
+    const config = useConfig();
     const navigation = useNavigation();
     const { gstConfigure: configGst, gstWithTextConfigure: configGstWithText } = useGstConfig();
 
@@ -161,7 +164,8 @@ const BespokePerformanceScreen = ({ route }) => {
                     },
                 )
                 .then(res => {
-                    const portfolioData = res.data[0].originalData;
+                    const portfolioData = res?.data?.[0]?.originalData;
+                    if (!portfolioData) return;
                     setStrategyDetails(portfolioData);
                     if (portfolioData?.model?.rebalanceHistory?.length > 0) {
                         const latest = [...portfolioData.model.rebalanceHistory].sort(
@@ -191,7 +195,8 @@ const BespokePerformanceScreen = ({ route }) => {
                     },
                 )
                 .then(res => {
-                    const portfolioData = res.data[0].originalData;
+                    const portfolioData = res?.data?.[0]?.originalData;
+                    if (!portfolioData) return;
                     setModalContext(prev => ({ ...prev, singleStrategyDetails: portfolioData }));
                     setSingleStrategyDetails(portfolioData);
                     if (portfolioData?.model?.rebalanceHistory?.length > 0) {
@@ -245,8 +250,12 @@ const BespokePerformanceScreen = ({ route }) => {
         }
     }, [broker, userDetails]);
 
-    const subscribed =
-        planDetails?.subscribed_by?.filter(email => email === userEmail).length > 0;
+    // The optional chain `planDetails?.subscribed_by?.filter(...)` is unsafe
+    // when `subscribed_by` is a defined-but-non-array value (object or
+    // string). The API has been observed returning non-array shapes. Guard
+    // explicitly with `Array.isArray()` before calling array methods.
+    const subscribed = Array.isArray(planDetails?.subscribed_by)
+        && planDetails.subscribed_by.includes(userEmail);
 
     const clientCode = userDetails?.clientCode;
     const apiKey = userDetails?.apiKey;
@@ -435,37 +444,14 @@ const BespokePerformanceScreen = ({ route }) => {
     };
     useEffect(() => { getAllSubscriptionData(); }, []);
 
-    const ACCEPTABLE_DATE_FORMATS = ['D MMM YYYY, HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss.SSSZ'];
-
-    const getSubscriptionStatus = (planName, subscriptions) => {
-        const normalizeGroupName = name => { if (!name) return ''; return name.toLowerCase().replace(/%20/g, ' ').replace(/\s+/g, '_').trim(); };
-        if (!subscriptions || subscriptions.length === 0) return 'none';
-        // Exact match only (post-normalization) — see MPCard.js for why the
-        // previous substring/`.includes()` fallback was removed (falsely
-        // matched an unrelated plan whose name contains a deleted plan's
-        // name as a prefix, e.g. "test" vs "test 1").
-        const matchingPlanSubs = subscriptions.filter(sub => {
-            const nSub = normalizeGroupName(sub?.plan);
-            const nPlan = normalizeGroupName(planName);
-            return nSub === nPlan;
-        });
-        if (matchingPlanSubs.length === 0) return 'none';
-        const activeSubscriptions = matchingPlanSubs.filter(sub => sub?.status !== 'deleted');
-        if (activeSubscriptions.length === 0) return 'none';
-        const neverExpiringSubscriptions = activeSubscriptions.filter(sub => sub.expiry === null);
-        if (neverExpiringSubscriptions.length > 0) return 'active';
-        const validSubscriptions = activeSubscriptions.filter(sub => sub.expiry ? moment(sub.expiry, ACCEPTABLE_DATE_FORMATS, true).isValid() : false);
-        if (validSubscriptions.length === 0) return 'none';
-        const latestSub = validSubscriptions.sort((a, b) => moment(b.expiry, ACCEPTABLE_DATE_FORMATS) - moment(a.expiry, ACCEPTABLE_DATE_FORMATS))[0];
-        const expiryDate = moment(latestSub?.expiry, ACCEPTABLE_DATE_FORMATS);
-        const today = moment();
-        const daysLeft = expiryDate.diff(today, 'days');
-        if (daysLeft < 0) return 'expired';
-        if (daysLeft <= 7) return 'renew';
-        return 'active';
-    };
-
-    const subscriptionStatus = getSubscriptionStatus(modelName, subscriptionData?.subscriptions);
+    // Shared util — consults subscriptionData.groups before subscriptions
+    // (web parity, prod-alphaquark-github/src/Home/PricingSection/IPOCard.js
+    // hasActiveSubscription). Pass the FULL subscriptionData object so
+    // the groups branch can fire; the previous inline copy only looked at
+    // `.subscriptions` and produced false-positives for plans the user
+    // never subscribed to (2026-06-09 MySubscriptionsScreen bug, same
+    // shape here).
+    const subscriptionStatus = getSubscriptionStatusString(modelName, subscriptionData);
     const isActive = subscriptionStatus === 'active' || subscriptionStatus === 'renew';
 
     const Presentation = useComponent('screens.BespokePerformanceScreen');
@@ -474,6 +460,7 @@ const BespokePerformanceScreen = ({ route }) => {
         <Presentation
             viewModel={{
                 modelName,
+                config,
                 strategyDetails,
                 singleStrategyDetails,
                 latestRebalance,
@@ -530,6 +517,7 @@ const BespokePerformanceScreen = ({ route }) => {
             }}
             actions={{
                 onGoBack: () => navigation.goBack(),
+                onOpenResearchReports: () => navigation.navigate('ResearchReportScreen'),
                 onTabIndexChange: setIndex,
                 onSelectedPricingChange: setSelectedPricing,
                 onInvestNow: () => setPaymentModal(true),

@@ -1,10 +1,12 @@
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { useConfig } from '../context/ConfigContext';
+import { DesignContext } from '../design/DesignProvider';
 import { buildColors } from './colors';
 import { buildSpacing } from './spacing';
 import { buildTypography } from './typography';
 import { buildRadii } from './radii';
 import { buildShadows } from './shadows';
+import { buildAssets } from './assets';
 
 /**
  * Hook that returns the full resolved design-token bundle for the current
@@ -33,16 +35,34 @@ import { buildShadows } from './shadows';
  */
 export const useTokens = () => {
     const config = useConfig() || {};
+    // Variant-aware asset slot. RN's static require(...) can't be swapped by a
+    // backend config field, so per-variant brand images (logoPng/logoFadedPng)
+    // are resolved through the DesignProvider's variant token module instead.
+    // useContext (not useDesign) so this stays safe if ever called outside the
+    // provider — it falls back to the default-variant assets. Other token
+    // families (colors/typography/…) already vary per-tenant via ConfigContext
+    // legacy-branding, so only `assets` needs the variant builder here.
+    const design = useContext(DesignContext);
+    const buildVariantAssets = design?.tokens?.buildAssets || buildAssets;
+    // Variant-aware color builder. Default variant re-exports src/theme/colors,
+    // so `design.tokens.buildColors` is functionally the same as the local
+    // `buildColors` for default. A custom variant (moneyman_app, etc.) exports
+    // its own builder with hard-coded brand defaults, so its color palette
+    // persists even when `src/` is copied over from Alphab2bapp.
+    const buildVariantColors = design?.tokens?.buildColors || buildColors;
 
     return useMemo(
         () => ({
-            colors: buildColors(config),
+            colors: buildVariantColors(config),
             spacing: buildSpacing(config),
             typography: buildTypography(config),
             radii: buildRadii(config),
             shadows: buildShadows(config),
+            assets: buildVariantAssets(config),
         }),
         [
+            buildVariantAssets,
+            buildVariantColors,
             // Colors deps (mirror useColors.js)
             config.mainColor,
             config.secondaryColor,
@@ -66,6 +86,7 @@ export const useTokens = () => {
             config.typographyTokens,
             config.radiiTokens,
             config.shadowTokens,
+            config.assetTokens,
         ]
     );
 };

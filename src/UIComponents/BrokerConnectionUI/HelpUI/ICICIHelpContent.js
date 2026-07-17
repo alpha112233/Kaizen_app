@@ -35,7 +35,7 @@ const ICICIHelpContent = ({expanded, onExpandChange }) => {
                            and log in using your username and password. Verify your identity with the OTP and submit.
                          </Text>
                          <Text style={styles.instruction}>
-                           2. Click on the "Register an App" tab, then fill in the "App Name" field with "{Config?.REACT_APP_WHITE_LABEL_TEXT || 'Kaizen Alpha'}" or a name of
+                           2. Click on the "Register an App" tab, then fill in the "App Name" field with "{Config?.REACT_APP_WHITE_LABEL_TEXT || 'AlphaQuark'}" or a name of
                            your choice. Paste your dedicated static IP (claimed in the IP-whitelist panel above) into the Breeze "IP Whitelist" field — ICICI rejects every order from a non-whitelisted IP. Enter the "Redirect URL" as{" "}
                            <LinkifiedUrl url={iciciCallbackUrl} />{" "}
                            and click "Submit". Please ensure that "Redirect URL" is entered exactly as shown above — if you previously registered a different URL, update it.

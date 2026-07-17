@@ -44,10 +44,35 @@ import Icon from '../primitives/Icon';
 import Spinner from '../primitives/Spinner';
 
 const Glogo = require('../../../src/assets/GLogo.png');
-const KaizenAlphaLogo = require('../../../src/assets/AppLogo/kaizenalpha.png');
 
-const renderLogo = (LogoComponent, configLoading) => {
-    if (configLoading) return <View style={styles.logo} />;
+// Module-scope `require(...)` of the default-variant logo intentionally
+// removed in Phase 2 (whitelabel-sync, 2026-05-09). The default logo now
+// comes from `useTokens().assets.logoPng` so a variant overlay's
+// `designs/<variant>/tokens/assets.js` can swap it without touching this
+// presentation file. See docs/DESIGN_SYSTEM_ARCHITECTURE.md § Variant assets.
+
+// Remote (backend URL) logo that falls back to the bundled default asset if the
+// URL fails to load — private/403 S3 objects (e.g. the markup tenant's
+// Markup_falcon.png, 2026-07-13) would otherwise render nothing. Self-contained
+// so renderLogo can stay a pure function.
+const RemoteLogoImage = ({ uri, defaultLogo }) => {
+    const [failed, setFailed] = React.useState(false);
+    if (failed) return <Image source={defaultLogo} style={styles.logo} resizeMode="contain" />;
+    return (
+        <Image
+            source={{ uri }}
+            onError={() => setFailed(true)}
+            style={styles.logo}
+            resizeMode="contain"
+        />
+    );
+};
+
+const renderLogo = (LogoComponent, configLoading, defaultLogo) => {
+    // While the advisor config loads, show the bundled default logo instead of a
+    // blank box so the brand mark is visible immediately (and stays if the
+    // backend logo URL 403s — see RemoteLogoImage). 2026-07-13.
+    if (configLoading) return <Image source={defaultLogo} style={styles.logo} resizeMode="contain" />;
     if (LogoComponent && typeof LogoComponent === 'function') {
         return <LogoComponent style={styles.logo} />;
     }
@@ -55,18 +80,15 @@ const renderLogo = (LogoComponent, configLoading) => {
         return <SvgUri uri={LogoComponent} width={styles.logo.width} height={styles.logo.height} />;
     }
     if (LogoComponent && typeof LogoComponent === 'string') {
-        return <Image source={{ uri: LogoComponent }} style={styles.logo} resizeMode="contain" />;
+        return <RemoteLogoImage uri={LogoComponent} defaultLogo={defaultLogo} />;
     }
     if (LogoComponent && typeof LogoComponent === 'object' && LogoComponent.uri) {
-        return <Image source={{ uri: LogoComponent.uri }} style={styles.logo} resizeMode="contain" />;
+        return <RemoteLogoImage uri={LogoComponent.uri} defaultLogo={defaultLogo} />;
     }
     if (LogoComponent && typeof LogoComponent === 'object') {
         return <Image source={LogoComponent} style={styles.logo} resizeMode="contain" />;
     }
-    if (LogoComponent && typeof LogoComponent === 'number') {
-        return <Image source={LogoComponent} style={styles.logo} resizeMode="contain" />;
-    }
-    return <Image source={KaizenAlphaLogo} style={styles.logo} resizeMode="contain" />;
+    return <Image source={defaultLogo} style={styles.logo} resizeMode="contain" />;
 };
 
 const LoginScreen = ({ viewModel, actions }) => {
@@ -102,7 +124,7 @@ const LoginScreen = ({ viewModel, actions }) => {
         >
             <TouchableWithoutFeedback onPress={dismissKeyboard}>
                 <LinearGradient
-                    colors={[tokens.colors.brand.gradientStart || 'rgba(0, 38, 81, 1)', tokens.colors.brand.gradientEnd || 'rgba(0, 86, 183, 1)']}
+                    colors={[tokens.colors.brand.gradientStart, tokens.colors.brand.gradientEnd]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.container}
@@ -117,7 +139,7 @@ const LoginScreen = ({ viewModel, actions }) => {
 
                         <View style={styles.content}>
                             <View style={styles.logoContainer}>
-                                {renderLogo(logoComponent, configLoading)}
+                                {renderLogo(logoComponent, configLoading, tokens.assets.logoPng)}
                                 <Text variant="title" style={styles.logoText}>
                                     {whiteLabelText || Config?.REACT_APP_WHITE_LABEL_TEXT}
                                 </Text>
@@ -136,11 +158,11 @@ const LoginScreen = ({ viewModel, actions }) => {
                                 variant="caption"
                                 style={{ color: '#BDCFFF', fontSize: 12, marginBottom: 35 }}
                             >
-                                Its only takes a minute to create your account
+                                It only takes a minute to create your account
                             </Text>
 
                             <View style={styles.inputContainer}>
-                                <Icon Component={Mail} color="#A199FF" size={16} style={styles.inputIcon} />
+                                <Icon Component={Mail} color="rgba(100, 199, 59, 1)" size={16} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Email address"
@@ -153,7 +175,7 @@ const LoginScreen = ({ viewModel, actions }) => {
                             </View>
 
                             <View style={styles.inputContainer}>
-                                <Icon Component={Lock} color="#A199FF" size={16} style={styles.inputIcon} />
+                                <Icon Component={Lock} color="rgba(100, 199, 59, 1)" size={16} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Password"
@@ -206,7 +228,7 @@ const LoginScreen = ({ viewModel, actions }) => {
                                 Don't have an account?{' '}
                             </Text>
                             <TouchableOpacity onPress={onNavigateToSignup}>
-                                <Text variant="bodyEmphasis" style={{ color: '#A199FF', fontSize: 14, marginLeft: 5 }}>Sign Up</Text>
+                                <Text variant="bodyEmphasis" style={{ color: '#85F500', fontSize: 14, marginLeft: 5 }}>Sign Up</Text>
                             </TouchableOpacity>
                         </View>
                         <Toast />
@@ -227,7 +249,7 @@ const styles = StyleSheet.create({
     circleThree: { width: 250, height: 250, bottom: -100, left: -100 },
     content: { paddingTop: 50, paddingHorizontal: 20 },
     logoContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 30 },
-    logo: { width: 60, height: 60, marginRight: 8 },
+    logo: { width: 40, height: 40, marginRight: 8 },
     logoText: {
         fontSize: 22,
         fontWeight: '700',
@@ -235,7 +257,7 @@ const styles = StyleSheet.create({
         letterSpacing: 1.5,
         fontFamily: Platform.select({ ios: 'Azonix', android: 'Azonix', default: 'System' }),
     },
-    underline: { height: 2, width: '100%', backgroundColor: '#A199FF', marginTop: 4 },
+    underline: { height: 2, width: '100%', backgroundColor: '#0D47A1', marginTop: 4 },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -248,14 +270,14 @@ const styles = StyleSheet.create({
     inputIcon: { marginRight: 10 },
     input: { flex: 1, height: '100%', color: '#000', fontSize: 13 },
     forgotPassword: {
-        color: '#A199FF',
+        color: 'rgba(133, 245, 0, 1)',
         textAlign: 'right',
         marginBottom: 20,
         fontSize: 12,
         fontFamily: 'Poppins-Medium',
     },
     loginButton: {
-        backgroundColor: '#A199FF',
+        backgroundColor: 'rgba(41, 164, 0, 1)',
         paddingVertical: 5,
         borderRadius: 3,
         alignItems: 'center',

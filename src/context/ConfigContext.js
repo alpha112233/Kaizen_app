@@ -12,10 +12,19 @@ export const useConfig = () => {
     return useContext(ConfigContext);
 };
 
-// Default variant for this fork. This repo ships only the kaizenalpha
-// tenant; if APP_VARIANT is missing or unrecognised, fall back to
-// kaizenalpha so we never silently render a foreign brand.
-const DEFAULT_VARIANT = 'kaizenalpha';
+// Default variant used when APP_VARIANT is missing or unknown. Was
+// 'rgxresearch' historically — but rgxresearch falls through to
+// sharedUIConfig, whose logo / theme is ZamZam-branded (sharedUIConfig
+// was originally the ZamZam variant config; logo file
+// `src/assets/AppLogo/logo.png` is byte-identical to
+// `src/assets/AppLogo/Zamzam.png`). On AlphaQuark builds we MUST NOT
+// silently degrade to ZamZam branding when the env var fails to
+// resolve (gradle missed the .env, react-native-config not linked,
+// dev build bundling stale config, etc.). 'alphaquark' is a safer
+// default for this codebase since the variant explicitly declares
+// AlphaQuarkLogo. White-label tenants who deploy this app from their
+// own fork should change DEFAULT_VARIANT to their own variant key.
+const DEFAULT_VARIANT = 'alphaquark';
 
 export const ConfigProvider = ({ children }) => {
     const selectedVariant = Config?.APP_VARIANT || DEFAULT_VARIANT;
@@ -30,7 +39,7 @@ export const ConfigProvider = ({ children }) => {
         console.warn(
             '[ConfigContext] APP_VARIANT not set in .env — defaulting to',
             DEFAULT_VARIANT,
-            '. Set APP_VARIANT=kaizenalpha in .env to suppress this warning.',
+            '. If this is a non-AlphaQuark tenant build, set APP_VARIANT explicitly.',
         );
     }
     const initialConfig = { ...APP_VARIANTS[validVariant], selectedVariant: validVariant };
@@ -73,7 +82,7 @@ export const ConfigProvider = ({ children }) => {
             try {
                 // Get base URL and subdomain from environment variables
                 const baseUrl = Config.REACT_APP_NODE_SERVER_API_URL || 'http://localhost:8001/';
-                const subdomain = Config.REACT_APP_ADVISOR_SUBDOMAIN || Config.REACT_APP_HEADER_NAME || 'kaizenalpha';
+                const subdomain = Config.REACT_APP_ADVISOR_SUBDOMAIN || Config.REACT_APP_HEADER_NAME || 'rgxresearch';
 
                 // Construct the API URL
                 const apiUrl = `${baseUrl}api/app-advisor/get?appSubdomain=${subdomain}`;
@@ -95,7 +104,51 @@ export const ConfigProvider = ({ children }) => {
                     'aq-encrypted-key': headers['aq-encrypted-key'] ? 'SET' : 'MISSING',
                 });
 
+                // D3 (docs/WEB_PARITY_MIGRATION_2026-06.md §4.1): the RIA / NBA /
+                // Portfolio-Health / Transition flags are NOT in /api/app-advisor/get —
+                // they live in advisor_config and are served by /api/admin/frontend-config
+                // (no admin auth; reads the advisor from the X-Advisor-Subdomain header,
+                // which `headers` already carries). Kick it off BEFORE awaiting the main
+                // config so the two fetches run in PARALLEL (no serial cold-start cost).
+                // Never throws — a failure leaves every new flag at its default (false).
+                const parityFlagsPromise = (async () => {
+                    try {
+                        // HARD timeout: this fetch must NEVER block the advisor
+                        // branding/config from applying. If frontend-config is slow or
+                        // hangs, bail fast and leave the parity flags at default-OFF —
+                        // the main app-advisor/get config (theme, logo, gradients) still
+                        // applies. (Without this, a stalled flags call would leave the UI
+                        // on bare defaults: red #ff0000 accent + missing logo.)
+                        const ff = await axios.get(`${baseUrl}api/admin/frontend-config`, {
+                            headers,
+                            timeout: 6000,
+                        });
+                        const d = ff?.data?.data || ff?.data || {};
+                        return {
+                            riaBillingEnabled:       d.riaBillingEnabled === true,
+                            nbaHomeEnabled:          d.nbaHomeEnabled === true,
+                            portfolioHealthEnabled:  d.portfolioHealthEnabled === true,
+                            transitionEngineEnabled: d.transitionEngineEnabled === true,
+                            portfolioHealth:         d.portfolioHealth || undefined,
+                            // In-app support widget (chat + voice), customer side. Default OFF.
+                            voiceSupportUserEnabled: d.voiceSupportUserEnabled === true,
+                            // Client Performance Summary (fund-wise portfolio summary +
+                            // value history + realised P&L). Default-ON, mirroring web's
+                            // `!== false` gate in Routes/Admin/loginRoutes.js /frontend-config.
+                            performanceSummaryEnabled: d.performanceSummaryEnabled !== false,
+                            // Checkout-time blocking KYC gate (PAN+DoB → KRA verify
+                            // BEFORE payment/Digio). Default OFF, mirrors web's
+                            // `=== true` gate in loginRoutes.js /frontend-config.
+                            kycBlockingEnabled:      d.kycBlockingEnabled === true,
+                        };
+                    } catch (e) {
+                        console.warn('[ConfigContext] frontend-config flags unavailable, defaulting OFF:', e?.message);
+                        return {};
+                    }
+                })();
+
                 const response = await axios.get(apiUrl, { headers });
+                const parityFlags = await parityFlagsPromise;
 
                 console.log('API Response:', response.data);
 
@@ -147,17 +200,27 @@ export const ConfigProvider = ({ children }) => {
 
                         // ============================================================================
                         // AUTHENTICATION
-                        // ============================================================================
                         // Backend (apiData) wins over the static Config.js fallback for
                         // googleWebClientId. Defensive `.trim()` because the backend has been
                         // observed returning the value with trailing whitespace
                         // (`'713385591555-…googleusercontent.com '`), which Google Sign-In
                         // rejects with DEVELOPER_ERROR if passed verbatim.
+                        // ============================================================================
                         googleWebClientId:
-                            initialConfig.googleWebClientId ||
                             (typeof apiData.googleWebClientId === 'string'
                                 ? apiData.googleWebClientId.trim()
-                                : apiData.googleWebClientId),
+                                : apiData.googleWebClientId) ||
+                            initialConfig.googleWebClientId,
+
+                        // iOS-only Google Sign-In client ID (per-tenant Firebase
+                        // project). Same backend-over-variant precedence + defensive
+                        // .trim() as googleWebClientId. Consumed by Login/LogOutScreen;
+                        // only applied on iOS (undefined is a harmless no-op elsewhere).
+                        googleIosClientId:
+                            (typeof apiData.googleIosClientId === 'string'
+                                ? apiData.googleIosClientId.trim()
+                                : apiData.googleIosClientId) ||
+                            initialConfig.googleIosClientId,
 
                         // ============================================================================
                         // DIGIO CONFIGURATION
@@ -194,6 +257,34 @@ export const ConfigProvider = ({ children }) => {
                             ? apiData.featureFlags.allowAfterHoursOrders
                             : (apiData.allowAfterHoursOrders !== undefined ? apiData.allowAfterHoursOrders : true),
 
+                        // Courses + Webinars per-advisor gates. Source of truth on
+                        // the server is AdvisorConfig.{courses_enabled,webinars_enabled}
+                        // surfaced as camelCase by /api/app-advisor/get's AdvisorConfig
+                        // lookup block (mirrors web's AppConfigContext default-false).
+                        // Drawer entries + webinar screens consume these.
+                        coursesEnabled:  apiData.coursesEnabled  ?? false,
+                        webinarsEnabled: apiData.webinarsEnabled ?? false,
+
+                        // RIA AUM-billing / NBA / Portfolio-Health / Transition per-advisor
+                        // gates (D3). Source of truth: advisor_config.{aum_billing.enabled,
+                        // nba_home_enabled, portfolio_health_enabled, transition_engine_enabled,
+                        // portfolio_health}, served by /api/admin/frontend-config (fetched in
+                        // parallel above → `parityFlags`). Default OFF — nothing renders until
+                        // an advisor opts in from supportAQ (AdvisorConfigPage). Toggles already
+                        // exist there for nba/health/transition.
+                        riaBillingEnabled:       parityFlags.riaBillingEnabled       ?? false,
+                        nbaHomeEnabled:          parityFlags.nbaHomeEnabled          ?? false,
+                        portfolioHealthEnabled:  parityFlags.portfolioHealthEnabled  ?? false,
+                        transitionEngineEnabled: parityFlags.transitionEngineEnabled ?? false,
+                        voiceSupportUserEnabled: parityFlags.voiceSupportUserEnabled ?? false,
+                        portfolioHealth:         parityFlags.portfolioHealth         ?? undefined,
+                        // Client Performance Summary — DEFAULT-ON to match web. A failed
+                        // frontend-config fetch (parityFlags == {}) still enables it.
+                        performanceSummaryEnabled: parityFlags.performanceSummaryEnabled ?? true,
+                        // Checkout-time blocking KYC gate — DEFAULT-OFF. A failed
+                        // frontend-config fetch (parityFlags == {}) leaves it OFF.
+                        kycBlockingEnabled:      parityFlags.kycBlockingEnabled ?? false,
+
                         // ============================================================================
                         // PAYMENT CONFIGURATION
                         // Supported platforms: 'razorpay', 'cashfree', 'payu'
@@ -205,51 +296,48 @@ export const ConfigProvider = ({ children }) => {
 
                         // ============================================================================
                         // BRANDING & THEME COLORS
-                        // Static config (whitelabel/appVariants.js) wins over backend for all
-                        // branding fields — this is a dedicated whitelabel fork so the bundled
-                        // branding is authoritative. Backend values are only used as fallback.
                         // ============================================================================
-                        themeColor: initialConfig.themeColor || apiData.themeColor,
-                        logo: initialConfig.logo || apiData.logo,
-                        toolbarlogo: initialConfig.toolbarlogo || apiData.toolbarlogo,
+                        themeColor: apiData.themeColor || initialConfig.themeColor,
+                        logo: apiData.logo || initialConfig.logo,
+                        toolbarlogo: apiData.toolbarlogo || initialConfig.toolbarlogo,
                         backgroundLogo: apiData.backgroundLogo || null,
                         showBackgroundLogo: apiData.showBackgroundLogo !== undefined ? apiData.showBackgroundLogo : true,
-                        mainColor: initialConfig.mainColor || apiData.mainColor,
-                        secondaryColor: initialConfig.secondaryColor || apiData.secondaryColor,
-                        gradient1: initialConfig.gradient1 || apiData.gradient1,
-                        gradient2: initialConfig.gradient2 || apiData.gradient2,
-                        placeholderText: initialConfig.placeholderText || apiData.placeholderText,
+                        mainColor: apiData.mainColor || initialConfig.mainColor,
+                        secondaryColor: apiData.secondaryColor || initialConfig.secondaryColor,
+                        gradient1: apiData.gradient1 || initialConfig.gradient1,
+                        gradient2: apiData.gradient2 || initialConfig.gradient2,
+                        placeholderText: apiData.placeholderText || initialConfig.placeholderText,
 
                         // ============================================================================
                         // LAYOUT CONFIGURATION
                         // ============================================================================
-                        homeScreenLayout: initialConfig.homeScreenLayout || apiData.homeScreenLayout,
+                        homeScreenLayout: apiData.homeScreenLayout || initialConfig.homeScreenLayout,
 
                         // ============================================================================
                         // CARD STYLING
                         // Note: API uses camelCase (cardBorderWidth), static config uses CardborderWidth
                         // ============================================================================
-                        CardborderWidth: initialConfig.CardborderWidth ?? apiData.cardBorderWidth ?? apiData.CardborderWidth,
-                        cardElevation: initialConfig.cardElevation ?? apiData.cardElevation,
-                        cardverticalmargin: initialConfig.cardverticalmargin ?? apiData.cardVerticalMargin ?? apiData.cardverticalmargin,
+                        CardborderWidth: apiData.cardBorderWidth ?? apiData.CardborderWidth ?? initialConfig.CardborderWidth,
+                        cardElevation: apiData.cardElevation ?? initialConfig.cardElevation,
+                        cardverticalmargin: apiData.cardVerticalMargin ?? apiData.cardverticalmargin ?? initialConfig.cardverticalmargin,
 
                         // ============================================================================
                         // BOTTOM TAB / NAVIGATION STYLING
                         // Note: API uses camelCase, static config uses mixed case
                         // ============================================================================
-                        tabIconColor: initialConfig.tabIconColor || apiData.tabIconColor,
-                        bottomTabBorderTopWidth: initialConfig.bottomTabBorderTopWidth ?? apiData.bottomTabBorderTopWidth,
-                        bottomTabbg: initialConfig.bottomTabbg || apiData.bottomTabBg || apiData.bottomTabbg,
-                        selectedTabcolor: initialConfig.selectedTabcolor || apiData.selectedTabColor || apiData.selectedTabcolor,
+                        tabIconColor: apiData.tabIconColor || initialConfig.tabIconColor,
+                        bottomTabBorderTopWidth: apiData.bottomTabBorderTopWidth ?? initialConfig.bottomTabBorderTopWidth,
+                        bottomTabbg: apiData.bottomTabBg || apiData.bottomTabbg || initialConfig.bottomTabbg,
+                        selectedTabcolor: apiData.selectedTabColor || apiData.selectedTabcolor || initialConfig.selectedTabcolor,
 
                         // ============================================================================
                         // BASKET COLORS (for stock basket cards)
                         // Note: API uses camelCase, static config uses lowercase
                         // ============================================================================
-                        basket1: initialConfig.basket1 || apiData.basket1,
-                        basket2: initialConfig.basket2 || apiData.basket2,
-                        basketcolor: initialConfig.basketcolor || apiData.basketColor || apiData.basketcolor,
-                        basketsymbolbg: initialConfig.basketsymbolbg || apiData.basketSymbolBg || apiData.basketsymbolbg,
+                        basket1: apiData.basket1 || initialConfig.basket1,
+                        basket2: apiData.basket2 || initialConfig.basket2,
+                        basketcolor: apiData.basketColor || apiData.basketcolor || initialConfig.basketcolor,
+                        basketsymbolbg: apiData.basketSymbolBg || apiData.basketsymbolbg || initialConfig.basketsymbolbg,
 
                         // ============================================================================
                         // API KEYS (nested object) - API data takes priority
@@ -267,6 +355,41 @@ export const ConfigProvider = ({ children }) => {
                         REACT_APP_ANGEL_ONE_API_KEY: apiData.apiKeys?.angelOneApiKey || Config.REACT_APP_ANGEL_ONE_API_KEY || '',
                         REACT_APP_ZERODHA_API_KEY: apiData.apiKeys?.zerodhaApiKey || Config.REACT_APP_ZERODHA_API_KEY || '',
                         REACT_APP_BROKER_CONNECT_REDIRECT_URL: apiData.brokerConnectRedirectUrl || Config.REACT_APP_BROKER_CONNECT_REDIRECT_URL || '',
+
+                        // ============================================================================
+                        // PER-TENANT CONFIG MIGRATED FROM .env → appadvisors (supportAQ-controlled)
+                        // ----------------------------------------------------------------------------
+                        // Each of these resolves `appadvisors value ?? .env fallback`, so a tenant's
+                        // settings can be changed from supportAQ App Advisors with NO app rebuild.
+                        // The .env value remains the bootstrap/offline fallback (and stays correct
+                        // per build). These are also written into the AsyncStorage `@app:advisorConfig`
+                        // sync block below, so every consumer reading
+                        // `configData.config.REACT_APP_*` (TradeContext) gets the backend value too.
+                        // What deliberately stays in .env: REACT_APP_HEADER_NAME (subdomain — used to
+                        // fetch THIS config), REACT_APP_AQ_KEYS/SECRET (signs the fetch; secret),
+                        // server base URLs, APP_VARIANT (design, read before config loads),
+                        // REACT_APP_FIREBASE_* (native, bound to google-services.json), MARKET_WS_*.
+                        // ============================================================================
+                        REACT_APP_ADVISOR_SPECIFIC_TAG:
+                            apiData.advisorSpecificTag || apiData.apiKeys?.advisorSpecificTag || Config.REACT_APP_ADVISOR_SPECIFIC_TAG || '',
+                        REACT_APP_WHITE_LABEL_TEXT:
+                            apiData.whiteLabelText || apiData.appName || Config.REACT_APP_WHITE_LABEL_TEXT || '',
+                        REACT_APP_ADVISOR_SPECIFIER:
+                            apiData.advisorSpecifier || apiData.apiKeys?.advisorSpecifier || Config.REACT_APP_ADVISOR_SPECIFIER || 'RA',
+                        REACT_APP_RAZORPAY_LIVE_API_KEY:
+                            apiData.apiKeys?.razorpayKeyId || apiData.razorpayKey || Config.REACT_APP_RAZORPAY_LIVE_API_KEY || '',
+                        REACT_APP_DIGIO_CHECK:
+                            apiData.digioConfig?.digioCheck || apiData.digioCheck || Config.REACT_APP_DIGIO_CHECK || 'beforePayment',
+                        REACT_APP_ADVISOR_LOGO:
+                            apiData.advisorLogo || Config.REACT_APP_ADVISOR_LOGO || '',
+                        // Semantic (camelCase) aliases for components that prefer config.* over the
+                        // legacy REACT_APP_* shape.
+                        whiteLabelText:
+                            apiData.whiteLabelText || apiData.appName || Config.REACT_APP_WHITE_LABEL_TEXT || initialConfig.appName,
+                        advisorSpecifier:
+                            apiData.advisorSpecifier || apiData.apiKeys?.advisorSpecifier || Config.REACT_APP_ADVISOR_SPECIFIER || 'RA',
+                        advisorSpecificTag:
+                            apiData.advisorSpecificTag || apiData.apiKeys?.advisorSpecificTag || Config.REACT_APP_ADVISOR_SPECIFIC_TAG || '',
 
                         // ============================================================================
                         // PAYMENT MODAL UI CUSTOMIZATION
@@ -328,6 +451,39 @@ export const ConfigProvider = ({ children }) => {
                         // Surfacing taglines via backend lets legal vary copy per tenant
                         // without a code change.
                         taglines: apiData.taglines || null,
+
+                        // ============================================================================
+                        // APP UPDATE — set this field in MongoDB to trigger the update modal
+                        // db.appadvisors.updateOne({subdomain:'<tenant>'},{$set:{latestAppVersion:'1.0.5'}})
+                        // Consumed by AppUpdateChecker (UpdateAppModal) as the authoritative
+                        // version; falls back to Play Store / App Store scraping when null.
+                        // ============================================================================
+                        latestAppVersion: apiData.latestAppVersion || null,
+                        // Platform-specific force-update floors (Android vs iOS can be on
+                        // different store versions). UpdateAppModal.pickPlatformVersion()
+                        // prefers these over the generic latestAppVersion/minAppVersion.
+                        latestAppVersionAndroid: apiData.latestAppVersionAndroid || null,
+                        latestAppVersionIos: apiData.latestAppVersionIos || null,
+                        minAppVersion: apiData.minAppVersion || null,
+                        minAppVersionAndroid: apiData.minAppVersionAndroid || null,
+                        minAppVersionIos: apiData.minAppVersionIos || null,
+                        forceUpdate: apiData.forceUpdate,
+
+                        // Multi-advisor RA-ID onboarding gate. Only the master
+                        // app (b2b / subdomain "prod") sets this true in
+                        // appadvisors; every white-label defaults false → the
+                        // SignUpRADetails screen self-redirects to Home.
+                        raIdOnboardingEnabled: apiData.raIdOnboardingEnabled === true,
+
+                        // ============================================================================
+                        // iOS APP STORE ID — set this in MongoDB once the iOS build is live on the
+                        // App Store. The "Update Now" button on iOS opens
+                        // `https://apps.apple.com/app/id<iosAppStoreId>`. Apple requires the numeric
+                        // store ID (e.g. 1234567890), NOT the bundle ID.
+                        // db.appadvisors.updateOne({subdomain:'<tenant>'},{$set:{iosAppStoreId:'1234567890'}})
+                        // When null, UpdateAppModal's iOS Update CTA is a no-op (no broken URL).
+                        // ============================================================================
+                        iosAppStoreId: apiData.iosAppStoreId || null,
                     };
 
                     console.log('✅ Using newConfig from API for APP_VARIANTS:', {
@@ -340,6 +496,7 @@ export const ConfigProvider = ({ children }) => {
                         homeScreenLayout: newConfig.homeScreenLayout,
                         // Authentication
                         googleWebClientId: newConfig.googleWebClientId,
+                        googleIosClientId: newConfig.googleIosClientId,
                         // Digio Config
                         digioCheck: newConfig.digioCheck,
                         digioEnabled: newConfig.digioEnabled,
@@ -365,6 +522,28 @@ export const ConfigProvider = ({ children }) => {
                                     REACT_APP_BROKER_CONNECT_REDIRECT_URL: newConfig.REACT_APP_BROKER_CONNECT_REDIRECT_URL,
                                     REACT_APP_ANGEL_ONE_API_KEY: newConfig.REACT_APP_ANGEL_ONE_API_KEY,
                                     REACT_APP_ZERODHA_API_KEY: newConfig.REACT_APP_ZERODHA_API_KEY,
+                                    // Per-tenant config migrated to appadvisors (see newConfig block
+                                    // above). Persisted here so TradeContext's
+                                    // configData.config.REACT_APP_* reads the backend value (?? .env).
+                                    // Guarded with `|| stored.config?.X` so a transiently-empty API
+                                    // response can never blank out a previously-good value.
+                                    REACT_APP_ADVISOR_SPECIFIC_TAG: newConfig.REACT_APP_ADVISOR_SPECIFIC_TAG || stored.config?.REACT_APP_ADVISOR_SPECIFIC_TAG,
+                                    REACT_APP_WHITE_LABEL_TEXT: newConfig.REACT_APP_WHITE_LABEL_TEXT || stored.config?.REACT_APP_WHITE_LABEL_TEXT,
+                                    REACT_APP_ADVISOR_SPECIFIER: newConfig.REACT_APP_ADVISOR_SPECIFIER || stored.config?.REACT_APP_ADVISOR_SPECIFIER,
+                                    REACT_APP_RAZORPAY_LIVE_API_KEY: newConfig.REACT_APP_RAZORPAY_LIVE_API_KEY || stored.config?.REACT_APP_RAZORPAY_LIVE_API_KEY,
+                                    REACT_APP_DIGIO_CHECK: newConfig.REACT_APP_DIGIO_CHECK || stored.config?.REACT_APP_DIGIO_CHECK,
+                                    REACT_APP_ADVISOR_LOGO: newConfig.REACT_APP_ADVISOR_LOGO || stored.config?.REACT_APP_ADVISOR_LOGO,
+                                    // D3 / Codex T5: persist the parity flags into the same
+                                    // AsyncStorage blob TradeContext reads, so useConfig() and
+                                    // configData never disagree on a gate.
+                                    riaBillingEnabled: newConfig.riaBillingEnabled,
+                                    nbaHomeEnabled: newConfig.nbaHomeEnabled,
+                                    portfolioHealthEnabled: newConfig.portfolioHealthEnabled,
+                                    transitionEngineEnabled: newConfig.transitionEngineEnabled,
+                                    voiceSupportUserEnabled: newConfig.voiceSupportUserEnabled,
+                                    portfolioHealth: newConfig.portfolioHealth,
+                                    performanceSummaryEnabled: newConfig.performanceSummaryEnabled,
+                                    kycBlockingEnabled: newConfig.kycBlockingEnabled,
                                 },
                             };
                             await AsyncStorage.setItem('@app:advisorConfig', JSON.stringify(updatedStored));

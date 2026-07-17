@@ -295,7 +295,7 @@ const ExecutionGate = ({
             Toast.show({
               type: 'error',
               text1: 'Connection issue',
-              text2: outcome.message || 'Could not reach Kaizen Alpha. Please try again.',
+              text2: outcome.message || 'Could not reach AlphaQuark. Please try again.',
               visibilityTime: 4000,
             });
             onCancel?.();

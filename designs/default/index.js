@@ -93,6 +93,12 @@ import ModelPortfolioScreen from './screens/ModelPortfolioScreen';
 import MPPerformanceScreen from './screens/MPPerformanceScreen';
 import MPInvestNowModal from './screens/MPInvestNowModal';
 
+// Phase J screens (2026-05-05) — Portfolio (bottom-tab Portfolio)
+import PortfolioScreen from './screens/PortfolioScreen';
+
+// Phase J follow-up (2026-05-06) — Notification list (HTML § 08)
+import NotificationListScreen from './screens/NotificationListScreen';
+
 // Phase G composites (2026-05-02) — heavy composites (batch 4)
 import StockCard from './composites/StockCard';
 import BasketCard from './composites/BasketCard';
@@ -102,6 +108,21 @@ import CustomTabbarMPPerformance from './composites/CustomTabbarMPPerformance';
 import EmptyStateMP from './composites/EmptyStateMP';
 import ModelPFCard from './composites/ModelPFCard';
 import MPCard from './composites/MPCard';
+
+// Courses (2026-05-23) — LiveKit viewer composite (placeholder; see file header for activation)
+import LiveRoom from './composites/LiveRoom';
+// Courses Phase 2 (2026-05-23) — Gumlet VOD player (WebView; see file header for native-video swap)
+import GumletPlayer from './composites/GumletPlayer';
+// Web-parity (P1) — RIA AUM value-history card (self-gated on riaBillingEnabled).
+import AumPerformanceCard from './composites/AumPerformanceCard';
+// Web-parity (P2) — Portfolio Health tool sheet (self-gated on portfolioHealthEnabled).
+import PortfolioHealthSheet from './composites/PortfolioHealthSheet';
+// Web-parity (P3) — NBA action banner + status strip (self-gated on nbaHomeEnabled).
+import NbaBanner from './composites/NbaBanner';
+// Web-parity (P4) — eNACH provisional-access banner (self-shows only when a mandate is pending).
+import ProvisionalBanner from './composites/ProvisionalBanner';
+// Web-parity (P5) — Transition (advice) card. DEFERRED/unmounted; gated transitionEngineEnabled.
+import PortfolioTransitionCard from './composites/PortfolioTransitionCard';
 
 const variant = {
     name: 'default',
@@ -177,6 +198,24 @@ const variant = {
         'screens.ModelPortfolioScreen': ModelPortfolioScreen,
         'screens.MPPerformanceScreen': MPPerformanceScreen,
         'screens.MPInvestNowModal': MPInvestNowModal,
+        // Screens (Phase J — bottom-tab Portfolio)
+        'screens.PortfolioScreen': PortfolioScreen,
+        // Screens (Phase J follow-up — Notification list)
+        'screens.NotificationListScreen': NotificationListScreen,
+        // Courses (2026-05-23) — LiveKit viewer (placeholder until @livekit/react-native installed)
+        'composites.LiveRoom': LiveRoom,
+        // Courses Phase 2 (2026-05-23) — Gumlet VOD player (WebView-based; works today)
+        'composites.GumletPlayer': GumletPlayer,
+        // Web-parity (P1) — RIA AUM value-history card
+        'composites.AumPerformanceCard': AumPerformanceCard,
+        // Web-parity (P2) — Portfolio Health tool sheet
+        'composites.PortfolioHealthSheet': PortfolioHealthSheet,
+        // Web-parity (P3) — NBA action banner + status strip
+        'composites.NbaBanner': NbaBanner,
+        // Web-parity (P4) — eNACH provisional-access banner
+        'composites.ProvisionalBanner': ProvisionalBanner,
+        // Web-parity (P5) — Transition (advice) card; deferred/unmounted
+        'composites.PortfolioTransitionCard': PortfolioTransitionCard,
     },
     // SDK widget defaults — all 10 overridable slots.
     // Each file in sdk/ re-exports the SDK built-in OR provides a

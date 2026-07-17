@@ -53,11 +53,13 @@ import {
     FlatList,
     SafeAreaView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import {
     ChevronLeft,
     CheckCircle,
     Star,
+    FileText,
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PieChart from 'react-native-pie-chart';
@@ -164,9 +166,11 @@ const Distribution = ({
 const BespokePerformanceScreen = ({ viewModel, actions }) => {
     const vm = viewModel || {};
     const act = actions || {};
+    const insets = useSafeAreaInsets();
 
     const {
         modelName = '',
+        config = null,
         strategyDetails = { pieData: [] },
         latestRebalance = null,
         planDetails = null,
@@ -176,6 +180,7 @@ const BespokePerformanceScreen = ({ viewModel, actions }) => {
         userDetails = null,
         subscribed = false,
         subscriptionStatus = 'none',
+        isActive = false,
         pricingOptions = [],
         selectedPricing = null,
         currentPrice = 0,
@@ -211,6 +216,7 @@ const BespokePerformanceScreen = ({ viewModel, actions }) => {
 
     const {
         onGoBack = () => {},
+        onOpenResearchReports = () => {},
         onTabIndexChange = () => {},
         onSelectedPricingChange = () => {},
         onInvestNow = () => {},
@@ -256,8 +262,27 @@ const BespokePerformanceScreen = ({ viewModel, actions }) => {
                                                 <ChevronLeft size={24} color="#000" onPress={onGoBack} />
                                             </TouchableOpacity>
                                             <View style={styles.header}>
-                                                <Text style={styles.title}>Bespoke Plans</Text>
+                                                <Text style={styles.title}>{config?.bespokePlanLabel || 'Bespoke Plans'}</Text>
                                             </View>
+                                            {isActive && (
+                                                <TouchableOpacity
+                                                    onPress={onOpenResearchReports}
+                                                    activeOpacity={0.7}
+                                                    style={{
+                                                        marginLeft: 'auto',
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                        backgroundColor: 'rgba(255,255,255,0.15)',
+                                                        paddingHorizontal: 10,
+                                                        paddingVertical: 6,
+                                                        borderRadius: 8,
+                                                    }}>
+                                                    <FileText size={16} color="#fff" />
+                                                    <Text style={{ marginLeft: 6, color: '#fff', fontWeight: '600', fontSize: 12 }}>
+                                                        Reports
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )}
                                         </View>
                                         {/* Header */}
                                         <View style={styles.headerSection}>
@@ -466,7 +491,7 @@ const BespokePerformanceScreen = ({ viewModel, actions }) => {
                 </View>
             </ScrollView>
 
-            <View style={{ alignContent: 'center', alignItems: 'center', alignSelf: 'center', elevation: 20, shadowColor: 'grey' }}>
+            <View style={{ alignContent: 'center', alignItems: 'center', alignSelf: 'center', elevation: 20, shadowColor: 'grey', paddingBottom: Math.max(insets.bottom, 8) }}>
                 {subscribed === true ? (
                     <TouchableOpacity disabled={subscribed} style={[styles.investButtondisable, { width: screenWidth * 0.9 }]}>
                         <Text style={styles.investButtonTextdisable}>Subscribed</Text>

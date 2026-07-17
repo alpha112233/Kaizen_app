@@ -1,22 +1,116 @@
 /**
  * ============================================================================
- * whitelabel/appVariants — TENANT CONFIG ROOT (fork: kaizenalpha)
+ * whitelabel/appVariants — TENANT CONFIG ROOT (Kaizen_app fork)
  * ============================================================================
  *
  * 🔴 PER-FORK FILE. NOT BYTE-IDENTICAL ACROSS REPOS. 🔴
  *
- * Colors sourced from kaizen_alpha web repo:
- *   src/SeperateDesigns/LandingPageDesigns/KaizenLandingPage.jsx
- *   CSS variables: --purple #A199FF, --black #000000, --near-black #0A0A0A,
- *   --dark #1A1A1A, --yellow #F2F261, --purple-dark #8B82F0
+ * The `APP_VARIANTS` map for tenants this repo ships. `src/utils/Config.js`
+ * is the upstream-managed re-exporter (byte-identical across forks); this
+ * file holds the actual values per repo.
+ *
+ * To add a new tenant, add an entry below. To create a fork (whitelabel
+ * overlay), copy this file into the fork's `whitelabel/appVariants.js`
+ * and edit. See `docs/WHITELABEL_RECIPE.md`.
+ *
+ * Synced from upstream Alphab2bapp on 2026-07-17 (full re-sync); the
+ * `kaizenalpha` entry below is this fork's own variant (dark purple + black
+ * theme, colors sourced from the kaizen_alpha web repo's
+ * src/SeperateDesigns/LandingPageDesigns/KaizenLandingPage.jsx CSS variables:
+ * --purple #A199FF, --black #000000, --near-black #0A0A0A, --dark #1A1A1A,
+ * --yellow #F2F261, --purple-dark #8B82F0). `EmptyStateUi` is likewise kept
+ * as this fork's purple-themed override (matches the kaizenalpha brand)
+ * rather than upstream's red default.
  * ============================================================================
  */
 
+// SharedDefaultLogo is the fallback logo applied to every variant
+// that doesn't explicitly override `logo`. The file at
+// `src/assets/AppLogo/logo.png` is the ZamZam-branded logo (the
+// asset is byte-identical to `src/assets/AppLogo/Zamzam.png`) — so
+// any variant that inherits `sharedUIConfig` without overriding
+// `logo` will display ZamZam branding. Variants which need their
+// own brand MUST set `logo` and `toolbarlogo` explicitly (see
+// `alphaquark` and `kaizenalpha` below). The variable was previously
+// named `ZamzamLogo`, which made the leak path visually obvious in
+// code review but was misleading: this is the SHARED-CONFIG fallback
+// logo, not a ZamZam-specific asset.
+import SharedDefaultLogo from '../src/assets/AppLogo/logo.png';
+import AlphaQuarkLogo from '../src/assets/logo.png';
 import KaizenAlphaLogo from '../src/assets/AppLogo/kaizenalpha.png';
 
+// Shared UI config — theme, colors, layout
+const sharedUIConfig = {
+  themeColor: '#ff0000',
+  logo: SharedDefaultLogo,
+  toolbarlogo: SharedDefaultLogo,
+  homeScreenLayout: 'layout1',
+  mainColor: '#0D021F',
+  secondaryColor: '#ffffff',
+  gradient1: '#F0F0F0',
+  gradient2: '#773D9A',
+  placeholderText: '#B893F1',
+  CardborderWidth: 1.5,
+  cardElevation: 0,
+  basket1: '#6A29CA',
+  basket2: '#4F0A9E',
+  cardverticalmargin: 3,
+  tabIconColor: '#fff',
+  bottomTabBorderTopWidth: 0,
+  bottomTabbg: '#242424',
+  selectedTabcolor: '#8555EF',
+  basketcolor: '#600CC0',
+  basketsymbolbg: '#6D0DD6',
+  googleWebClientId: '892331696104-e26pu9iotqrjk1o6jq4ifd4e95fasil1.apps.googleusercontent.com',
+};
+
+// Per-advisor config: subdomain + advisorRaCode
+// When copying the app for a new advisor, just add a new entry here.
 const APP_VARIANTS = {
+  alphaquark: {
+    themeColor: '#0000ff',
+    logo: AlphaQuarkLogo,
+    toolbarlogo: AlphaQuarkLogo,
+    homeScreenLayout: 'layout2',
+    mainColor: '#4CAAA0',
+    secondaryColor: '#F0F0F0',
+    gradient1: '#F0F0F0',
+    gradient2: '#F0F0F0',
+    placeholderText: '#FFFFFF',
+    CardborderWidth: 0,
+    cardElevation: 3,
+    cardverticalmargin: 3,
+    tabIconColor: '#000',
+    bottomTabBorderTopWidth: 1.5,
+    bottomTabbg: '#fff',
+    selectedTabcolor: '#000',
+    basketcolor: '#721E30',
+    basketsymbolbg: '#8D2952',
+    basket1: '#9D2115',
+    basket2: '#6B1207',
+    googleWebClientId: '892331696104-e26pu9iotqrjk1o6jq4ifd4e95fasil1.apps.googleusercontent.com',
+    subdomain: 'prod',
+    advisorRaCode: 'ALPHAQUARK',
+    paymentModal: {
+      headerBg: '#0056B7',
+      stepActiveColor: '#0056B7',
+      stepCompletedColor: '#29A400',
+      buttonPrimaryBg: '#0056B7',
+      buttonSecondaryBg: '#0056B7',
+      accentColor: '#0056B7',
+      checkboxActiveColor: '#29A400',
+      linkColor: '#0056B7',
+      progressBarColor: '#0056B7',
+    },
+  },
+  zamzamcapital: {...sharedUIConfig, subdomain: 'zamzamcapital',   advisorRaCode: 'ZAMZAMCAPITAL'},
+  rgxresearch:   {...sharedUIConfig, subdomain: 'rgxresearch',     advisorRaCode: 'RGXRESEARCH'},
+  arfs:          {...sharedUIConfig, subdomain: 'arfs',            advisorRaCode: 'ARFS'},
+  magnus:        {...sharedUIConfig, subdomain: 'zamzamcapital',   advisorRaCode: 'ZAMZAMCAPITAL'},
+
+  // ── kaizenalpha (this fork) ──────────────────────────────────────────────
+  // Dark purple + black theme, from KaizenLandingPage.jsx CSS vars.
   kaizenalpha: {
-    // ── Brand colors (dark purple + black, from KaizenLandingPage.jsx CSS vars) ──
     themeColor: '#A199FF',        // --purple (primary accent)
     logo: KaizenAlphaLogo,
     toolbarlogo: KaizenAlphaLogo,
@@ -63,6 +157,8 @@ const APP_VARIANTS = {
     },
   },
 
+  // kaizenalpha's own EmptyStateUi (purple-themed, matches the brand above)
+  // — overrides upstream's red default for this fork.
   EmptyStateUi: {
     backgroundColor: '#2D2B5A',     // dark purple
     darkerColor: '#1A1840',

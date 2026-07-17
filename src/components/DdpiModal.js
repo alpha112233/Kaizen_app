@@ -1282,7 +1282,7 @@ export function AngleOneTpinModal({
       <input type="hidden" name="ReqId" value="${edisData?.ReqId || ''}" />
       <input type="hidden" name="Version" value="1.1" />
       <input type="hidden" name="TransDtls" value="${edisData?.TransDtls || ''}" />
-      <input type="hidden" name="returnURL" value="${Config.REACT_APP_WEBSITE_URL || 'https://kaizenalpha.in'}/stock-recommendation" />
+      <input type="hidden" name="returnURL" value="${Config.REACT_APP_WEBSITE_URL || 'https://prod.alphaquark.in'}/stock-recommendation" />
       <input id="submitBtn" type="submit" />
     </form>
   </body>
@@ -2071,7 +2071,7 @@ export function OtherBrokerModel({
         '3. Select Authorize with T-PIN.',
         '4. Click Continue to CDSL.',
         '5. Enter your T-PIN (or generate a new one if needed) and verify it, then enter the OTP.',
-        `6. Once verified, return to the ${Config?.REACT_APP_WHITE_LABEL_TEXT || 'Kaizen Alpha'} platform and retry the sell order.`,
+        `6. Once verified, return to the ${Config?.REACT_APP_WHITE_LABEL_TEXT || 'AlphaQuark'} platform and retry the sell order.`,
       ],
     },
     'ICICI Direct': {
