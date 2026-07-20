@@ -13,7 +13,6 @@ import {WebView} from 'react-native-webview';
 import {XIcon, ChevronLeft} from 'lucide-react-native';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
-import {getAuth} from '@react-native-firebase/auth';
 import {generateToken} from '../utils/SecurityTokenManager';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,6 +31,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../utils/accountEmail';
 
 const {height: screenHeight} = Dimensions.get('window');
 // The live backend still exposes the retired v1 partner endpoint and does
@@ -50,9 +50,7 @@ const IIFLModal = ({isVisible, onClose, fetchBrokerStatusModal}) => {
   const [egressReady, setEgressReady] = useState(false);
   const exchangeStartedRef = useRef(false);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
   const accent =
     colors?.brand?.primary ||
     runtimeConfig?.mainColor ||

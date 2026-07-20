@@ -41,6 +41,7 @@ import useTokens from '../../theme/useTokens';
 import { useComponent } from '../../design/useDesign';
 import useHomeMarketSummary from '../Home/hooks/useHomeMarketSummary';
 import { shapeMpPlan, shapeBespokePlan } from '../../utils/alphanomyPlanShape';
+import {useAccountEmail, getAccountDisplayName} from '../../utils/accountEmail';
 
 const {width, width: ScreenWidth} = Dimensions.get('window');
 
@@ -65,11 +66,16 @@ const ModelPortfolioScreen = ({type = '', onDataLoaded}) => {
   const [showPaymentFail, setShowPaymentFail] = useState(false);
   const navigation = useNavigation();
   const user = auth.currentUser;
-  const userEmail = user?.email;
+  // Apple users have no usable currentUser.email — the identity is the typed
+  // account email. useAccountEmail() applies that precedence and re-renders
+  // when it resolves; reading user.email here left this whole screen (the
+  // "Plans" tab) empty because the fetch gate below never opened. See
+  // src/utils/accountEmail.js.
+  const userEmail = useAccountEmail();
 
   // Variant-facing user name for the alphanomy `_AppHeader` greeting.
   // Declared AFTER `user` so we don't TDZ-read an undeclared binding.
-  const userName = userDetails?.name || user?.displayName || '';
+  const userName = getAccountDisplayName(userDetails?.name, user?.displayName);
 
   // Variant-facing alphanomy plan rows — derived from the same catalog
   // state the legacy MP card list reads (`allStrategy`, `allBespoke`).

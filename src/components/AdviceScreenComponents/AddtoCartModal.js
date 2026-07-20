@@ -9,7 +9,6 @@ import {
   PanResponder,
 } from 'react-native';
 import server from '../../utils/serverConfig';
-import {getAuth} from '@react-native-firebase/auth';
 import axios from 'axios';
 import ZerodhaReviewModal from '../ReviewZerodhaTradeModal';
 import IIFLReviewTradeModal from '../IIFLReviewTradeModal';
@@ -56,6 +55,7 @@ import TotalAmountTextRebalance from './DynamicText/totalAmountRebalance';
 import CartFullAmountText from './DynamicText/CartFullAmountText';
 import TotalAmountText from './DynamicText/totalAmount';
 import useSdkClient from '../../sdk/useSdkClient';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const isSdkExecuteAdviceEnabled = () => {
   const v = String(Config?.REACT_APP_USE_SDK_EXECUTE_ADVICE || '').trim().toLowerCase();
@@ -98,9 +98,7 @@ const AddToCartModal = ({
   const [openZerodhaReviewModal, setOpenZerodhaModel] = useState(false);
   const [openSuccessModal, setOpenSucessModal] = useState(false);
   const {setCartCount} = useCart();
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
   const [cartItemCount, setCartItemCount] = useState();
   //const [brokerStatus, setBrokerStatus] = useState();
 

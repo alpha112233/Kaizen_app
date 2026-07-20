@@ -37,12 +37,12 @@ import {
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { ChevronDown, ChevronRight } from 'lucide-react-native';
-import { getAuth } from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { useConfig } from '../../../src/context/ConfigContext';
 import useTokens from '../../../src/theme/useTokens';
 import PortfolioSummaryService from '../../../src/FunctionCall/services/PortfolioSummaryService';
 import { useTrade } from '../../../src/screens/TradeContext';
+import { useAccountEmail } from '../../../src/utils/accountEmail';
 
 // ── formatters (mirror web's `inr` / `pct`) ────────────────────────────────
 const inr = v => {
@@ -86,7 +86,10 @@ function PortfolioSummaryInner() {
   const config = useConfig();
   const tokens = useTokens();
   const enabled = !!(config && config.performanceSummaryEnabled);
-  const email = getAuth().currentUser?.email || null;
+  // Apple users have no usable currentUser.email (null / relay alias);
+  // this component gates its fetch on `email`, and the identity can
+  // resolve AFTER mount — the reactive hook re-renders when it does.
+  const email = useAccountEmail();
   const {
     modelPortfolioStrategyfinal,
     modelPortfolioEntitlementsLoaded,

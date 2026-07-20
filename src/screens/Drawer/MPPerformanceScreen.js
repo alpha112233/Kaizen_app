@@ -25,7 +25,6 @@ import {useParams} from 'react-router-native';
 import axios from 'axios';
 import moment from 'moment';
 import CryptoJS from 'react-native-crypto-js';
-import {getAuth} from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import Config from 'react-native-config';
 import { useComponent } from '../../design/useDesign';
@@ -61,6 +60,7 @@ import {AngleOneTpinModal} from '../../components/DdpiModal';
 import {FyersTpinModal} from '../../components/DdpiModal';
 import {OtherBrokerModel} from '../../components/DdpiModal';
 import {FileText} from 'lucide-react-native';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const Alpha100 = require('../../assets/alpha-100.png');
 const screenWidth = Dimensions.get('window').width;
@@ -92,10 +92,8 @@ const MPPerformanceScreen = ({route}) => {
   const gradient2 = tokens.colors.brand.gradientEnd;
   const mainColor = tokens.colors.brand.primary;
 
-  const auth = getAuth();
-  const user = auth.currentUser;
   const {fileName} = useParams();
-  const userEmail = user && user.email;
+  const userEmail = getAccountEmail();
 
   // State
   const [confirmOrder, setConfirmOrder] = useState(false);

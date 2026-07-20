@@ -1,6 +1,5 @@
 import React, {useRef, useState, useEffect} from 'react';
 import {View, StyleSheet, Dimensions} from 'react-native';
-import {getAuth} from '@react-native-firebase/auth';
 import server from '../../utils/serverConfig';
 import axios from 'axios';
 import CryptoJS from 'react-native-crypto-js';
@@ -10,6 +9,7 @@ import {generateToken} from '../../utils/SecurityTokenManager';
 import ZerodhaConnectUI from '../../UIComponents/BrokerConnectionUI/ZerodhaConnectUI';
 import {useTrade} from '../../../screens/TradeContext';
 import {getAdvisorSubdomain} from '../../utils/variantHelper';
+import {getAccountEmail} from '../../../utils/accountEmail';
 const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
 const commonHeight = screenHeight * 0.06;
 
@@ -37,9 +37,7 @@ const ZerodhaConnectModal = ({
   const [ispasswordVisibleup, setIsPasswordVisibleup] = useState(false);
   const [showWebView, setShowWebView] = useState(false); // Flag to toggle WebView display
   const [authUrl, setAuthUrl] = useState('');
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
   const sheet = useRef(null);
   const scrollViewRef = useRef(null);
 

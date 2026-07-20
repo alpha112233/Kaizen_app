@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {ChevronLeft, Bookmark} from 'lucide-react-native';
-import {getAuth} from '@react-native-firebase/auth';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -37,6 +36,7 @@ import EmptyStateInfoMP from '../Drawer/EmptyStateMP';
 import PerformanceChart from '../../components/ModelPortfolioComponents/PerformanceChart';
 import DistributionGrid from '../Drawer/DistributionRowGrid';
 import {useTrade} from '../TradeContext';
+import {getAccountEmail} from '../../utils/accountEmail';
 import {useConfig} from '../../context/ConfigContext';
 import useTokens from '../../theme/useTokens';
 
@@ -158,9 +158,7 @@ const AfterSubscriptionScreen = ({route}) => {
   const gradientEnd = tokens.colors.brand.gradientEnd;
   const themeColor = tokens.colors.brand.accent;
   const {fileName} = route.params;
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user && user.email;
+  const userEmail = getAccountEmail();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);

@@ -22,7 +22,6 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 
 import { brokerRegistry, BROKER_AUTH_TYPE, getApiBrokerName } from '../../config/brokerRegistry';
@@ -31,6 +30,7 @@ import { generateToken } from '../../utils/SecurityTokenManager';
 import Config from 'react-native-config';
 import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import useModalStore from '../../GlobalUIModals/modalStore';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const getHeaders = () => ({
   'Content-Type': 'application/json',
@@ -43,8 +43,7 @@ const BrokerSelectionScreen = () => {
   const route = useRoute();
   const { onBrokerConnected } = route.params || {};
 
-  const auth = getAuth();
-  const userEmail = auth.currentUser?.email;
+  const userEmail = getAccountEmail();
 
   const [connectedBrokers, setConnectedBrokers] = useState({});
   const [loading, setLoading] = useState(true);

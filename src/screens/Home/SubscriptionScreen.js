@@ -11,7 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios';
-import { getAuth } from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { ChevronLeft, Pencil } from 'lucide-react-native';
 import { FadeLoading } from 'react-native-fade-loading';
@@ -31,6 +30,7 @@ import {
   isBrokerSessionExpired,
   getPrimaryBrokerEntry,
 } from '../../utils/brokerStateUtils';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const cross = require('../../assets/cross.png');
 const tick = require('../../assets/checked.png');
@@ -72,9 +72,7 @@ const SubscriptionScreen = () => {
 
   const navigation = useNavigation();
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const [showDisconnectBroker, setShowDisconnectBroker] = useState(false);
   const [withoutBrokerLoader, setWithoutBrokerLoader] = useState(false);

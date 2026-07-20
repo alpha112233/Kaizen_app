@@ -17,7 +17,6 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getAuth } from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import server from '../utils/serverConfig';
 import { generateToken } from '../utils/SecurityTokenManager';
@@ -32,6 +31,7 @@ import { refreshGrowwSession } from '../utils/growwRefresh';
 import eventEmitter from './EventEmitter';
 import AngelOneCautionaryWarning from './AngelOneCautionaryWarning';
 import { useComponent } from '../design/useDesign';
+import {getAccountEmail} from '../utils/accountEmail';
 
 const BrokerSelectionModal = ({
     showBrokerModal,
@@ -61,9 +61,7 @@ const BrokerSelectionModal = ({
 
     const [pressedBroker, setPressedBroker] = useState(null);
     const [userDetails, setUserDetails] = useState();
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const userEmail = user?.email;
+    const userEmail = getAccountEmail();
     const [loginLoading, setLoginLoading] = useState(false);
     const [brokerStatus, setBrokerStatus] = useState(
         userDetails ? userDetails.connect_broker_status : null,

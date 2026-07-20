@@ -13,7 +13,6 @@ import {
   Platform,
 } from 'react-native';
 
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 import CryptoJS from 'react-native-crypto-js';
 import Config from 'react-native-config';
@@ -34,6 +33,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -70,9 +70,7 @@ const GrowwConnectModal = ({
   const [egressReady, setEgressReady] = useState(false);
   const [unmetAck, setUnmetAck] = useState(false);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const advisorSubdomain =
     configData?.config?.REACT_APP_HEADER_NAME || getAdvisorSubdomain();

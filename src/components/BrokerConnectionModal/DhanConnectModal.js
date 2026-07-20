@@ -1,7 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
 import server from '../../utils/serverConfig';
-import {getAuth} from '@react-native-firebase/auth';
 import axios from 'axios';
 import {generateToken} from '../../utils/SecurityTokenManager';
 import Config from 'react-native-config';
@@ -16,6 +15,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
 
@@ -43,9 +43,7 @@ const DhanConnectModal = ({
 
   const hasProcessedCallback = useRef(false);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const [userDetails, setUserDetails] = useState(null);
 

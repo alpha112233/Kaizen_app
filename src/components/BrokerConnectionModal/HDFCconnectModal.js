@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import server from '../../utils/serverConfig';
 import CryptoJS from 'react-native-crypto-js';
-import { getAuth } from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import { generateToken } from '../../utils/SecurityTokenManager';
 
@@ -17,6 +16,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const HDFCconnectModal = ({
   isVisible,
@@ -34,9 +34,7 @@ const HDFCconnectModal = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [showWebView, setShowWebView] = useState(false);
   const [authUrl, setAuthUrl] = useState('');
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
   const [isPasswordVisibleup, setIsPasswordVisibleup] = useState(false);
   const sheet = useRef(null);
   const scrollViewRef = useRef(null);

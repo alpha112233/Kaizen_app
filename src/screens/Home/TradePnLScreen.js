@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {ChevronLeft, TrendingUp, TrendingDown, Clock, BarChart3} from 'lucide-react-native';
-import {getAuth} from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import Config from 'react-native-config';
@@ -21,6 +20,7 @@ import {generateToken} from '../../utils/SecurityTokenManager';
 import {useTrade} from '../TradeContext';
 import {useConfig} from '../../context/ConfigContext';
 import formatCurrency from '../../utils/formatCurrency';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const TradePnLScreen = () => {
   const {configData} = useTrade();
@@ -30,8 +30,7 @@ const TradePnLScreen = () => {
   const mainColor = config?.mainColor || '#0056B7';
 
   const navigation = useNavigation();
-  const auth = getAuth();
-  const userEmail = auth.currentUser?.email;
+  const userEmail = getAccountEmail();
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

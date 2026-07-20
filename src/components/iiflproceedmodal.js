@@ -15,12 +15,12 @@ import {XIcon, EyeOffIcon, EyeIcon} from 'lucide-react-native';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {WebView} from 'react-native-webview';
-import {getAuth} from '@react-native-firebase/auth';
 import server from '../utils/serverConfig';
 import {generateToken} from '../utils/SecurityTokenManager';
 import Config from 'react-native-config';
 import {useTrade} from '../screens/TradeContext';
 import {getAdvisorSubdomain} from '../utils/variantHelper';
+import {getAccountEmail} from '../utils/accountEmail';
 
 const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
 const commonHeight = screenHeight * 0.06; // Common height
@@ -42,9 +42,7 @@ const IIFLProceedModal = ({
   const [broker, setBroker] = useState('IIFL Securities');
   const [showWebView, setShowWebView] = useState(false); // State to control WebView visibility
   const [isLoading, setIsLoading] = useState(false); // State for loading indicator
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   useEffect(() => {
     if (isVisible && userEmail) {

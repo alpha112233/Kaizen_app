@@ -40,7 +40,6 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import CryptoJS from 'react-native-crypto-js';
-import { getAuth } from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import server from '../../utils/serverConfig';
 import { generateToken } from '../../utils/SecurityTokenManager';
@@ -48,6 +47,7 @@ import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import { useTrade } from '../../screens/TradeContext';
 import eventEmitter from '../EventEmitter';
 import useModalStore from '../../GlobalUIModals/modalStore';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const wrapCredential = (value) =>
   CryptoJS.AES.encrypt(String(value || ''), 'ApiKeySecret').toString();
@@ -59,8 +59,7 @@ const DefinEdgeConnectModal = ({
 }) => {
   const { configData } = useTrade();
   const showAlert = useModalStore((s) => s.showAlert);
-  const auth = getAuth();
-  const userEmail = auth.currentUser?.email;
+  const userEmail = getAccountEmail();
 
   const [apiKey, setApiKey] = useState('');        // api_token
   const [secretKey, setSecretKey] = useState('');  // api_secret

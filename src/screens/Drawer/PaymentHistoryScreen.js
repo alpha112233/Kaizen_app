@@ -21,7 +21,6 @@ import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import { decode as atob, encode as btoa } from 'base-64';
 import Toast from 'react-native-toast-message';
-import { getAuth } from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import FileViewer from 'react-native-file-viewer';
 import server from '../../utils/serverConfig';
@@ -31,6 +30,7 @@ import { useConfig } from '../../context/ConfigContext';
 import { useComponent } from '../../design/useDesign';
 import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import RiaBillingService from '../../FunctionCall/services/RiaBillingService';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 // Robustly turn an axios arraybuffer (or already-base64 string) into base64 so the
 // existing savePdfToFile (atob → RNFS.writeFile) can consume it unchanged.
@@ -106,9 +106,7 @@ const PaymentHistoryScreen = () => {
     const [feeStatements, setFeeStatements] = useState([]);
     const [feeContract, setFeeContract] = useState(null);
 
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const userEmail = user?.email;
+    const userEmail = getAccountEmail();
 
     // X-Advisor-Subdomain: prefer the live config value (per-tenant
     // override resolved from the backend), but fall back to the static

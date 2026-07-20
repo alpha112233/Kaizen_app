@@ -7,10 +7,10 @@ import Toast from 'react-native-toast-message';
 import server from '../../utils/serverConfig';
 import { generateToken } from '../../utils/SecurityTokenManager';
 import Config from 'react-native-config';
-import { getAuth } from '@react-native-firebase/auth';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTrade } from '../TradeContext';
 import { useConfig } from '../../context/ConfigContext';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const ResearchReportScreen = () => {
   const {configData}=useTrade();
@@ -37,9 +37,7 @@ const ResearchReportScreen = () => {
   const [sortOrder, setSortOrder] = useState('latest');
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   useEffect(() => {
     if (userEmail) {

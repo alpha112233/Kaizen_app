@@ -24,7 +24,6 @@ import ZerodhaIcon from '../../assets/Zerodha.png';
 import ZerodhaHelpContent from './HelpUI/ZerodhaHelpContent';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CrossPlatformOverlay from '../../components/CrossPlatformOverlay';
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from '../../utils/safeConfig';
@@ -37,6 +36,7 @@ import {
   useSdkBridge,
   sdkExchangeBrokerToken,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('screen');
 
@@ -55,9 +55,7 @@ const ZerodhaConnectUI = ({
   const showAlert = useModalStore((state) => state.showAlert);
   const sdkBridge = useSdkBridge();
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   // Get common headers for API calls
   const getHeaders = () => ({

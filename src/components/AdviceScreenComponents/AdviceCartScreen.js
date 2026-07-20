@@ -4,15 +4,13 @@ import axios from 'axios';
 import server from '../../utils/serverConfig';
 import CustomToolbar from '../../components/CustomToolbar';
 import StockCard from '../../UIComponents/StockAdvicesUI/StockCard';
-import { getAuth } from '@react-native-firebase/auth';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const AdviceCartScreen = ({ broker }) => {
   const [stockDetails, setStockDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   useEffect(() => {
     if (userEmail) {

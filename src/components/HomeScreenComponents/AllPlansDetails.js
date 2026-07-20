@@ -17,7 +17,6 @@ import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import server from '../../utils/serverConfig';
 import { generateToken } from '../../utils/SecurityTokenManager';
 import Config from 'react-native-config';
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 import { useTrade } from '../../screens/TradeContext';
 import { useGstConfig } from '../../context/GstConfigContext';
@@ -26,6 +25,7 @@ import { withGst, gstLabel } from '../../utils/gstHelpers';
 import RenderHTML from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import PlanCard from './PlanCard';
+import { useAccountEmail } from '../../utils/accountEmail';
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.8;
 const CARD_SPACING = 16;
@@ -43,10 +43,10 @@ const AllPlanDetails = ({ type }) => {
 
   const flatListRef = useRef(null);
   const advisorTag = configData?.config?.REACT_APP_ADVISOR_SPECIFIC_TAG;
-  const auth = getAuth();
   const navigation = useNavigation();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  // Apple users have no usable currentUser.email; without this the plan URLs
+  // below were built with `null` and returned nothing. See utils/accountEmail.
+  const userEmail = useAccountEmail();
 
   const subscribed = !planList;
 

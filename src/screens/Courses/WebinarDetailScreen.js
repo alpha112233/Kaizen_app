@@ -24,6 +24,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import { useDesign } from '../../design/useDesign';
 import { useConfig } from '../../context/ConfigContext';
+import {getAccountEmail} from '../../utils/accountEmail';
 import liveKitService from '../../FunctionCall/services/LiveKitService';
 import BuyWebinarTicketSheet from '../../components/BuyWebinarTicketSheet';
 
@@ -164,7 +165,7 @@ export default function WebinarDetailScreen() {
   const isVod = data.recordingStorageTier === 'promoted' && data.gumletAssetId;
   const ctaLabel = isFree ? 'Register for free' : `Buy ticket — ₹${data.ticketPrice}`;
   const emailMismatch = user?.email && purchaseEmail
-    && user.email.toLowerCase() !== purchaseEmail.toLowerCase();
+    && (getAccountEmail() || '').toLowerCase() !== purchaseEmail.toLowerCase();
 
   return (
     <>
@@ -251,7 +252,7 @@ export default function WebinarDetailScreen() {
               {user && emailMismatch && !joinToken && (
                 <View style={styles.warnBox}>
                   <Text style={styles.warnText}>
-                    You're signed in as {user.email} but registered as {purchaseEmail}. Either sign out and sign in with the registered email, or register again with this account below.
+                    You're signed in as {getAccountEmail()} but registered as {purchaseEmail}. Either sign out and sign in with the registered email, or register again with this account below.
                   </Text>
                   <TouchableOpacity
                     onPress={() => {

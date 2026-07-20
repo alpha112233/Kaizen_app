@@ -10,11 +10,11 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, NativeModules } from 'react-native';
-import { getAuth } from '@react-native-firebase/auth';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { useTrade } from '../TradeContext';
 import { updateRACodeAndConfig, getRaId, getUserData } from '../../utils/storageUtils';
 import { useComponent } from '../../design/useDesign';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 let RNRestart = null;
 try {
@@ -29,9 +29,7 @@ const ChangeAdvisor = () => {
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
 
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const userEmail = user?.email;
+    const userEmail = getAccountEmail();
     const navigation = useNavigation();
 
     const { getAllTrades, getModelPortfolioStrategyDetails, reloadConfigData } = useTrade();

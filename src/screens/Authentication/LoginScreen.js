@@ -33,6 +33,7 @@ import { generateToken } from '../../utils/SecurityTokenManager';
 import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import { useConfig } from '../../context/ConfigContext';
 import { useComponent } from '../../design/useDesign';
+import { setAccountEmail, isPlaceholderName } from '../../utils/accountEmail';
 
 import {
     storeLoginData,
@@ -318,12 +319,26 @@ const LoginScreen = () => {
     const completeAppleSignIn = async (user, userEmail, fullName) => {
         try {
             setLoading(true);
+            // Apple returns `fullName` ONLY on the first-ever authorization
+            // for an Apple ID — on any re-install or re-login it is null. The
+            // old code fell through to the literal 'Apple User', wrote it onto
+            // the Firebase profile AND POSTed it as the backend account name,
+            // so `userDetails.name` itself became "Apple User" and every
+            // greeting rendered it permanently. Never persist a placeholder:
+            // fall back to the typed email's local part, which is a real,
+            // user-recognisable identity.
+            const nameFromEmail = String(userEmail || '')
+                .split('@')[0]
+                .trim();
             let displayName = user.displayName;
+            if (isPlaceholderName(displayName)) {
+                displayName = null;
+            }
             if (!displayName && fullName) {
                 const nameParts = [fullName.givenName, fullName.familyName].filter(Boolean);
-                displayName = nameParts.join(' ') || 'Apple User';
+                displayName = nameParts.join(' ') || null;
             }
-            displayName = displayName || 'Apple User';
+            displayName = displayName || nameFromEmail || '';
 
             // CRITICAL: lowercase the email before every backend call.
             // The backend's POST /api/user/ (aq_backend_github/Routes/userRoutes.js:381)
@@ -345,12 +360,14 @@ const LoginScreen = () => {
             // from their subscription/plans (2026-07-20).
             const effectiveEmail = String(userEmail || user.email).trim().toLowerCase();
 
-            // Persist the resolved account identity: TradeContext (and any
-            // other consumer) cannot rely on auth.currentUser.email for
-            // Apple sign-ins — it stays null / relay-aliased for the life
-            // of the Firebase user. See resolveStoredAccountEmail().
+            // Persist the resolved account identity: no consumer can rely on
+            // auth.currentUser.email for Apple sign-ins — it stays null /
+            // relay-aliased for the life of the Firebase user. setAccountEmail
+            // persists AND updates the in-memory cache that
+            // utils/accountEmail.getAccountEmail() serves to every screen
+            // synchronously, then emits the resolve event below.
             try {
-                await AsyncStorage.setItem('aq_account_email', effectiveEmail);
+                await setAccountEmail(effectiveEmail);
             } catch (persistErr) {
                 console.warn('aq_account_email persist failed (non-fatal):', persistErr?.message);
             }

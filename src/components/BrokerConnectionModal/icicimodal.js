@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { getAuth } from '@react-native-firebase/auth';
 import server from '../../utils/serverConfig';
 import axios from 'axios';
 import CryptoJS from 'react-native-crypto-js';
@@ -17,6 +16,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const ICICIUPModal = ({
   isVisible,
@@ -42,9 +42,7 @@ const ICICIUPModal = ({
   const sheet = useRef(null);
   const scrollViewRef = useRef(null);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const checkValidApiAnSecretdecrypt = details => {
     const bytesKey = CryptoJS.AES.decrypt(details, 'ApiKeySecret');

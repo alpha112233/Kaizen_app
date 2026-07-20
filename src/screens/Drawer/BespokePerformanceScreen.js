@@ -13,7 +13,6 @@ import { Dimensions } from 'react-native';
 import axios from 'axios';
 import moment from 'moment';
 import CryptoJS from 'react-native-crypto-js';
-import { getAuth } from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import Config from 'react-native-config';
 import IsMarketHours from '../../utils/isMarketHours';
@@ -27,6 +26,7 @@ import { getAdvisorSubdomain } from '../../utils/variantHelper';
 import { useComponent } from '../../design/useDesign';
 import { getSubscriptionStatusString } from '../../utils/subscriptionStatus';
 import { useConfig } from '../../context/ConfigContext';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const screenWidth = Dimensions.get('window').width;
 const ScreenHeight = Dimensions.get('window').height;
@@ -45,10 +45,8 @@ const BespokePerformanceScreen = ({ route }) => {
     const navigation = useNavigation();
     const { gstConfigure: configGst, gstWithTextConfigure: configGstWithText } = useGstConfig();
 
-    const auth = getAuth();
-    const user = auth.currentUser;
     const { fileName } = useParams();
-    const userEmail = user && user.email;
+    const userEmail = getAccountEmail();
 
     // State
     const [confirmOrder, setConfirmOrder] = useState(false);

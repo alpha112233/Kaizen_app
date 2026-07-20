@@ -9,7 +9,6 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import server from '../../utils/serverConfig';
@@ -26,6 +25,7 @@ import {
   markBrokerExpired,
 } from '../../utils/reauthHelpers';
 import { isBrokerSessionExpired } from '../../utils/brokerStateUtils';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 // Backend `connected_brokers[].broker` → ModalManager switch key. Keep in
 // sync with src/GlobalUIModals/ModalManager.js. Brokers not listed here
@@ -85,9 +85,7 @@ const ManageConnectionsModal = ({
     configData?.config?.REACT_APP_BROKER_CONNECT_REDIRECT_URL ||
     '';
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const fetchConnections = async () => {
     if (!userEmail || fetchingRef.current) return;

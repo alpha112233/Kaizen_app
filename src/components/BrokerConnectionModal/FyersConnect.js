@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 
-import { getAuth } from '@react-native-firebase/auth';
 import server from '../../utils/serverConfig';
 import CryptoJS from 'react-native-crypto-js';
 import axios from 'axios';
@@ -17,6 +16,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const commonHeight = screenHeight * 0.06;
@@ -46,9 +46,7 @@ const FyersConnect = ({
   const brokerConnectRedirectURL =
     configData?.config?.REACT_APP_BROKER_CONNECT_REDIRECT_URL;
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
   const [helpVisible, setHelpVisible] = useState(false);
 
   const sheet = useRef(null);

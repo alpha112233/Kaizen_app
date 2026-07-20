@@ -9,7 +9,6 @@ import {
   Dimensions,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import {getAuth} from '@react-native-firebase/auth';
 import axios from 'axios';
 import server from '../../utils/serverConfig';
 import {
@@ -26,16 +25,15 @@ import {useNavigation} from '@react-navigation/native';
 import CalendarPicker from 'react-native-calendar-picker';
 import Accordion from 'react-native-collapsible/Accordion';
 import {generateToken} from '../../utils/SecurityTokenManager';
+import {getAccountEmail} from '../../utils/accountEmail';
 import Config from 'react-native-config';
 import {useTrade} from '../TradeContext';
 import {getAdvisorSubdomain} from '../../utils/variantHelper';
 const {width: screenWidth} = Dimensions.get('window');
 const HistoryScreen = () => {
   const {configData} = useTrade();
-  const auth = getAuth();
   const navigation = useNavigation();
-  const user = auth.currentUser;
-  const userEmail = user && user.email;
+  const userEmail = getAccountEmail();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [startDateOpen, setStartDateOpen] = useState(false);

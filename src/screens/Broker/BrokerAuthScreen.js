@@ -18,7 +18,6 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 import Config from 'react-native-config';
 
@@ -33,6 +32,7 @@ import {
 import { getApiBrokerName } from '../../config/brokerRegistry';
 import useModalStore from '../../GlobalUIModals/modalStore';
 import CryptoJS from 'react-native-crypto-js';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const getHeaders = () => ({
   'Content-Type': 'application/json',
@@ -47,8 +47,7 @@ const BrokerAuthScreen = () => {
   const route = useRoute();
   const { brokerConfig, onSuccess } = route.params || {};
 
-  const auth = getAuth();
-  const userEmail = auth.currentUser?.email;
+  const userEmail = getAccountEmail();
   const showAlert = useModalStore((state) => state.showAlert);
 
   const [state, setState] = useState('loading'); // loading, webview, success, error

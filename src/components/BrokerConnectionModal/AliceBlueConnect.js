@@ -1,5 +1,4 @@
 import React, {useRef, useState, useEffect} from 'react';
-import {getAuth} from '@react-native-firebase/auth';
 import server from '../../utils/serverConfig';
 import axios from 'axios';
 import Config from 'react-native-config';
@@ -14,6 +13,7 @@ import {
   sdkExchangeBrokerToken,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 // Route through CCXT backend (matching web's handleAliceBlueConnect) so origin
 // is stored in MongoDB for multi-site callback routing. The CCXT server
@@ -58,9 +58,7 @@ const AliceBlueConnect = ({
 
   const [loading, setLoading] = useState(false);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const [userDetails, setUserDetails] = useState();
   const getUserDeatils = () => {

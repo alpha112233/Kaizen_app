@@ -4,7 +4,6 @@ import { Dimensions } from 'react-native';
 import server from '../../utils/serverConfig';
 import CryptoJS from 'react-native-crypto-js';
 
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 
 import { generateToken } from '../../utils/SecurityTokenManager';
@@ -20,6 +19,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -41,9 +41,7 @@ const UpstoxModal = ({
   const [ispasswordVisibleup, setIsPasswordVisibleup] = useState(false);
   const [showWebView, setShowWebView] = useState(false);
   const [authUrl, setAuthUrl] = useState('');
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
   const sheet = useRef(null);
   const scrollViewRef = useRef(null);
 

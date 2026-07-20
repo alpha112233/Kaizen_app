@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 import server from '../../utils/serverConfig';
 import CryptoJS from 'react-native-crypto-js';
@@ -17,6 +16,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const KotakModal = ({
   isVisible,
@@ -31,9 +31,7 @@ const KotakModal = ({
   const sdkBridge = useSdkBridge();
   const sheet = useRef(null);
   const scrollViewRef = useRef(null);
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
   const [apiKey, setApiKey] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [ucc, setucc] = useState('');

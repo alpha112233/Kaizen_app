@@ -27,7 +27,6 @@ import Toast from 'react-native-toast-message';
 import {ChevronLeft} from 'lucide-react-native';
 import CustomToolbar from '../../components/CustomToolbar';
 import MPCard from '../../components/ModelPortfolioComponents/MPCard';
-import {getAuth} from '@react-native-firebase/auth';
 import server from '../../utils/serverConfig';
 import { validateStockExchanges } from '../../utils/brokerPublisher';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
@@ -48,6 +47,7 @@ import {useTrade} from '../TradeContext';
 import {useConfig} from '../../context/ConfigContext';
 import { computeTradeVariant } from '../../utils/tradeVariant';
 import {getAdvisorSubdomain} from '../../utils/variantHelper';
+import {getAccountEmail} from '../../utils/accountEmail';
 import useSdkClient from '../../sdk/useSdkClient';
 
 const isSdkExecuteAdviceEnabled = () => {
@@ -65,9 +65,7 @@ const IgnoreTradesScreen = () => {
   const { allowAfterHoursOrders } = useConfig() || {};
   const sdkClient = useSdkClient();
   const sdkExecuteAdviceEnabled = isSdkExecuteAdviceEnabled() && !!sdkClient;
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user && user.email;
+  const userEmail = getAccountEmail();
 
   const {showAddToCartModal} = useModal();
   const {setCartCount} = useCart();

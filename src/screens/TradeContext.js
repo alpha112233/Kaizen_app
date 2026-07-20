@@ -9,9 +9,6 @@ import React, {
 } from 'react';
 import axios from 'axios';
 import CryptoJS from 'react-native-crypto-js';
-import {getAuth, onAuthStateChanged} from '@react-native-firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import eventEmitter from '../components/EventEmitter';
 import server from '../utils/serverConfig';
 import {fetchFunds} from '../FunctionCall/fetchFunds';
 import {fetchBrokerAllHoldings} from '../FunctionCall/fetchBrokerAllHoldings';
@@ -20,25 +17,9 @@ import {fetchOrderBook, fetchPendingOrders} from '../services/BrokerOrderBookAPI
 
 import {getConfigData, isUserDataComplete} from '../utils/storageUtils';
 import Config from 'react-native-config';
+import {getAccountEmailAsync, useAccountEmail} from '../utils/accountEmail';
 const TradeContext = createContext();
 
-// Account-identity fallback for Apple sign-ins. Firebase's
-// auth.currentUser.email is authoritative when present, but Apple can
-// withhold the email (null) or supply a @privaterelay.appleid.com alias
-// for the life of the Firebase user — while every backend record
-// (subscription, plans, clientlist) is keyed by the REAL email the user
-// typed on EmailScreenAppleLogin. completeAppleSignIn persists that
-// resolved identity under this key; every call-time email derivation
-// falls back to it. Google flows never hit the fallback.
-const ACCOUNT_EMAIL_KEY = 'aq_account_email';
-const resolveStoredAccountEmail = async () => {
-  try {
-    const v = await AsyncStorage.getItem(ACCOUNT_EMAIL_KEY);
-    return v ? v.toLowerCase() : null;
-  } catch {
-    return null;
-  }
-};
 import {generateToken} from '../utils/SecurityTokenManager';
 import {getAdvisorSubdomain} from '../utils/variantHelper';
 import {isOrderSuccess, isOrderRejected} from '../utils/orderStatusUtils';
@@ -72,44 +53,16 @@ export const TradeProvider = ({children}) => {
   const [ignoredTrades, setIgnoredTrades] = useState([]);
   const [isBrokerConnected, setIsBrokerConnected] = useState(false);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  // Apple sign-in identity fallback: hydrated on every auth-state change
-  // so the [userEmail, configData] effects fire even when
-  // currentUser.email is null / a private-relay alias (Apple flows).
-  // Without this, the effects' `if (userEmail && ...)` gates never open
-  // for Apple users and Home renders permanently empty (2026-07-20).
-  const [accountEmailFallback, setAccountEmailFallback] = useState(null);
-  useEffect(() => {
-    // Two hydration triggers: (1) auth-state change covers cold-start
-    // restore of an existing Apple session; (2) the explicit event covers
-    // FIRST sign-in, where signInWithCredential fires the auth listener
-    // BEFORE the user has typed their email on EmailScreenAppleLogin —
-    // completeAppleSignIn emits after persisting the resolved identity.
-    const unsub = onAuthStateChanged(getAuth(), async (u) => {
-      if (!u) {
-        setAccountEmailFallback(null);
-        return;
-      }
-      const stored = await resolveStoredAccountEmail();
-      setAccountEmailFallback(stored);
-    });
-    const onResolved = (email) =>
-      setAccountEmailFallback(email ? String(email).toLowerCase() : null);
-    eventEmitter.on('aq:accountEmailResolved', onResolved);
-    return () => {
-      unsub();
-      eventEmitter.off('aq:accountEmailResolved', onResolved);
-    };
-  }, []);
-  // Firebase preserves the case of Apple's identityToken email
-  // (Google always issues lowercase). Backend GET /api/user/getUser/:email
-  // auto-lowercases but backend POST /api/user/ stores VERBATIM — so every
-  // downstream URL that embeds userEmail must match the lowercase record
-  // we now write in completeAppleSignIn. Lowercase once at the source.
-  const userEmail = user?.email
-    ? user.email.toLowerCase()
-    : accountEmailFallback;
+  // Apple users have no usable currentUser.email (null / relay alias) for
+  // the life of the Firebase user, while every backend record (subscription,
+  // plans, clientlist) is keyed by the REAL email typed on
+  // EmailScreenAppleLogin. useAccountEmail() applies the Apple-aware
+  // precedence (Firebase-first, then the typed identity) and RE-RENDERS
+  // when the identity resolves — a one-shot read would capture null and
+  // never open the [userEmail, configData] effects below, which is exactly
+  // how Home rendered permanently empty for Apple users (2026-07-20). See
+  // src/utils/accountEmail.js.
+  const userEmail = useAccountEmail();
 
   const [configData, setConfigData] = useState(null);
   const [configLoading, setConfigLoading] = useState(true);
@@ -457,16 +410,11 @@ export const TradeProvider = ({children}) => {
   };
 
   const getModelPortfolioStrategyDetails = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    // Firebase preserves the case of Apple's identityToken email
-  // (Google always issues lowercase). Backend GET /api/user/getUser/:email
-  // auto-lowercases but backend POST /api/user/ stores VERBATIM — so every
-  // downstream URL that embeds userEmail must match the lowercase record
-  // we now write in completeAppleSignIn. Lowercase once at the source.
-  const userEmail = user?.email
-    ? user.email.toLowerCase()
-    : await resolveStoredAccountEmail();
+    // Apple users have no usable currentUser.email (null / relay alias);
+    // getAccountEmailAsync() applies the Firebase-first/typed-identity
+    // precedence and guarantees the stored identity has been read at least
+    // once. See src/utils/accountEmail.js.
+    const userEmail = await getAccountEmailAsync();
 
     try {
       setIsDatafetchingMP(true);
@@ -534,16 +482,11 @@ export const TradeProvider = ({children}) => {
   // Mirrors web's `getRebalanceRepair` in prod-alphaquark-github/
   // src/Home/LivePortfolioSection/Home.js:364-393.
   const getModelPortfolioRepairTrades = async portfolios => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    // Firebase preserves the case of Apple's identityToken email
-  // (Google always issues lowercase). Backend GET /api/user/getUser/:email
-  // auto-lowercases but backend POST /api/user/ stores VERBATIM — so every
-  // downstream URL that embeds userEmail must match the lowercase record
-  // we now write in completeAppleSignIn. Lowercase once at the source.
-  const userEmail = user?.email
-    ? user.email.toLowerCase()
-    : await resolveStoredAccountEmail();
+    // Apple users have no usable currentUser.email (null / relay alias);
+    // getAccountEmailAsync() applies the Firebase-first/typed-identity
+    // precedence and guarantees the stored identity has been read at least
+    // once. See src/utils/accountEmail.js.
+    const userEmail = await getAccountEmailAsync();
 
     if (!userEmail || !configData) return;
     const list = Array.isArray(portfolios) ? portfolios : [];
@@ -619,16 +562,11 @@ export const TradeProvider = ({children}) => {
     }
   }
 const getAllTrades = async () => {
-  const auth = getAuth();
-  const user = auth.currentUser;
-  // Firebase preserves the case of Apple's identityToken email
-  // (Google always issues lowercase). Backend GET /api/user/getUser/:email
-  // auto-lowercases but backend POST /api/user/ stores VERBATIM — so every
-  // downstream URL that embeds userEmail must match the lowercase record
-  // we now write in completeAppleSignIn. Lowercase once at the source.
-  const userEmail = user?.email
-    ? user.email.toLowerCase()
-    : await resolveStoredAccountEmail();
+  // Apple users have no usable currentUser.email (null / relay alias);
+  // getAccountEmailAsync() applies the Firebase-first/typed-identity
+  // precedence and guarantees the stored identity has been read at least
+  // once. See src/utils/accountEmail.js.
+  const userEmail = await getAccountEmailAsync();
 
   if (!userEmail) {
     // TradeProvider mounts before auth resolves. The [userEmail, configData]
@@ -972,11 +910,10 @@ const getAllTrades = async () => {
     // after Apple login even though the same account showed plans fine
     // after a subsequent Google login (Firebase cached currentUser
     // populates the closure early enough for Google flows).
-    const authNow = getAuth();
-    const currentUser = authNow.currentUser;
-    const userEmail = currentUser?.email
-      ? currentUser.email.toLowerCase()
-      : await resolveStoredAccountEmail();
+    // getAccountEmailAsync() applies the same Firebase-first/typed-identity
+    // precedence and guarantees the stored identity has been read at least
+    // once. See src/utils/accountEmail.js.
+    const userEmail = await getAccountEmailAsync();
     if (!userEmail) {
       console.warn('[getPlanList] skipped — auth not ready yet');
       return;
@@ -1140,15 +1077,12 @@ const getAllTrades = async () => {
     // (it wraps the app in App.js), so the top-level `userEmail` closure at
     // line 62 is `undefined` when a fresh Apple sign-in lands. Google usually
     // has a cached session so the top-level closure is populated; Apple's
-    // fresh identityToken path populates auth.currentUser AFTER TradeProvider
-    // has already captured `undefined`. Reading fresh from auth.currentUser
-    // here (matching getModelPortfolioStrategyDetails / getAllTrades) makes
-    // this function work regardless of when auth resolved relative to mount.
-    const authNow = getAuth();
-    const currentUser = authNow.currentUser;
-    const userEmail = currentUser?.email
-      ? currentUser.email.toLowerCase()
-      : await resolveStoredAccountEmail();
+    // fresh identityToken path populates the identity AFTER TradeProvider
+    // has already captured `undefined`. getAccountEmailAsync() (matching
+    // getModelPortfolioStrategyDetails / getAllTrades) makes this function
+    // work regardless of when the identity resolved relative to mount. See
+    // src/utils/accountEmail.js.
+    const userEmail = await getAccountEmailAsync();
     if (!userEmail) {
       console.warn('[getUserDeatils] skipped — no authenticated user yet');
       return;
@@ -1241,11 +1175,7 @@ const getAllTrades = async () => {
     } = userDetails;
 
     // Re-derive at call time — see comment in getUserDeatils.
-    const authNow = getAuth();
-    const currentUser = authNow.currentUser;
-    const userEmail = currentUser?.email
-      ? currentUser.email.toLowerCase()
-      : await resolveStoredAccountEmail();
+    const userEmail = await getAccountEmailAsync();
 
     try {
       const fetchedFunds = await fetchFunds(
@@ -1278,11 +1208,7 @@ const getAllTrades = async () => {
     // explicit reconnect action by the user. User-reported 2026-04-29.
     const silent = opts.silent === true;
     // Re-derive at call time — see comment in getUserDeatils.
-    const authNow = getAuth();
-    const currentUser = authNow.currentUser;
-    const userEmail = currentUser?.email
-      ? currentUser.email.toLowerCase()
-      : await resolveStoredAccountEmail();
+    const userEmail = await getAccountEmailAsync();
     if (!userEmail) return;
     try {
       const updatedUser = await getUserDeatils();
@@ -1423,7 +1349,15 @@ const getAllTrades = async () => {
 
       setAllNotifications(response.data.data);
     } catch (error) {
-      console.error('Error fetching notifications', error);
+      // 404 is the backend's "this user has no notification record yet" —
+      // the normal state for a new / freshly-migrated account, not a
+      // failure. Logging it at error level raised a red LogBox on every
+      // launch. Treat it as an empty list; keep error level for the rest.
+      if (error?.response?.status === 404) {
+        setAllNotifications([]);
+      } else {
+        console.error('Error fetching notifications', error);
+      }
     } finally {
       setIsNotificationLoading(false);
     }

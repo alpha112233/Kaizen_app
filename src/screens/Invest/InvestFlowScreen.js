@@ -33,7 +33,6 @@ import {
   FlatList,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getAuth } from '@react-native-firebase/auth';
 import axios from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -54,6 +53,7 @@ import {
   PaymentType,
 } from '../../FunctionCall/services/PendingPaymentManager';
 import { logPayment } from '../../utils/Logging';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const getHeaders = () => ({
   'Content-Type': 'application/json',
@@ -123,8 +123,7 @@ const InvestFlowScreen = () => {
   const { portfolio, onSubscribed } = route.params || {};
   const showAlert = useModalStore((state) => state.showAlert);
 
-  const auth = getAuth();
-  const userEmail = auth.currentUser?.email;
+  const userEmail = getAccountEmail();
 
   // ── Step tracking ──
   const [currentStep, setCurrentStep] = useState(0);

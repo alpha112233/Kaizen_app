@@ -16,7 +16,6 @@ import {X, Shield, ExternalLink} from 'lucide-react-native';
 import {WebView} from 'react-native-webview';
 import axios from 'axios';
 import Config from 'react-native-config';
-import {getAuth} from '@react-native-firebase/auth';
 import server from '../../utils/serverConfig';
 import {generateToken} from '../../utils/SecurityTokenManager';
 import {getAdvisorSubdomain} from '../../utils/variantHelper';
@@ -29,6 +28,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const AxisConnectModal = ({
   isVisible,
@@ -37,8 +37,7 @@ const AxisConnectModal = ({
 }) => {
   const {configData} = useTrade();
   const sdkBridge = useSdkBridge();
-  const auth = getAuth();
-  const userEmail = auth.currentUser?.email;
+  const userEmail = getAccountEmail();
   const [userDetails, setUserDetails] = useState(null);
   const userId = userDetails?._id;
   const [loading, setLoading] = useState(false);

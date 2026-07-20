@@ -19,7 +19,6 @@ import axios from "axios";
 import debounce from "lodash.debounce";
 import dayjs from 'dayjs';
 import moment from "moment";
-import { getAuth } from "@react-native-firebase/auth";
 import TokenPurchaseModal from "../TokenPurchaseModal";
 import Loader from "../../../utils/Loader";
 import CalendarPicker from "react-native-calendar-picker";
@@ -34,6 +33,7 @@ import Config from "react-native-config";
 import { generateToken } from "../../../utils/SecurityTokenManager";
 import { useTrade } from "../../TradeContext";
 import { useConfig } from "../../../context/ConfigContext";
+import {getAccountEmail} from '../../../utils/accountEmail';
 
 const NewsScreen = ({isVisible}) => {
   const {configData}=useTrade();
@@ -53,9 +53,7 @@ const NewsScreen = ({isVisible}) => {
 
 
 
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const userEmail = user?.email;
+    const userEmail = getAccountEmail();
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);

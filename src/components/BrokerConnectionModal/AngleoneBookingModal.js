@@ -1,6 +1,5 @@
 import React, {useRef, useState, useEffect} from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
-import {getAuth} from '@react-native-firebase/auth';
 import server from '../../utils/serverConfig';
 import axios from 'axios';
 const {height: screenHeight} = Dimensions.get('window');
@@ -16,6 +15,7 @@ import {
   sdkConnectBroker,
   sdkDualWriteSafely,
 } from '../../sdk/brokerSdkBridge';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const AngleOneBookingTrueSheet = ({
   isVisible,
@@ -53,9 +53,7 @@ const AngleOneBookingTrueSheet = ({
   //                "Invalid redirect URL".
   const [authUrl, setauthurl] = useState('');
   const [authtoken, setAuthToken] = useState(null);
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const [userDetails, setUserDetails] = useState();
   const getUserDeatils = () => {

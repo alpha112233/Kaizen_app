@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {ChevronLeft, ChevronRight, Crown} from 'lucide-react-native';
-import {getAuth} from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import moment from 'moment';
@@ -29,6 +28,7 @@ import {
   getSubscriptionStatus,
   ACCEPTABLE_DATE_FORMATS,
 } from '../../utils/subscriptionStatus';
+import {getAccountEmail} from '../../utils/accountEmail';
 
 const {width: screenWidth} = Dimensions.get('window');
 const Alpha100 = require('../../assets/alpha-100.png');
@@ -52,9 +52,7 @@ const MySubscriptionsScreen = () => {
   const themeColor = config?.themeColor || mainColor;
 
   const navigation = useNavigation();
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user?.email;
+  const userEmail = getAccountEmail();
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
