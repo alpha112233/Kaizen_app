@@ -56,8 +56,14 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Kaizen Alpha needs camera access so you can capture and share photos, such as for profile pictures or verification documents.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string>Kaizen Alpha uses your location to confirm you are in a region where our research and advisory services are licensed to operate.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Kaizen Alpha needs permission to save shared images, screenshots, and trading reports to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Kaizen Alpha needs access to your photo library so you can share screenshots and save trading reports or charts to your device.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome.ttf</string>
