@@ -18,7 +18,7 @@ on:
 
 env:
   # >>> PER-APP CONFIG — set to the real App Store Connect bundle id <<<
-  APP_BUNDLE_ID: com.aq.kaizenalpha
+  APP_BUNDLE_ID: com.aq.kaizen
   # Force the standard Xcode toolchain so the Swift back-compat libs
   # (swiftCompatibility50/51/56/...) that prebuilt Firebase references resolve
   # under Xcode 26 (the runner otherwise picks an incomplete toolchain).

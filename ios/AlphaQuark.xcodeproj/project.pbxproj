@@ -683,7 +683,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizenalpha;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizen;
 				PRODUCT_NAME = KaizenAlpha;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -713,7 +713,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizenalpha;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aq.kaizen;
 				PRODUCT_NAME = KaizenAlpha;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
